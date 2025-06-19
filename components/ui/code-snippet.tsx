@@ -13,7 +13,6 @@ interface CodeSnippetProps {
 
 export function CodeSnippet({
   codeString,
-  language = 'javascript', // Defaulting to javascript for this use case
   title = 'Example API Request',
 }: CodeSnippetProps) {
   const [copied, setCopied] = useState(false);
