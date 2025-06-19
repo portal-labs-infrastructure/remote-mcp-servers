@@ -1,6 +1,4 @@
 import { Badge } from '@/components/ui/badge'; // Shadcn Badge (replaces Chip)
-import Link from 'next/link';
-import { ExternalLink, Tag as TagIcon } from 'lucide-react'; // Lucide icons
 
 interface ServerCardBodyProps {
   server: Pick<
@@ -20,10 +18,9 @@ export default function ServerCardBody({ server }: ServerCardBodyProps) {
       {' '}
       {/* Replaces Stack gap={2} sx={{ flexGrow: 1 }} */}
       {server.category && (
-        <Badge variant="outline" className="py-1 px-2.5 self-start text-sm">
+        <Badge variant="outline" className="self-start text-xs">
           {' '}
           {/* Chip styling */}
-          <TagIcon className="h-4 w-4 mr-1.5" /> {/* startDecorator */}
           {server.category}
         </Badge>
       )}
@@ -43,18 +40,6 @@ export default function ServerCardBody({ server }: ServerCardBodyProps) {
         className={`flex flex-col gap-3 ${server.description ? 'mt-0' : 'mt-auto'}`}>
         {' '}
         {/* Stack gap={2} sx={{ mt: ... }} */}
-        {server.mcp_url && (
-          <Link
-            href={server.mcp_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-muted-foreground hover:text-primary truncate block" // MuiLink styling
-          >
-            {server.mcp_url}
-            <ExternalLink className="inline-block h-3 w-3 ml-1 align-baseline" />{' '}
-            {/* endDecorator */}
-          </Link>
-        )}
         <div className="flex flex-row flex-wrap gap-1.5">
           <Badge
             variant={

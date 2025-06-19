@@ -12,7 +12,7 @@ export async function Hero() {
     <section className="w-full py-12 md:py-24 lg:py-32 xl:py-32 bg-gradient-to-r from-primary/10 to-secondary/10">
       <div className="container px-4 md:px-6 text-center">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/50">
             Discover & Share MCP Servers
           </h1>
           <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
