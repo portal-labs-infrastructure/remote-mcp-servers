@@ -1,5 +1,4 @@
 import ServerCard from './server-card';
-import PublicDiscoverableServerCard from './server-card'; // Adjust path
 import { createClient } from '@/lib/supabase/server';
 
 // Helper function to fetch and validate servers
