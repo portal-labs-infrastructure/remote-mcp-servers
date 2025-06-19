@@ -13,6 +13,7 @@ export type Database = {
         Row: {
           authentication_type: string
           category: string
+          created_at: string | null
           description: string
           documentation_url: string | null
           dynamic_client_registration: boolean | null
@@ -23,10 +24,13 @@ export type Database = {
           maintainer_url: string | null
           mcp_url: string
           name: string
+          status: string
+          user_id: string | null
         }
         Insert: {
           authentication_type: string
           category: string
+          created_at?: string | null
           description: string
           documentation_url?: string | null
           dynamic_client_registration?: boolean | null
@@ -37,10 +41,13 @@ export type Database = {
           maintainer_url?: string | null
           mcp_url: string
           name: string
+          status?: string
+          user_id?: string | null
         }
         Update: {
           authentication_type?: string
           category?: string
+          created_at?: string | null
           description?: string
           documentation_url?: string | null
           dynamic_client_registration?: boolean | null
@@ -51,6 +58,8 @@ export type Database = {
           maintainer_url?: string | null
           mcp_url?: string
           name?: string
+          status?: string
+          user_id?: string | null
         }
         Relationships: []
       }

@@ -116,38 +116,6 @@ async function main() {
   }
 }
 
-// Example JSON data (can be used for direct testing if not using file input)
-const exampleJsonData = [
-  {
-    id: 'asana-mcp',
-    name: 'Asana',
-    description: "Manage your team's work, projects, & tasks online.",
-    category: 'Project Management',
-    mcp_url: 'https://mcp.asana.com/sse',
-    authentication_types: ['OAuth2.1'], // Arrays will be stringified
-    dynamic_client_registration: true,
-    documentation_url: 'https://developers.asana.com/docs/mcp-server',
-    maintainer_name: 'Asana',
-    maintainer_url: 'https://asana.com',
-    icon_url: 'https://remote-mcp-servers.com/logos/asana.png',
-    is_official: true,
-  },
-  {
-    id: 'another-service',
-    name: 'Another Service, with comma',
-    description: 'This description has a "quote" and a\nnewline.',
-    category: 'Utility',
-    mcp_url: 'https://mcp.another.com',
-    authentication_types: ['APIKey', 'Bearer'],
-    dynamic_client_registration: false,
-    documentation_url: 'https://docs.another.com',
-    maintainer_name: 'Another Inc.',
-    maintainer_url: 'https://another.com',
-    icon_url: 'https://remote-mcp-servers.com/logos/another.png',
-    is_official: false,
-  },
-];
-
 // If you want to test directly without command line args, uncomment and modify:
 /*
 (function testDirectly() {

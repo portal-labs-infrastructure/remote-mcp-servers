@@ -1,30 +1,61 @@
 # Remote MCP Server Registry
 
-A public, community-maintained registry of remote Model Context Protocol (MCP) servers. This web application displays a list of known MCP servers.
+A dynamic, community-driven registry of remote Model Context Protocol (MCP) servers. This web application allows users to discover, list, and submit MCP servers.
 
 **Live Site:** https://remote-mcp-servers.com
-
-**Registry JSON:** https://remote-mcp-servers.com/mcp-servers.json
 
 ## Purpose
 
 The Model Context Protocol (MCP) enables applications to securely share contextual information with AI models. As the ecosystem of MCP-enabled services grows, this registry aims to:
 
-- Provide a centralized, discoverable list of MCP servers that are hosted online and **DO NOT** require a local server.
-- Encourage community contributions to keep the list up-to-date.
+- Provide a centralized, discoverable, and up-to-date list of MCP servers.
+- Empower the community to contribute and maintain server listings through a user-friendly interface.
+- Offer a dynamic API for accessing server information programmatically.
 
 ## Features
 
-- **Displays MCP Servers:** Lists servers from a community-maintained JSON file.
-- **Server Details:** Shows name, description, category, maintainer, MCP URL, and authentication types.
-- **Contribution Link:** Easy link to the GitHub repository for contributing server information.
+- **Dynamic Server Listings:** Displays MCP servers fetched from a live database.
+- **User Accounts & Submission:** Users can sign up, log in, and submit their own MCP servers for inclusion in the registry (pending review).
+- **Server Management Dashboard:** Logged-in users can view and manage their submitted servers.
+- **Filtering & Pagination API:** A public API endpoint (`/api/servers`) allows fetching server data with support for filtering by various criteria (category, name/description query, official status, authentication type) and pagination.
+- **Server Details:** Shows name, description, category, maintainer, MCP URL, authentication type, and other relevant metadata.
+
+## API Endpoint for Server Data
+
+**Public API Endpoint:** `/api/servers`
+
+This endpoint provides a paginated and filterable list of approved MCP servers.
+
+**Example Usage:**
+
+- Get default list (page 1, 10 items): `/api/servers`
+- Get page 2 with 5 items: `/api/servers?page=2&limit=5`
+- Filter by category "AI Agent": `/api/servers?category=AI%20Agent`
+- Search for "MyServer" in name or description: `/api/servers?q=MyServer`
+- Filter by official status: `/api/servers?is_official=true`
+- Filter by authentication type: `/api/servers?authentication_type=OAuth`
+- Combine filters: `/api/servers?category=Utility&q=secure&limit=15`
+
+**Supported Query Parameters:**
+
+- `page` (number, default: 1): The page number for pagination.
+- `limit` (number, default: 10, max: 100): The number of items per page.
+- `q` (string): A search query string that will be matched against server names and descriptions (case-insensitive).
+- `category` (string): Filter by a specific server category.
+- `is_official` (boolean: `true` or `false`): Filter by official server status.
+- `authentication_type` (string): Filter by a specific authentication type (e.g., "OAuth", "APIKey", "None").
+
+The API returns a JSON object with a `data` array containing the servers and a `pagination` object with metadata.
 
 ## Tech Stack
 
-- **Framework:** [Vite](https://vitejs.dev/) + [React](https://reactjs.org/)
+- **Framework:** [Next.js](https://nextjs.org/) (App Router)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **UI Library:** [MUI Joy](https://mui.com/joy-ui/getting-started/)
-- **Icons:** [Material Icons](https://mui.com/material-ui/material-icons/) (via MUI)
+- **Database & Auth:** [Supabase](https://supabase.io/)
+- **UI Components:** [Shadcn UI](https://ui.shadcn.com/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Forms:** [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) for validation
 
 ## Getting Started
 
@@ -32,51 +63,92 @@ The Model Context Protocol (MCP) enables applications to securely share contextu
 
 - [Node.js](https://nodejs.org/) (version 18.x or later recommended)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- A [Supabase](https://supabase.io/) project.
 
-### Installation
+### Installation & Setup
 
-1.  Clone the repository:
+1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/portal-labs-infrastructure/remote-mcp-server-registry
-    cd remote-mcp-server-registry
+    git clone https://github.com/portal-labs-infrastructure/remote-mcp-servers
+    cd remote-mcp-servers
     ```
 
-2.  Install dependencies:
+2.  **Install dependencies:**
+
     ```bash
     npm install
     # or
     yarn install
     ```
 
+3.  **Set up Supabase Environment Variables:**
+    - Sign up for a free Supabase account at [supabase.com](https://supabase.com/) and create a new project.
+    - In your Supabase project dashboard, go to "Project Settings" > "API".
+    - You will need your **Project URL** and the **`anon` public API key**.
+    - Create a `.env.local` file in the root of your cloned project.
+    - Add your Supabase credentials to `.env.local`:
+      ```env
+      NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_PROJECT_URL
+      NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_PUBLIC_KEY
+      # For server-side actions that might need elevated privileges (like admin tasks, not typically user submissions if RLS is set up correctly)
+      # SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
+      ```
+    - **Database Schema:** You will need to set up the `discoverable_mcp_servers` table in your Supabase database.
+      Use the csv in `seed/output.csv` in the Supabase dashboard to create the table and populate it with the initial data.
+    - **Run SQL Scripts:** Add created_at and status columns to the `discoverable_mcp_servers` table. You can run the following SQL in the Supabase SQL editor:
+      ```sql
+        UPDATE public.discoverable_mcp_servers
+        SET created_at = NOW()
+        WHERE created_at IS NULL;
+      ```
+      ```sql
+        UPDATE public.discoverable_mcp_servers
+        SET status = 'approved'
+        WHERE status IS NULL OR status != 'approved';
+      ```
+
 ### Running Locally
 
-1.  Start the development server:
+1.  **Start the development server:**
+
     ```bash
     npm run dev
     # or
     yarn dev
     ```
-    The application will typically be available at `http://localhost:5173` (or another port if 5173 is busy).
+
+    The application will typically be available at `http://localhost:3000`.
 
 ## How to Contribute
 
-Contributions to the MCP server list are highly welcome!
+We encourage contributions to expand the registry!
 
-1.  **Fork and Edit:**
-    - The primary list of servers is maintained in the `mcp-servers.json` file within the GitHub repository.
-    - Fork this repository.
-    - Edit the `mcp-servers.json` file in your fork to add new servers or update existing ones. Please ensure your additions conform to the existing schema.
-2.  **Submit a Pull Request:**
-    - Create a Pull Request from your fork back to the main repository's `main` branch.
-    - Provide a clear description of your changes.
+1.  **Sign Up / Log In:**
+    - Visit the live site and create an account or log in if you already have one.
+2.  **Submit Your Server:**
+    - Navigate to your dashboard or the "Add New Server" page.
+    - Fill out the form with your MCP server's details.
+3.  **Review Process:**
+    - Submitted servers will typically go into a "pending review" state.
+    - Administrators will review submissions for accuracy and appropriateness before approving them to be publicly listed.
 
-Your contributions help keep this registry accurate and valuable for the community!
+For code contributions (bug fixes, new features):
+
+1.  **Fork the repository.**
+2.  Create a new branch for your feature or fix.
+3.  Make your changes.
+4.  Commit your changes and push to your fork.
+5.  **Submit a Pull Request** to the `main` branch of the original repository with a clear description of your changes.
 
 ## Future Enhancements (Ideas)
 
-- More advanced filtering and sorting of servers.
-- Schema validation for `mcp-servers.json` submissions (e.g., via GitHub Actions).
+- Admin panel for reviewing and managing server submissions.
+- User profiles and ability to edit submitted servers.
+- Notifications for server submission status changes.
+- Advanced search and sorting options on the frontend.
+- MCP server to expose the server registry as an MCP server itself.
+- Python client to expose the server registry discovery to LLMs.
 
 ## License
 

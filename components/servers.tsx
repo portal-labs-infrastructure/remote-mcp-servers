@@ -13,6 +13,7 @@ async function getDiscoverableServersFromSupabase(): Promise<{
     const { data, error: dbError } = await supabase
       .from('discoverable_mcp_servers')
       .select(`*`) // Fetch all columns
+      .eq('status', 'approved') // Filter for approved servers
       .order('name', { ascending: true }); // Optional: order by name
 
     if (dbError) {
@@ -63,7 +64,7 @@ export default async function Servers() {
   }
 
   return (
-    <div className="p-4 md:p-6">
+    <div className="px-4 md:px-0">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4">
         {servers.map((server) => (
           <ServerCard
