@@ -58,7 +58,7 @@ export default async function DashboardPage() {
                 <p className="text-sm text-muted-foreground">
                   {server.mcp_url}
                 </p>
-                <p className="text-sm">
+                <p className="text-sm  pt-2">
                   Status:{' '}
                   <span
                     className={`font-medium ${

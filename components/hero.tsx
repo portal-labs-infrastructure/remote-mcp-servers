@@ -15,24 +15,26 @@ export async function Hero() {
   const exampleApiRequest = `curl -X GET "https://remote-mcp-servers.com/api/servers?limit=3"`;
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 xl:py-32 bg-gradient-to-r from-primary/10 to-secondary/10">
+    <section className="w-full py-16 md:py-24 lg:py-32 xl:py-32 bg-gradient-to-r from-primary/10 to-secondary/10">
       <div className="container px-4 md:px-6 text-center">
         <div className="space-y-4">
           <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/50">
             Discover & Share MCP Servers
           </h1>
           <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-            Explore a community-driven list of Model Context Protocol servers.
-            Add your own to help grow the ecosystem and connect AI agents
-            globally.
+            Explore a community-driven list of remote Model Context Protocol
+            servers. Add your own to help grow the ecosystem and connect AI
+            agents globally.
           </p>
         </div>
 
-        <CodeSnippet
-          codeString={exampleApiRequest}
-          title="Quick Start"
-          language="bash"
-        />
+        <div className="hidden md:block">
+          <CodeSnippet
+            codeString={exampleApiRequest}
+            title="Quick Start"
+            language="bash"
+          />
+        </div>
 
         <div className="mt-6 flex flex-wrap justify-center gap-4">
           {' '}

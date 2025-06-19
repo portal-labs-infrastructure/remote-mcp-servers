@@ -49,7 +49,7 @@ export function CodeSnippet({
         </Button>
       </div>
       <pre className="p-4 text-sm text-slate-100 dark:text-slate-200 overflow-x-auto">
-        <code>{codeString}</code>
+        <code className="text-wrap">{codeString}</code>
       </pre>
     </div>
   );
