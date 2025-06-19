@@ -1,0 +1,92 @@
+import { Badge } from '@/components/ui/badge'; // Shadcn Badge (replaces Chip)
+import Link from 'next/link';
+import { ExternalLink, Tag as TagIcon } from 'lucide-react'; // Lucide icons
+
+interface ServerCardBodyProps {
+  server: Pick<
+    DiscoverableMcpServer,
+    | 'category'
+    | 'description'
+    | 'mcp_url'
+    | 'authentication_type'
+    | 'dynamic_client_registration'
+    | 'is_official'
+  >;
+}
+
+export default function ServerCardBody({ server }: ServerCardBodyProps) {
+  return (
+    <div className="flex flex-col gap-4 flex-grow">
+      {' '}
+      {/* Replaces Stack gap={2} sx={{ flexGrow: 1 }} */}
+      {server.category && (
+        <Badge variant="outline" className="py-1 px-2.5 self-start text-sm">
+          {' '}
+          {/* Chip styling */}
+          <TagIcon className="h-4 w-4 mr-1.5" /> {/* startDecorator */}
+          {server.category}
+        </Badge>
+      )}
+      {server.description && (
+        <div className="flex-grow">
+          {' '}
+          {/* Box sx={{ flexGrow: 1 }} */}
+          <p className="text-sm text-muted-foreground line-clamp-3">
+            {' '}
+            {/* Typography + line clamp */}
+            {server.description}
+          </p>
+        </div>
+      )}
+      {/* MCP URL and Metadata Badges will be at the bottom of this component */}
+      <div
+        className={`flex flex-col gap-3 ${server.description ? 'mt-0' : 'mt-auto'}`}>
+        {' '}
+        {/* Stack gap={2} sx={{ mt: ... }} */}
+        {server.mcp_url && (
+          <Link
+            href={server.mcp_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-muted-foreground hover:text-primary truncate block" // MuiLink styling
+          >
+            {server.mcp_url}
+            <ExternalLink className="inline-block h-3 w-3 ml-1 align-baseline" />{' '}
+            {/* endDecorator */}
+          </Link>
+        )}
+        <div className="flex flex-row flex-wrap gap-1.5">
+          <Badge
+            variant={
+              server.authentication_type.toLowerCase().includes('oauth')
+                ? 'default'
+                : 'secondary'
+            } // Chip color mapping
+            className="text-xs" // size="sm"
+          >
+            {server.authentication_type}
+          </Badge>
+
+          {server.dynamic_client_registration && (
+            <Badge
+              variant="default"
+              className="bg-blue-600 hover:bg-blue-700 text-xs">
+              {' '}
+              {/* Chip color="primary" */}
+              Dynamic Client Reg
+            </Badge>
+          )}
+          {server.is_official && (
+            <Badge
+              variant="default"
+              className="bg-yellow-500 hover:bg-yellow-600 text-xs">
+              {' '}
+              {/* Chip color="warning" */}
+              Official
+            </Badge>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
