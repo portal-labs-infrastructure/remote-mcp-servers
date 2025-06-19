@@ -38,32 +38,22 @@ export async function Hero() {
           {' '}
           {/* Added flex-wrap for responsiveness */}
           {user ? (
-            <>
-              <Button asChild size="lg">
-                <Link href="/dashboard">Go to Your Dashboard</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                {/* Using <a> tag for external link, with target="_blank" */}
-                <a
-                  href={GITHUB_REPO_URL}
-                  target="_blank"
-                  rel="noopener noreferrer">
-                  {/* Optional: Icon */}
-                  <Github className="mr-1 h-5 w-5" />
-                  Read the Docs
-                </a>
-              </Button>
-            </>
+            <Button asChild size="lg">
+              <Link href="/dashboard">Go to Your Dashboard</Link>
+            </Button>
           ) : (
-            <>
-              <Button asChild size="lg" variant="default">
-                <Link href="/auth/login">Add Your Server</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/servers">Explore Servers</Link>
-              </Button>
-            </>
+            <Button asChild size="lg" variant="default">
+              <Link href="/auth/login">Add Your Server</Link>
+            </Button>
           )}
+          <Button asChild size="lg" variant="outline">
+            {/* Using <a> tag for external link, with target="_blank" */}
+            <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer">
+              {/* Optional: Icon */}
+              <Github className="mr-1 h-5 w-5" />
+              Read the Docs
+            </a>
+          </Button>
         </div>
       </div>
     </section>
