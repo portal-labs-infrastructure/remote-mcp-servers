@@ -86,34 +86,7 @@ export const metadata: Metadata = {
     // site: '@yourtwitterhandle', // Optional: If you have a site Twitter handle
     // creator: '@creatorhandle', // Optional: If you have a creator Twitter handle
   },
-
-  // == Other useful tags (not directly from your list but good to consider) ==
-  // manifest: '/site.webmanifest', // If you have a web app manifest
-  robots: {
-    // Control search engine indexing
-    index: true,
-    follow: true,
-    nocache: true,
-    googleBot: {
-      index: true,
-      follow: false,
-      noimageindex: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  // verification: { // For site verification with search engines
-  //   google: 'your-google-site-verification-code',
-  //   // yandex: 'your-yandex-verification-code',
-  //   // other: {
-  //   //   me: ['my-email@example.com', 'my-link'],
-  //   // },
-  // },
 };
-
-// For the Google Analytics tag, you'll use the next/script component.
-// This typically goes into your root layout (app/layout.tsx).
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
