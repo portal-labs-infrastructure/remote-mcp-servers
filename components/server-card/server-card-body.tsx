@@ -53,20 +53,14 @@ export default function ServerCardBody({ server }: ServerCardBodyProps) {
           </Badge>
 
           {server.dynamic_client_registration && (
-            <Badge
-              variant="default"
-              className="bg-blue-600 hover:bg-blue-700 text-xs">
+            <Badge variant="secondary" className="text-xs">
               {' '}
               {/* Chip color="primary" */}
-              Dynamic Client Reg
+              Dynamic Client
             </Badge>
           )}
           {server.is_official && (
-            <Badge
-              variant="default"
-              className="bg-yellow-500 hover:bg-yellow-600 text-xs">
-              {' '}
-              {/* Chip color="warning" */}
+            <Badge variant="secondary" className="text-xs">
               Official
             </Badge>
           )}
