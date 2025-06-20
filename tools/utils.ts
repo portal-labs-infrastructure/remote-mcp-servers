@@ -6,32 +6,39 @@ import { createClient } from '@/lib/supabase/server';
 export const discoverableMcpServerSchema = z.object({
   id: z.string().uuid().describe('Unique identifier of the server.'),
   name: z.string().describe('Name of the server.'),
-  description: z
-    .string()
-    .nullable()
-    .default(null)
-    .describe('Description of the server.'),
-  url: z
-    .string()
-    .url()
-    .nullable()
-    .default(null)
-    .describe('Primary URL of the MCP server.'),
+  description: z.string().describe('Description of the server.'),
   category: z
     .string()
-    .nullable()
-    .default(null)
     .describe("Category of the server (e.g., 'AI', 'Gaming')."),
-  is_official: z
-    .boolean()
-    .nullable()
-    .default(null)
-    .describe('Indicates if the server is officially recognized.'),
+  mcp_url: z.string().url().describe('Primary URL of the MCP server.'),
   authentication_type: z
     .string()
-    .nullable()
-    .default(null)
     .describe("Type of authentication supported (e.g., 'none', 'oauth')."),
+  dynamic_client_registration: z
+    .boolean()
+    .describe('Indicates if dynamic client registration is supported.'),
+  documentation_url: z
+    .string()
+    .url()
+    .describe('URL to the server documentation.'),
+  maintainer_name: z.string().describe('Name of the server maintainer.'),
+  maintainer_url: z
+    .string()
+    .url()
+    .describe("URL to the server maintainer's profile or website."),
+  icon_url: z
+    .string()
+    .url()
+    .describe('URL to the server icon image.')
+    .nullable(),
+  is_official: z
+    .boolean()
+    .describe('Indicates if the server is officially recognized.'),
+  user_id: z
+    .string()
+    .uuid()
+    .describe('User ID of the server maintainer.')
+    .nullable(),
   status: z
     .string()
     .describe("Approval status of the server (e.g., 'approved')."),
@@ -42,8 +49,6 @@ export const discoverableMcpServerSchema = z.object({
     .string()
     .describe('Timestamp of when the server record was last updated.')
     .optional(),
-  // Add any other relevant fields from your table
-  // For JSON fields from Supabase, you might use z.record(z.any()) or a more specific schema
 });
 
 // Zod schema for the paginated response structure
