@@ -17,7 +17,7 @@ export async function Hero() {
   const mcpConnectionUrl = `${BASE_URL}/api/mcp`;
 
   return (
-    <section className="w-full py-16 md:py-24 lg:py-32 xl:py-32 bg-gradient-to-r from-primary/10 to-secondary/10">
+    <section className="w-full py-16 md:py-24 lg:py-32 xl:py-32">
       <div className="container px-4 md:px-6 text-center">
         <div className="space-y-4">
           <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
@@ -30,7 +30,7 @@ export async function Hero() {
           </p>
         </div>
 
-        <div className="hidden md:block">
+        <div className="hidden md:block my-10">
           <CodeSnippet
             codeString={exampleApiRequest}
             title="Quick Start"

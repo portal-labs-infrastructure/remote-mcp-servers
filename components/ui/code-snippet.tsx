@@ -31,7 +31,7 @@ export function CodeSnippet({
   };
 
   return (
-    <div className="bg-neutral-800 dark:bg-main rounded-lg my-8 w-full max-w-xl mx-auto shadow-lg text-left">
+    <div className="bg-neutral-800 dark:bg-main rounded-lg my-4 w-full max-w-xl mx-auto shadow-lg text-left">
       {/* ^ Changed bg-slate-800 to bg-neutral-800. dark:bg-main is kept as per your code. */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-neutral-700 dark:border-neutral-700">
         {/* ^ Changed border-slate-700 to border-neutral-700 */}
