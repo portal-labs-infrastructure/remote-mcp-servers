@@ -1,10 +1,5 @@
 import { z } from 'zod';
-import type {
-  CallToolResult,
-  ServerNotification,
-  ServerRequest,
-} from '@modelcontextprotocol/sdk/types.js';
-import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { querySupabaseRegistry, paginatedServersSchema } from './utils';
 
 const inputSchema = z.object({
@@ -46,10 +41,9 @@ export default {
   description:
     'Lists approved, discoverable MCP servers from the registry with pagination and optional filters. Data is read-only.',
   inputSchema,
-  outputSchema, // For documentation and potential validation
+  outputSchema,
   handler: async (
     args: z.infer<typeof inputSchema>,
-    _req: RequestHandlerExtra<ServerRequest, ServerNotification>, // _req indicates it's not used
   ): Promise<CallToolResult> => {
     try {
       const result = await querySupabaseRegistry({
@@ -71,11 +65,7 @@ export default {
         content: [
           { type: 'text', text: `Error listing servers: ${e.message}` },
         ],
-        error: {
-          code: -32000,
-          message:
-            e.message || 'Failed to list servers due to an internal error.',
-        },
+        isError: true,
       };
     }
   },

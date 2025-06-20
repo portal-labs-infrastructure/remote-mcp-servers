@@ -10,7 +10,7 @@ const handler = createMcpHandler(
         {
           description: tool.description,
           inputSchema: tool.inputSchema.shape,
-          // outputSchema: tool.outputSchema.shape,
+          outputSchema: tool.outputSchema.shape,
         },
         tool.handler,
       );

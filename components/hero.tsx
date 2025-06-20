@@ -13,6 +13,7 @@ export async function Hero() {
   } = await supabase.auth.getUser();
 
   const exampleApiRequest = `curl -X GET "https://remote-mcp-servers.com/api/servers?limit=3"`;
+  const mcpConnectionUrl = `https://remote-mcp-servers.com/api/mcp`;
 
   return (
     <section className="w-full py-16 md:py-24 lg:py-32 xl:py-32 bg-gradient-to-r from-primary/10 to-secondary/10">
@@ -32,6 +33,12 @@ export async function Hero() {
           <CodeSnippet
             codeString={exampleApiRequest}
             title="Quick Start"
+            language="bash"
+          />
+
+          <CodeSnippet
+            codeString={mcpConnectionUrl}
+            title="MCP URL"
             language="bash"
           />
         </div>

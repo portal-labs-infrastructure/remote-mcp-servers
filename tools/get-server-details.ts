@@ -1,10 +1,5 @@
 import { z } from 'zod';
-import type {
-  CallToolResult,
-  ServerNotification,
-  ServerRequest,
-} from '@modelcontextprotocol/sdk/types.js';
-import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { createClient } from '@/lib/supabase/server';
 import { discoverableMcpServerSchema } from './utils';
 
@@ -16,17 +11,16 @@ const inputSchema = z.object({
 });
 
 // Output is a single server object, or null if not found
-const outputSchema = discoverableMcpServerSchema.nullable();
+const outputSchema = discoverableMcpServerSchema;
 
 export default {
   name: 'get_server_details',
   description:
-    'Retrieves details for a specific approved MCP server from the registry by its ID. Data is read-only.',
+    'Retrieves details for a specific approved MCP server from the registry by its ID.',
   inputSchema,
   outputSchema,
   handler: async (
     args: z.infer<typeof inputSchema>,
-    _req: RequestHandlerExtra<ServerRequest, ServerNotification>,
   ): Promise<CallToolResult> => {
     try {
       const supabase = await createClient();
@@ -47,8 +41,7 @@ export default {
                 text: `Server with ID ${args.id} not found or not approved.`,
               },
             ],
-            // Optionally, use the error field for "not found" if clients prefer that
-            // error: { code: -32001, message: `Server with ID ${args.id} not found or not approved.`}
+            isError: true,
           };
         }
         // Other database error
@@ -77,12 +70,7 @@ export default {
         content: [
           { type: 'text', text: `Error fetching server details: ${e.message}` },
         ],
-        error: {
-          code: -32000,
-          message:
-            e.message ||
-            'Failed to fetch server details due to an internal error.',
-        },
+        isError: true,
       };
     }
   },

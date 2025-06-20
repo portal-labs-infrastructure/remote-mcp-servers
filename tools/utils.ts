@@ -37,12 +37,11 @@ export const discoverableMcpServerSchema = z.object({
     .describe("Approval status of the server (e.g., 'approved')."),
   created_at: z
     .string()
-    .datetime()
     .describe('Timestamp of when the server record was created.'),
   updated_at: z
     .string()
-    .datetime()
-    .describe('Timestamp of when the server record was last updated.'),
+    .describe('Timestamp of when the server record was last updated.')
+    .optional(),
   // Add any other relevant fields from your table
   // For JSON fields from Supabase, you might use z.record(z.any()) or a more specific schema
 });
