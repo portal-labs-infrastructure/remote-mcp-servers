@@ -4,10 +4,7 @@ import { Geist } from 'next/font/google';
 import './globals.css'; // Assuming you have a global CSS file
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
-
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000';
+import { BASE_URL } from '@/const';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -18,7 +15,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   // == From your existing code ==
-  metadataBase: new URL(defaultUrl),
+  metadataBase: new URL(BASE_URL), // Base URL for metadata
 
   // == SEO: Core Meta Tags ==
   title:

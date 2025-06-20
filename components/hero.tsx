@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { CodeSnippet } from '@/components/ui/code-snippet';
 import { Github } from 'lucide-react'; // Optional: for an icon
+import { BASE_URL } from '@/const';
 
 const GITHUB_REPO_URL = process.env.NEXT_PUBLIC_GITHUB_URL;
 
@@ -12,8 +13,8 @@ export async function Hero() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const exampleApiRequest = `curl -X GET "https://remote-mcp-servers.com/api/servers?limit=3"`;
-  const mcpConnectionUrl = `https://remote-mcp-servers.com/api/mcp`;
+  const exampleApiRequest = `curl -X GET "${BASE_URL}/api/servers?limit=3"`;
+  const mcpConnectionUrl = `${BASE_URL}/api/mcp`;
 
   return (
     <section className="w-full py-16 md:py-24 lg:py-32 xl:py-32 bg-gradient-to-r from-primary/10 to-secondary/10">
