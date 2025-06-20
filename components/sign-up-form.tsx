@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
+import { cn } from '@/lib/utils';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function SignUpForm({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
+}: React.ComponentPropsWithoutRef<'div'>) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -34,7 +34,7 @@ export function SignUpForm({
     setError(null);
 
     if (password !== repeatPassword) {
-      setError("Passwords do not match");
+      setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
@@ -48,19 +48,19 @@ export function SignUpForm({
         },
       });
       if (error) throw error;
-      router.push("/auth/sign-up-success");
+      router.push('/auth/sign-up-success');
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Sign up</CardTitle>
+          <h1 className="text-2xl font-semibold">Sign Up</h1>
           <CardDescription>Create a new account</CardDescription>
         </CardHeader>
         <CardContent>
@@ -103,11 +103,11 @@ export function SignUpForm({
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating an account..." : "Sign up"}
+                {isLoading ? 'Creating an account...' : 'Sign up'}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Already have an account?{" "}
+              Already have an account?{' '}
               <Link href="/auth/login" className="underline underline-offset-4">
                 Login
               </Link>
