@@ -30,7 +30,8 @@ const ThemeSwitcher = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size={'sm'}>
+        <Button variant="secondary" size={'sm'}>
+          {theme ? theme.slice(0, 1).toUpperCase() + theme.slice(1) : 'System'}
           {theme === 'light' ? (
             <Sun
               key="light"

@@ -12,6 +12,7 @@ export type Database = {
       discoverable_mcp_servers: {
         Row: {
           authentication_type: string
+          average_rating: number | null
           category: string
           created_at: string | null
           description: string
@@ -29,6 +30,7 @@ export type Database = {
         }
         Insert: {
           authentication_type: string
+          average_rating?: number | null
           category: string
           created_at?: string | null
           description: string
@@ -46,6 +48,7 @@ export type Database = {
         }
         Update: {
           authentication_type?: string
+          average_rating?: number | null
           category?: string
           created_at?: string | null
           description?: string
@@ -62,6 +65,44 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          comment_text: string | null
+          created_at: string
+          id: number
+          rating: number
+          server_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          comment_text?: string | null
+          created_at?: string
+          id?: number
+          rating: number
+          server_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          comment_text?: string | null
+          created_at?: string
+          id?: number
+          rating?: number
+          server_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "discoverable_mcp_servers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
