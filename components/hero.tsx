@@ -21,10 +21,10 @@ export default async function Hero() {
       {/* Example gradient */}
       <div className="m-auto container px-6 md:px-6 text-center">
         <div className="space-y-4 md:space-y-6 mb-8 md:mb-10">
-          <h1 className="text-4xl max-w-3xl mb-8 m-auto font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+          <h1 className="text-4xl max-w-6xl mb-8 m-auto font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
             Discover & Share Remote MCP Servers
           </h1>
-          <p className="mx-auto max-w-[800px] text-muted-foreground md:text-xl">
+          <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
             Explore a community-driven list of remote Model Context Protocol
             servers that have been tested and approved.
           </p>
