@@ -37,11 +37,11 @@ export default async function DashboardPage() {
   const userServers = await getUserServers(user.id);
 
   return (
-    <div className="container mx-auto py-8  px-4 md:px-6">
+    <div className="container mx-auto py-8 px-4 md:px-6">
       <div className="flex justify-between items-center mb-8 gap-8 flex-wrap">
         <h1 className="text-3xl font-bold">Your MCP Servers</h1>
         <Button asChild>
-          <Link href="/dashboard/servers/new">
+          <Link href="/servers/new">
             <PlusCircle className="mr-2 h-5 w-5" /> Add New Server
           </Link>
         </Button>
@@ -87,7 +87,7 @@ export default async function DashboardPage() {
             Ready to share your MCP server with the world?
           </p>
           <Button asChild className="mt-4">
-            <Link href="/dashboard/servers/new">
+            <Link href="/servers/new">
               <PlusCircle className="mr-2 h-5 w-5" /> Submit Your First Server
             </Link>
           </Button>

@@ -1,7 +1,7 @@
 // serverFormSchema.ts (can be in the same file or imported)
 import * as z from 'zod';
 
-export const AUTHENTICATION_TYPES = ['OAuth', 'APIKey', 'None'] as const;
+export const AUTHENTICATION_TYPES = ['OAuth2', 'APIKey', 'None'] as const;
 
 export const serverFormSchema = z.object({
   name: z

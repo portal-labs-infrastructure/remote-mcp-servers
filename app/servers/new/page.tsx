@@ -28,7 +28,7 @@ import {
   AUTHENTICATION_TYPES,
   serverFormSchema,
   type ServerFormValues,
-} from '../../../actions/serverFormSchema'; // Assuming schema is in a separate file or defined above
+} from '../../actions/serverFormSchema'; // Assuming schema is in a separate file or defined above
 import { submitServerAction } from '@/app/actions/submitServerAction'; // Assuming your action is updated
 
 export default function AddNewServerPage() {
@@ -44,7 +44,7 @@ export default function AddNewServerPage() {
       icon_url: '',
       maintainer_name: '',
       maintainer_url: '',
-      authentication_type: 'OAuth',
+      authentication_type: 'OAuth2',
       dynamic_client_registration: false,
       is_official: false,
     },
@@ -98,7 +98,7 @@ export default function AddNewServerPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-xl w-full">
+    <div className="container mx-auto py-8 max-w-xl px-4 md:px-6 w-full">
       <h1 className="text-3xl font-bold mb-8">Register New MCP Server</h1>
       <Form {...form}>
         <form

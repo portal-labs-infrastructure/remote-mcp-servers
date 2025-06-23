@@ -115,7 +115,7 @@ export default function AppBar() {
                 className="w-full max-w-xs sm:max-w-sm">
                 {' '}
                 {/* Responsive width */}
-                <SheetHeader className="mb-4 border-b pb-4">
+                <SheetHeader className="mb-2 border-b">
                   <SheetDescription />
                   <SheetTitle asChild>
                     <Logo />

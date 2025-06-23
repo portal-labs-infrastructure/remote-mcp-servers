@@ -106,7 +106,18 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      unique_authentication_types: {
+        Row: {
+          authentication_type: string | null
+        }
+        Relationships: []
+      }
+      unique_categories: {
+        Row: {
+          category: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
