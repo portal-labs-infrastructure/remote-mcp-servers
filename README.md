@@ -20,32 +20,98 @@ The Model Context Protocol (MCP) enables applications to securely share contextu
 - **Filtering & Pagination API:** A public API endpoint (`/api/servers`) allows fetching server data with support for filtering by various criteria (category, name/description query, official status, authentication type) and pagination.
 - **Server Details:** Shows name, description, category, maintainer, MCP URL, authentication type, and other relevant metadata.
 
-## API Endpoint for Server Data
+## MCP Server Registry API
 
-**Public API Endpoint:** `/api/servers`
+### Main Endpoint
 
-This endpoint provides a paginated and filterable list of approved MCP servers.
+**GET** `/api/servers`
 
-**Example Usage:**
+Returns a paginated and filterable list of approved MCP servers.
 
-- Get default list (page 1, 10 items): `/api/servers`
-- Get page 2 with 5 items: `/api/servers?page=2&limit=5`
-- Filter by category "AI Agent": `/api/servers?category=AI%20Agent`
-- Search for "MyServer" in name or description: `/api/servers?q=MyServer`
-- Filter by official status: `/api/servers?is_official=true`
-- Filter by authentication type: `/api/servers?authentication_type=OAuth`
-- Combine filters: `/api/servers?category=Utility&q=secure&limit=15`
+#### Example Usage
 
-**Supported Query Parameters:**
+- Get default list (page 1, 10 items):  
+  `/api/servers`
+- Get page 2 with 5 items:  
+  `/api/servers?page=2&limit=5`
+- Filter by category "AI Agent":  
+  `/api/servers?categories=AI%20Agent`
+- Filter by multiple categories:  
+  `/api/servers?categories=AI%20Agent,Utility`
+- Search for "MyServer" in name or description:  
+  `/api/servers?q=MyServer`
+- Filter by official status:  
+  `/api/servers?isOfficial=true`
+- Filter by authentication type:  
+  `/api/servers?authTypes=OAuth`
+- Filter by multiple authentication types:  
+  `/api/servers?authTypes=OAuth,APIKey`
+- Combine filters:  
+  `/api/servers?categories=Utility&q=secure&limit=15&isOfficial=true`
+
+#### Supported Query Parameters
 
 - `page` (number, default: 1): The page number for pagination.
 - `limit` (number, default: 10, max: 100): The number of items per page.
-- `q` (string): A search query string that will be matched against server names and descriptions (case-insensitive).
-- `category` (string): Filter by a specific server category.
-- `is_official` (boolean: `true` or `false`): Filter by official server status.
-- `authentication_type` (string): Filter by a specific authentication type (e.g., "OAuth", "APIKey", "None").
+- `q` (string): Search query (matches server name and description, case-insensitive).
+- `categories` (string, comma-separated): Filter by one or more server categories.
+- `authTypes` (string, comma-separated): Filter by one or more authentication types (e.g., "OAuth", "APIKey", "None").
+- `dynamicClientRegistration` (boolean: `true` or `false`): Filter by support for dynamic client registration.
+- `isOfficial` (boolean: `true` or `false`): Filter by official server status.
 
-The API returns a JSON object with a `data` array containing the servers and a `pagination` object with metadata.
+**Note:**
+
+- For multi-value filters (`categories`, `authTypes`), provide a comma-separated list (e.g., `categories=AI,Utility`).
+
+#### Response Format
+
+```json
+{
+  "data": [
+    /* array of server objects */
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "itemsPerPage": 10,
+    "totalItems": 42,
+    "totalPages": 5,
+    "hasNextPage": true,
+    "hasPreviousPage": false
+  }
+}
+```
+
+### Get All Categories
+
+**GET** `/api/servers/categories`
+
+Returns a sorted array of all unique categories in the registry.
+
+Example Response:
+
+```json
+{ "categories": ["AI Agent", "Utility", "Productivity"] }
+```
+
+### Get All Authentication Types
+
+**GET** `/api/servers/auth-types`
+
+Returns a sorted array of all unique authentication types in the registry.
+
+Example Response:
+
+```json
+{ "authTypes": ["OAuth", "APIKey", "None"] }
+```
+
+### Summary
+
+Use `/api/servers` for paginated, filterable server lists.
+
+Use `/api/servers/categories` and `/api/servers/auth-types` to power dynamic filter UIs.
+
+All endpoints return JSON.
 
 ## Tech Stack
 
@@ -153,3 +219,7 @@ For code contributions (bug fixes, new features):
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+```
+
+```
