@@ -2,15 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 
-// Updated schema for query parameters
 const querySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
-  category: z.string().optional(),
-  q: z.string().optional(), // Changed 'name' to 'q' for general query
-  is_official: z.enum(['true', 'false']).optional(),
-  authentication_type: z.string().optional(),
-  // Add other filterable fields as needed
+  categories: z.string().optional(), // comma-separated
+  authTypes: z.string().optional(), // comma-separated
+  dynamicClientRegistration: z.enum(['true', 'false']).optional(),
+  isOfficial: z.enum(['true', 'false']).optional(),
+  q: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -32,42 +31,64 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { page, limit, ...filters } = validatedQuery.data;
+    const {
+      page,
+      limit,
+      categories,
+      authTypes,
+      dynamicClientRegistration,
+      isOfficial,
+      q,
+    } = validatedQuery.data;
 
     let queryBuilder = supabase
       .from('discoverable_mcp_servers')
       .select('*', { count: 'exact' })
       .eq('status', 'approved');
 
-    // Apply filters
-    if (filters.category) {
-      queryBuilder = queryBuilder.eq('category', filters.category);
+    // Multi-value filters
+    if (categories) {
+      const arr = categories
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (arr.length > 0) queryBuilder = queryBuilder.in('category', arr);
     }
-    if (typeof filters.is_official === 'boolean') {
-      queryBuilder = queryBuilder.eq('is_official', filters.is_official);
-    }
-    if (filters.authentication_type) {
-      queryBuilder = queryBuilder.eq(
-        'authentication_type',
-        filters.authentication_type,
-      );
+    if (authTypes) {
+      const arr = authTypes
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (arr.length > 0)
+        queryBuilder = queryBuilder.in('authentication_type', arr);
     }
 
-    // Apply general query 'q' to search name AND description
-    if (filters.q) {
-      const searchTerm = `%${filters.q}%`;
-      // Use .or() to search in multiple columns
-      // The format for .or() is a string of conditions, comma-separated.
-      // Each condition is column.operator.value
+    // Boolean filters
+    if (dynamicClientRegistration) {
+      queryBuilder = queryBuilder.eq(
+        'dynamic_client_registration',
+        dynamicClientRegistration === 'true',
+      );
+    }
+    if (isOfficial) {
+      queryBuilder = queryBuilder.eq('is_official', isOfficial === 'true');
+    }
+
+    // Search
+    if (q) {
+      const searchTerm = `%${q}%`;
       queryBuilder = queryBuilder.or(
         `name.ilike.${searchTerm},description.ilike.${searchTerm}`,
       );
     }
 
+    // Pagination
     const offset = (page - 1) * limit;
-    queryBuilder = queryBuilder.range(offset, offset + limit - 1);
-    queryBuilder = queryBuilder.order('created_at', { ascending: false });
+    queryBuilder = queryBuilder
+      .order('name', { ascending: true })
+      .range(offset, offset + limit - 1);
 
+    // Query
     const { data: servers, error, count } = await queryBuilder;
 
     if (error) {
