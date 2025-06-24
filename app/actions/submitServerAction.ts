@@ -52,7 +52,7 @@ export async function submitServerAction(
   // 3. Prepare Data for Supabase
   const serverDataToInsert = {
     ...validatedData,
-    status: 'pending_review', // Default status for new submissions
+    status: 'approved', // Default status for new submissions
     // `created_at` and `id` will be handled by Supabase (assuming defaults are set)
   };
 
@@ -91,7 +91,7 @@ export async function submitServerAction(
     // 5. Revalidate relevant paths (e.g., user's dashboard)
     // This tells Next.js to re-fetch data for these paths on the next visit.
     revalidatePath('/dashboard'); // Revalidates the main dashboard page
-    revalidatePath('/'); // If the public list might show pending servers or count changes
+    revalidatePath('/servers'); // If the public list might show pending servers or count changes
 
     return {
       success: true,

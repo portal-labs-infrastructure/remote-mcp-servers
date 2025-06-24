@@ -25,8 +25,8 @@ export default async function Hero() {
             Discover & Share Remote MCP Servers
           </h1>
           <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-            Explore a community-driven list of remote Model Context Protocol
-            servers that have been tested and approved.
+            Explore a list of remote Model Context Protocol servers that have
+            been rated and reviewed by the community.
           </p>
         </div>
 
