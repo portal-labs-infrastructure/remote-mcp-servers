@@ -49,6 +49,10 @@ export const discoverableMcpServerSchema = z.object({
     .string()
     .describe('Timestamp of when the server record was last updated.')
     .optional(),
+  average_rating: z
+    .number()
+    .describe('Average rating of the server.')
+    .nullable(),
 });
 
 // Zod schema for the paginated response structure
