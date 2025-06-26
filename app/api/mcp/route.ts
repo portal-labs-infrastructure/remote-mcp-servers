@@ -18,8 +18,10 @@ const handler = createMcpHandler(
   },
   {
     // Optional McpServer options (passed to new McpServer({ ... }))
-    // name: 'Portal One Streamable HTTP Server via Vercel Adapter',
-    // version: '1.0.0',
+    serverInfo: {
+      name: 'Remote MCP Servers',
+      version: '1.0.0',
+    },
   },
   {
     // Adapter options
