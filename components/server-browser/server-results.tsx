@@ -121,7 +121,7 @@ export default function ServerResults({
       {loading && servers.length === 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {Array.from({ length: 10 }).map((_, index) => (
-            <Skeleton key={index} className="w-full h-[300px] rounded-lg" />
+            <Skeleton key={index} className="w-full h-[281px] rounded-lg" />
           ))}
         </div>
       )}
