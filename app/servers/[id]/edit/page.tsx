@@ -18,7 +18,7 @@ async function getServerData(serverId: string) {
 export default async function EditServerPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const supabase = await createClient();
   const {
