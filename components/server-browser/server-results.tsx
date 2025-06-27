@@ -76,7 +76,7 @@ export default function ServerResults({
         <Button loading={loading} type="submit">
           {' '}
           {/* Matched button height */}
-          <SearchIcon className="mr-0" />{' '}
+          <SearchIcon className="mr-2" />{' '}
           {/* Icon always visible, text hidden on small screens */}
           <span className="hidden md:inline">Search</span>
         </Button>

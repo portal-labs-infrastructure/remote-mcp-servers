@@ -36,7 +36,7 @@ export default function SearchForm() {
       <Button type="submit" size="lg" className="h-12">
         {' '}
         {/* Matched button height */}
-        <SearchIcon className="mr-0 h-5 w-5" />{' '}
+        <SearchIcon className="mr-2 h-5 w-5" />{' '}
         {/* Icon always visible, text hidden on small screens */}
         <span className="hidden md:inline">Search</span>
       </Button>

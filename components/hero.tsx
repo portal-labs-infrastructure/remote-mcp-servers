@@ -1,10 +1,7 @@
-// src/app/Hero.tsx (or your Hero component file)
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server'; // Keep if still needed for user check
-// import { CodeSnippet } from '@/components/ui/code-snippet'; // REMOVE THIS
 import { Github, LogIn, LayoutDashboard } from 'lucide-react';
-// import { BASE_URL } from '@/const'; // REMOVE IF ONLY USED FOR SNIPPETS
 import SearchForm from '@/components/search-form'; // Assuming this is in src/components/
 
 const GITHUB_REPO_URL = process.env.NEXT_PUBLIC_GITHUB_URL;
@@ -16,12 +13,12 @@ export default async function Hero() {
   } = await supabase.auth.getUser();
 
   return (
-    <section className="w-full py-20 md:py-24 lg:py-36 bg-gradient-to-b ">
+    <section className="w-full py-20 md:py-24 lg:py-32 bg-gradient-to-b ">
       {' '}
       {/* Example gradient */}
       <div className="m-auto container px-6 md:px-6 text-center">
         <div className="space-y-4 md:space-y-6 mb-8 md:mb-10">
-          <h1 className="text-4xl max-w-6xl mb-8 m-auto font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+          <h1 className="text-4xl max-w-4xl mb-8 m-auto font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
             Discover & Share Remote MCP Servers
           </h1>
           <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">

@@ -140,7 +140,7 @@ export default function ServerFilters({
             }
           />
           <Label htmlFor="dynamicClientReg" className="font-normal">
-            Dynamic Client Registration
+            DCR
           </Label>
         </div>
         <div className="flex items-center space-x-2 mt-4">

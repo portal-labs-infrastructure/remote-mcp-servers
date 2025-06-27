@@ -43,15 +43,10 @@ export const serverFormSchema = z.object({
     .string()
     .url('Invalid maintainer URL.')
     .max(2048)
-    .or(z.literal(''))
-    .nullable()
-    .optional(),
-
+    .or(z.literal('')),
   // Updated authentication_type to be an enum
   authentication_type: z
-    .enum(AUTHENTICATION_TYPES, {
-      required_error: 'Authentication type is required.', // Optional: custom error message
-    })
+    .string()
     .describe('The primary authentication method supported by the server.'),
 
   // Boolean fields

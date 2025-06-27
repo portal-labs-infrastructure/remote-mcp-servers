@@ -7,7 +7,7 @@ import { FileText, Copy, CheckCircle2 } from 'lucide-react'; // Lucide icons
 import Link from 'next/link';
 
 interface ServerCardActionsProps {
-  server: Pick<DiscoverableMcpServer, 'documentation_url' | 'mcp_url'>;
+  server: Pick<DiscoverableMcpServer, 'id' | 'documentation_url' | 'mcp_url'>;
 }
 
 export default function ServerCardActions({ server }: ServerCardActionsProps) {
@@ -41,26 +41,11 @@ export default function ServerCardActions({ server }: ServerCardActionsProps) {
 
   return (
     // CardActions is just a div with padding/flex in Shadcn context
-    <div className="flex gap-2 p-0 flex-1">
+    <div className="flex gap-4 p-0 flex-1">
       {' '}
       {/* CardActions usually has padding, but here it's part of CardFooter */}
-      {server.documentation_url && (
-        <Button
-          variant="outline" // color="neutral"
-          className="flex-1" // fullWidth
-          asChild>
-          <Link
-            href={server.documentation_url}
-            target="_blank"
-            rel="noopener noreferrer">
-            <FileText className="mr-2 h-4 w-4" /> {/* startDecorator */}
-            Docs
-          </Link>
-        </Button>
-      )}
       <Button
-        variant="default" // color="primary"
-        className="flex-1" // fullWidth
+        variant="outline" // color="neutral"
         onClick={handleCopyMcpUrl}
         disabled={!server.mcp_url}>
         {copied ? (
@@ -70,6 +55,16 @@ export default function ServerCardActions({ server }: ServerCardActionsProps) {
         )}
         {copied ? 'Copied URL' : 'Copy URL'}
       </Button>
+      {server.documentation_url && (
+        <Button
+          className="flex-1" // fullWidth
+          asChild>
+          <Link href={`/servers/${server.id}`}>
+            <FileText className="mr-2 h-4 w-4" /> {/* startDecorator */}
+            Details
+          </Link>
+        </Button>
+      )}
     </div>
   );
 }

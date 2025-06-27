@@ -21,8 +21,8 @@ export type Database = {
           icon_url: string | null
           id: string
           is_official: boolean | null
-          maintainer_name: string | null
-          maintainer_url: string | null
+          maintainer_name: string
+          maintainer_url: string
           mcp_url: string
           name: string
           status: string
@@ -39,8 +39,8 @@ export type Database = {
           icon_url?: string | null
           id?: string
           is_official?: boolean | null
-          maintainer_name?: string | null
-          maintainer_url?: string | null
+          maintainer_name: string
+          maintainer_url: string
           mcp_url: string
           name: string
           status?: string
@@ -57,38 +57,70 @@ export type Database = {
           icon_url?: string | null
           id?: string
           is_official?: boolean | null
-          maintainer_name?: string | null
-          maintainer_url?: string | null
+          maintainer_name?: string
+          maintainer_url?: string
           mcp_url?: string
           name?: string
           status?: string
           user_id?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "discoverable_mcp_servers_user_id_fkey1"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          full_name: string | null
+          updated_at: string | null
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          full_name?: string | null
+          updated_at?: string | null
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          full_name?: string | null
+          updated_at?: string | null
+          user_id?: string
+          username?: string | null
+        }
         Relationships: []
       }
-      reviews: {
+      server_reviews: {
         Row: {
-          comment_text: string | null
+          comment: string | null
           created_at: string
-          id: number
+          id: string
           rating: number
           server_id: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
-          comment_text?: string | null
+          comment?: string | null
           created_at?: string
-          id?: number
+          id?: string
           rating: number
           server_id: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
-          comment_text?: string | null
+          comment?: string | null
           created_at?: string
-          id?: number
+          id?: string
           rating?: number
           server_id?: string
           updated_at?: string | null
@@ -96,11 +128,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "reviews_server_id_fkey"
+            foreignKeyName: "server_reviews_server_id_fkey"
             columns: ["server_id"]
             isOneToOne: false
             referencedRelation: "discoverable_mcp_servers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "server_reviews_user_id_fkey1"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
           },
         ]
       }

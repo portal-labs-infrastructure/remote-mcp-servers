@@ -35,37 +35,6 @@ export default function ServerCardBody({ server }: ServerCardBodyProps) {
           </p>
         </div>
       )}
-      {/* MCP URL and Metadata Badges will be at the bottom of this component */}
-      <div
-        className={`flex flex-col gap-3 ${server.description ? 'mt-0' : 'mt-auto'}`}>
-        {' '}
-        {/* Stack gap={2} sx={{ mt: ... }} */}
-        <div className="flex flex-row flex-wrap gap-1.5">
-          <Badge
-            variant={
-              server.authentication_type.toLowerCase().includes('oauth')
-                ? 'default'
-                : 'secondary'
-            } // Chip color mapping
-            className="text-xs" // size="sm"
-          >
-            {server.authentication_type}
-          </Badge>
-
-          {server.dynamic_client_registration && (
-            <Badge variant="secondary" className="text-xs">
-              {' '}
-              {/* Chip color="primary" */}
-              Dynamic Client
-            </Badge>
-          )}
-          {server.is_official && (
-            <Badge variant="secondary" className="text-xs">
-              Official
-            </Badge>
-          )}
-        </div>
-      </div>
     </div>
   );
 }

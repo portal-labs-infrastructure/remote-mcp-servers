@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { Edit, PlusCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { DeleteServerButton } from '@/components/dashboard/delete-server-button';
 // Import your table or card components for displaying servers
 // import { UserServersTable } from '@/components/dashboard/UserServersTable';
 
@@ -48,17 +49,17 @@ export default async function DashboardPage() {
       </div>
 
       {userServers.length > 0 ? (
-        // <UserServersTable servers={userServers} />
-        <div>
-          <h2 className="text-xl mb-4">Your Submitted Servers:</h2>
-          <ul className="space-y-4">
-            {userServers.map((server) => (
-              <li key={server.id} className="p-4 border rounded-lg shadow-sm">
+        <div className="space-y-4">
+          {userServers.map((server) => (
+            <div
+              key={server.id}
+              className="p-4 border rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
                 <h3 className="text-lg font-semibold">{server.name}</h3>
                 <p className="text-sm text-muted-foreground">
                   {server.mcp_url}
                 </p>
-                <p className="text-sm  pt-2">
+                <p className="text-sm pt-2">
                   Status:{' '}
                   <span
                     className={`font-medium ${
@@ -73,10 +74,21 @@ export default async function DashboardPage() {
                     {server.status?.replace('_', ' ')}
                   </span>
                 </p>
-                {/* Add Edit/Delete buttons here based on status and RLS */}
-              </li>
-            ))}
-          </ul>
+              </div>
+              <div className="flex gap-2 self-end sm:self-center">
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/servers/${server.id}/edit`}>
+                    <Edit className="h-4 w-4" />
+                    <span className="sr-only">Edit</span>
+                  </Link>
+                </Button>
+                <DeleteServerButton
+                  serverId={server.id}
+                  serverName={server.name}
+                />
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="text-center py-10 border-2 border-dashed rounded-lg">

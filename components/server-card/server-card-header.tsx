@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import Link from 'next/link';
-import { ExternalLink } from 'lucide-react';
+import { getInitials } from '@/lib/utils';
 
 interface ServerCardHeaderProps {
   server: Pick<
@@ -11,13 +10,6 @@ interface ServerCardHeaderProps {
 
 export default function ServerCardHeader({ server }: ServerCardHeaderProps) {
   // Fallback initials for Avatar
-  const getInitials = (name: string) => {
-    const names = name.split(' ');
-    if (names.length > 1) {
-      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
-  };
 
   return (
     <div className="flex flex-row gap-3 items-center">
@@ -39,16 +31,9 @@ export default function ServerCardHeader({ server }: ServerCardHeaderProps) {
         </h3>{' '}
         {/* Typography level="title-lg" */}
         {server.maintainer_name && server.maintainer_url && (
-          <Link
-            href={server.maintainer_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-muted-foreground hover:text-primary truncate block max-w-[200px] sm:max-w-[250px]" // MuiLink styling + truncation
-          >
+          <p className="text-xs text-muted-foreground hover:text-primary truncate block max-w-[200px] sm:max-w-[250px]">
             {server.maintainer_name}
-            <ExternalLink className="inline-block h-3 w-3 ml-1 align-baseline" />{' '}
-            {/* endDecorator */}
-          </Link>
+          </p>
         )}
       </div>
     </div>

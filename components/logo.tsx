@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function Logo() {
   return (
     <div className="flex gap-5 items-center font-semibold">
-      <Link href={'/'}>
+      <Link href="/" aria-label="Go to homepage">
         <div className="flex items-center gap-2">
           <Image
             src="/mcp.svg"
