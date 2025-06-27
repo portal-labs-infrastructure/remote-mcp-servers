@@ -4,6 +4,36 @@ import { ServerDetailCard } from '@/components/servers/server-detail-card';
 import { ReviewsSection } from '@/components/servers/reviews-section';
 import { ServerStrip } from '@/components/servers/server-strip';
 import { ServerHeader } from '@/components/servers/server-header';
+import { BASE_URL } from '@/const';
+import { Metadata } from 'next/types';
+
+type Props = {
+  params: { id: string };
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const supabase = await createClient();
+  const { data: server } = await supabase
+    .from('discoverable_mcp_servers')
+    .select('id, name, description')
+    .eq('id', params.id)
+    .single();
+
+  if (!server) {
+    return {
+      title: 'Server Not Found',
+    };
+  }
+
+  return {
+    title: `${server.name} | Remote MCP Servers`,
+    description: server.description,
+    // This is the crucial part that fixes the error
+    alternates: {
+      canonical: `${BASE_URL}/servers/${server.id}`,
+    },
+  };
+}
 
 // Helper function to fetch all data in parallel
 async function getServerPageData(serverId: string) {

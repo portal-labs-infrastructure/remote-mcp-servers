@@ -2,11 +2,15 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Users, Target, Code2, Heart } from 'lucide-react'; // Example icons
+import { BASE_URL } from '@/const';
 
 export const metadata: Metadata = {
-  title: 'About | MCP Server Registry',
+  title: 'About | Remote MCP Servers',
   description:
-    'Learn more about the MCP Server Registry project, its mission, how it works, and how you can contribute to the community of AI developers and agents.',
+    'Learn more about the Remote MCP Server registry, its mission, and the technology behind the MCP standard.',
+  alternates: {
+    canonical: `${BASE_URL}/about`,
+  },
 };
 
 export default function AboutPage() {

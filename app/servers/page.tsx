@@ -3,6 +3,17 @@ import { Loader2, PlusCircle } from 'lucide-react';
 import ServerBrowser from '@/components/server-browser';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Metadata } from 'next/types';
+import { BASE_URL } from '@/const';
+
+export const metadata: Metadata = {
+  title: 'Browse All MCP Servers | Remote MCP Servers',
+  description:
+    'Discover and browse a curated list of MCP-compatible servers. Find tools for AI, development, productivity, and more.',
+  alternates: {
+    canonical: `${BASE_URL}/servers`,
+  },
+};
 
 export default async function ServersPage() {
   return (

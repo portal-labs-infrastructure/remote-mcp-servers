@@ -2,11 +2,15 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { BASE_URL } from '@/const';
 
 export const metadata: Metadata = {
   title: 'What is the Model Context Protocol (MCP)? | MCP Server Registry',
   description:
     'Learn about the Model Context Protocol (MCP), an open protocol that standardizes how applications provide context to LLMs, and how it enables a new ecosystem of AI tools and integrations.',
+  alternates: {
+    canonical: `${BASE_URL}/docs/what-is-mcp`,
+  },
 };
 
 // It's good practice to define constants for external links
