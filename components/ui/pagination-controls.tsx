@@ -20,15 +20,26 @@ export default function PaginationControls({
 }: PaginationControlsProps) {
   if (totalPages <= 1) return null;
 
+  const handlePageChange = (newPage: number) => {
+    // 1. Call the parent component's state update function
+    onPageChange(newPage);
+
+    // 2. Scroll the window to the top with a smooth animation
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   const handlePrevious = () => {
     if (currentPage > 1) {
-      onPageChange(currentPage - 1);
+      handlePageChange(currentPage - 1);
     }
   };
 
   const handleNext = () => {
     if (currentPage < totalPages) {
-      onPageChange(currentPage + 1);
+      handlePageChange(currentPage + 1);
     }
   };
 
