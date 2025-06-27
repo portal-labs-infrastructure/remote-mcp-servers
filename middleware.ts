@@ -9,36 +9,39 @@ export async function middleware(req: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-
   const { pathname } = req.nextUrl;
 
-  // Define protected routes
-  const protectedRoutes = ['/dashboard', '/profile', '/settings']; // Add your protected routes
+  // Define which routes are for authentication (and should be public)
+  const authRoutes = ['/auth/login', '/auth/sign-up'];
 
-  if (!session && protectedRoutes.some((route) => pathname.startsWith(route))) {
-    // User is not authenticated and trying to access a protected route
-    const redirectUrl = new URL('/auth/login', req.url); // Your login page URL
-    redirectUrl.searchParams.set('redirect', pathname + req.nextUrl.search); // Add current path and query as redirect
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  // If user is logged in and tries to access login/signup, redirect to dashboard
-  if (session && (pathname === '/auth/login' || pathname === '/auth/sign-up')) {
+  // --- Logic for LOGGED-IN users ---
+  // If a logged-in user tries to visit an auth page, redirect them to the dashboard.
+  if (session && authRoutes.includes(pathname)) {
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
+  // --- Logic for LOGGED-OUT users ---
+  // If a user is not logged in AND is trying to access a route that is NOT an auth route,
+  // it must be a protected route. Redirect them to login.
+  if (!session && !authRoutes.includes(pathname)) {
+    const redirectUrl = new URL('/auth/login', req.url);
+    redirectUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  // If none of the above conditions are met, let the request proceed.
+  // (e.g., a logged-in user accessing /dashboard, or a logged-out user accessing /auth/login)
   return res;
 }
 
 export const config = {
+  // The middleware will run on these specific paths.
+  // Public pages like '/', '/about', '/servers' are correctly ignored.
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
-    '/((?!_next/static|_next/image|favicon.ico|auth/callback|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/dashboard/:path*',
+    '/profile/:path*',
+    '/settings/:path*',
+    '/auth/login',
+    '/auth/sign-up',
   ],
 };

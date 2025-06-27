@@ -19,7 +19,9 @@ export function ServerHeader({ server }: ServerDetailCardProps) {
           <AvatarFallback>{server.name.charAt(0)}</AvatarFallback>
         </Avatar>
         <div>
-          <CardTitle className="text-3xl font-bold">{server.name}</CardTitle>
+          <CardTitle className="text-3xl font-bold">
+            <h1>{server.name}</h1>
+          </CardTitle>
           <CardDescription className="text-lg mt-1">
             {server.description}
           </CardDescription>
