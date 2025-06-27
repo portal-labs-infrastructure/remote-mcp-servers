@@ -8,15 +8,16 @@ import { BASE_URL } from '@/const';
 import { Metadata } from 'next/types';
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: server } = await supabase
     .from('discoverable_mcp_servers')
     .select('id, name, description')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (!server) {
