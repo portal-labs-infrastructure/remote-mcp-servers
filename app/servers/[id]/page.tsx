@@ -83,7 +83,7 @@ export default async function ServerDetailPage({
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 md:px-6 space-y-12">
+    <div className="container mx-auto py-12 px-4 md:px-6 space-y-12">
       {/* Header */}
       <ServerHeader server={server} />
 

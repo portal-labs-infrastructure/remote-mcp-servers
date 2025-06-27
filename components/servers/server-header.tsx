@@ -10,8 +10,8 @@ interface ServerDetailCardProps {
 export function ServerHeader({ server }: ServerDetailCardProps) {
   return (
     <div className="flex justify-between items-start gap-8 flex-wrap">
-      <div className="flex items-center gap-4 flex-wrap">
-        <Avatar className="h-28 w-28">
+      <div className="flex gap-6 flex-wrap">
+        <Avatar className="h-24 w-24">
           <AvatarImage
             src={server.icon_url ?? undefined}
             alt={`${server.name} logo`}
@@ -25,7 +25,7 @@ export function ServerHeader({ server }: ServerDetailCardProps) {
           </CardDescription>
         </div>
       </div>
-      <Badge variant="secondary" className="whitespace-nowrap">
+      <Badge variant="secondary" className="whitespace-nowrap text-sm">
         {server.category}
       </Badge>
     </div>

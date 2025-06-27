@@ -1,4 +1,4 @@
-export const ITEMS_PER_PAGE = 25;
+export const ITEMS_PER_PAGE = 10;
 
 export interface ServerFilterParams {
   q?: string;

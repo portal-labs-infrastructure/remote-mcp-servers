@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { ITEMS_PER_PAGE } from './types';
 import PaginationControls from '../ui/pagination-controls';
 import { Button } from '../ui/loading-button';
+import { Skeleton } from '../ui/skeleton';
 
 interface ServerResultsProps {
   initialSearchTerm: string;
@@ -82,7 +83,7 @@ export default function ServerResults({
         </Button>
       </form>
 
-      {servers.length === 0 ? (
+      {!loading && servers.length === 0 && (
         <div className="flex flex-col items-center justify-center text-center py-10 border-2 border-dashed border-muted rounded-lg min-h-[300px]">
           <ListX className="h-12 w-12 text-muted-foreground mb-4" />
           <p className="text-muted-foreground font-semibold">
@@ -100,9 +101,10 @@ export default function ServerResults({
             </p>
           )}
         </div>
-      ) : (
+      )}
+      {servers.length > 0 && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {servers.map((server) => (
               <ServerCard server={server} key={server.id} />
             ))}
@@ -115,6 +117,13 @@ export default function ServerResults({
             totalItems={totalCount}
           />
         </>
+      )}
+      {loading && servers.length === 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {Array.from({ length: 10 }).map((_, index) => (
+            <Skeleton key={index} className="w-full h-[300px] rounded-lg" />
+          ))}
+        </div>
       )}
     </div>
   );
