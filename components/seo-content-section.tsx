@@ -3,19 +3,15 @@ import Link from 'next/link';
 export default function SeoContentSection() {
   return (
     <section className="py-20 md:py-24 lg:py-28 bg-background">
-      {' '}
-      {/* Use theme background */}
       <div className="container max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-12">
+        {/* Column 1: What is MCP? (Unchanged) */}
         <div className="space-y-2">
-          {' '}
-          {/* Simpler structure without Card for now */}
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             What is MCP?
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            The Model Context Protocol (MCP) is USB for AI agents, enabling
-            seamless communication between AI models and applications.
-            {/* TODO: Expand this content or link to full docs */}
+            The Model Context Protocol is like a USB adapter, enabling seamless
+            communication between models and applications.
           </p>
           <Link
             href="/docs/what-is-mcp"
@@ -29,9 +25,8 @@ export default function SeoContentSection() {
             Why This Registry?
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            We test and verify each server to ensure reliability and
-            performance, making it easier for developers to connect their AI
-            applications.
+            The canonical source for MCP servers. Fully searchable and indexed
+            for discovery by both developers and AI agents.
           </p>
           <Link
             href="/about"
@@ -40,6 +35,7 @@ export default function SeoContentSection() {
           </Link>
         </div>
 
+        {/* Column 3: How to Contribute (Unchanged) */}
         <div className="space-y-2">
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             How to Contribute
@@ -51,7 +47,7 @@ export default function SeoContentSection() {
           <Link
             href="/auth/login?redirect=/servers/new"
             className="text-sm font-medium text-primary hover:underline">
-            Add your server&rarr;
+            Add your server &rarr;
           </Link>
         </div>
       </div>
