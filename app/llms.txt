@@ -1,0 +1,18 @@
+# Remote MCP Servers
+
+> A public registry for discovering and integrating with servers that support the Machine-readable Capability Protocol (MCP). This site helps AI developers and agent builders find tools and services their agents can use dynamically.
+
+The Machine-readable Capability Protocol (MCP) is a standard for dynamic tool discovery. This registry is the canonical source for finding approved MCP servers, browsing them by category, and accessing their details for integration.
+
+## Core Concepts
+
+- [What is MCP?](https://remote-mcp-servers.com/docs/what-is-mcp.md): The official introduction to the MCP standard, explaining its purpose and key features.
+- [The MCP Specification](https://github.com/mcp-protocol/spec): The canonical technical specification for the protocol on GitHub. Essential for developers building an MCP server or client.
+
+## Server Registry
+
+- [Browse All Servers](https://remote-mcp-servers.com/servers.md): A complete, machine-readable list of all approved servers in the registry, including their names, IDs, and descriptions.
+
+## Optional
+
+- [About the Registry](https://remote-mcp-servers.com/about.md): Background information on the mission and purpose of this project.
