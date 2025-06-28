@@ -15,7 +15,7 @@ export default function ServerCardHeader({ server }: ServerCardHeaderProps) {
     <div className="flex flex-row gap-3">
       {' '}
       {/* Replaces Stack direction="row" gap={1.5} */}
-      <Avatar className="h-12 w-12 rounded-lg border bg-muted">
+      <Avatar className="h-16 w-16 rounded-lg border bg-muted">
         {' '}
         {/* size="lg", variant="outlined", custom borderRadius */}
         <AvatarImage src={server.icon_url ?? undefined} alt={server.name} />
