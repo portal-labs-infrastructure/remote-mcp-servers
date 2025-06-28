@@ -6,6 +6,10 @@ import { ServerStrip } from '@/components/servers/server-strip';
 import { ServerHeader } from '@/components/servers/server-header';
 import { BASE_URL } from '@/const';
 import { Metadata } from 'next/types';
+import ReactMarkdown from 'react-markdown';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -95,7 +99,6 @@ async function getServerPageData(serverId: string) {
     similar: similarResult.data || [],
   };
 }
-
 export default async function ServerDetailPage({
   params,
 }: {
@@ -114,35 +117,70 @@ export default async function ServerDetailPage({
   }
 
   return (
-    <div className="container mx-auto py-12 px-4 md:px-6 space-y-12">
-      {/* Header */}
-      <ServerHeader server={server} />
+    // Main page container
+    <div className="container mx-auto py-12 px-4 md:px-6">
+      {/* Header remains at the top, spanning the full width */}
+      <div className="mb-6">
+        <Link
+          href="/servers"
+          className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to all servers
+        </Link>
+      </div>
+      {/* Two-column grid layout starts here */}
+      <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+        {/* --- Left Column (Main Content) --- */}
+        <div className="lg:col-span-2 space-y-12">
+          <ServerHeader server={server} />
 
-      {/* Main Server Details */}
-      <ServerDetailCard server={server} />
+          <Badge variant="secondary" className="whitespace-nowrap text-sm">
+            {server.category}
+          </Badge>
 
-      {/* Interactive Reviews Section */}
-      <ReviewsSection
-        serverId={server.id}
-        initialReviews={reviews}
-        currentUserId={user?.id} // Pass the user's ID
-      />
+          {/* AI-Generated Summary */}
+          {server.ai_summary && (
+            <section>
+              <h2 className="text-2xl font-bold tracking-tight mb-6">
+                Overview
+              </h2>
+              <article className="prose dark:prose-invert max-w-none">
+                <ReactMarkdown>{server.ai_summary}</ReactMarkdown>
+              </article>
+            </section>
+          )}
 
-      {/* "More by" Strip */}
-      {byMaintainer.length > 0 && (
-        <ServerStrip
-          title={`More from ${server.maintainer_name}`}
-          servers={byMaintainer}
-        />
-      )}
+          {/* Interactive Reviews Section */}
+          <ReviewsSection
+            serverId={server.id}
+            initialReviews={reviews}
+            currentUserId={user?.id}
+          />
 
-      {/* "Similar Servers" Strip */}
-      {similar.length > 0 && (
-        <ServerStrip
-          title={`Similar in ${server.category}`}
-          servers={similar}
-        />
-      )}
+          {/* "More by" Strip */}
+          {byMaintainer.length > 0 && (
+            <ServerStrip
+              title={`More from ${server.maintainer_name}`}
+              servers={byMaintainer}
+            />
+          )}
+
+          {/* "Similar Servers" Strip */}
+          {similar.length > 0 && (
+            <ServerStrip
+              title={`Similar in ${server.category}`}
+              servers={similar}
+            />
+          )}
+        </div>
+
+        {/* --- Right Column (Sticky Sidebar) --- */}
+        <div className="lg:col-span-1">
+          <div className="sticky top-24 space-y-6">
+            <ServerDetailCard server={server} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

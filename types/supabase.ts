@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       discoverable_mcp_servers: {
         Row: {
+          ai_summary: string | null
           authentication_type: string
           average_rating: number | null
           category: string
@@ -30,6 +31,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          ai_summary?: string | null
           authentication_type: string
           average_rating?: number | null
           category: string
@@ -49,6 +51,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          ai_summary?: string | null
           authentication_type?: string
           average_rating?: number | null
           category?: string

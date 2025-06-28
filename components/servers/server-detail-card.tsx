@@ -5,6 +5,7 @@ import {
   CheckCircle,
   CheckCircle2,
   Copy,
+  FileText,
   Link as LinkIcon,
   ShieldCheck,
   User,
@@ -15,6 +16,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Separator } from '../ui/separator';
+import Link from 'next/link';
 
 // Assuming DiscoverableMcpServer is your server type from the database
 interface ServerDetailCardProps {
@@ -54,7 +56,7 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
     <Card className="w-full">
       {/* Section 3: Reorganized Information Grid */}
       <CardContent className="pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-6">
           {/* Column 1: About this Server */}
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">About this Server</h3>
@@ -119,8 +121,18 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
       </CardContent>
       <Separator /> {/* Divider */}
       <div className="px-6 py-4  flex flex-wrap gap-4 bg-muted/40">
+        <Button asChild variant="outline" className="flex-1">
+          <Link
+            href={`/servers/${server.id}.md`}
+            target="_blank"
+            rel="noopener noreferrer">
+            <FileText className="mr-2 h-4 w-4" />
+            View as Markdown
+          </Link>
+        </Button>
+
         {server.documentation_url && (
-          <Button variant="outline" asChild>
+          <Button variant="outline" className="flex-1" asChild>
             <a
               href={server.documentation_url}
               target="_blank"
@@ -129,7 +141,10 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
             </a>
           </Button>
         )}
-        <Button onClick={handleCopyMcpUrl} disabled={!server.mcp_url}>
+        <Button
+          onClick={handleCopyMcpUrl}
+          className="flex-1"
+          disabled={!server.mcp_url}>
           {copied ? (
             <CheckCircle2 className="mr-2 h-4 w-4" />
           ) : (
