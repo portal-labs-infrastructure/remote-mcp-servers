@@ -3,57 +3,59 @@ import { createClient } from '@/lib/supabase/server';
 
 // Zod schema for a single discoverable MCP server (used in tool output schemas)
 // Adjust fields to accurately match your 'discoverable_mcp_servers' table
-export const discoverableMcpServerSchema = z.object({
-  id: z.string().uuid().describe('Unique identifier of the server.'),
-  name: z.string().describe('Name of the server.'),
-  description: z.string().describe('Description of the server.'),
-  category: z
-    .string()
-    .describe("Category of the server (e.g., 'AI', 'Gaming')."),
-  mcp_url: z.string().url().describe('Primary URL of the MCP server.'),
-  authentication_type: z
-    .string()
-    .describe("Type of authentication supported (e.g., 'none', 'oauth')."),
-  dynamic_client_registration: z
-    .boolean()
-    .describe('Indicates if dynamic client registration is supported.'),
-  documentation_url: z
-    .string()
-    .url()
-    .describe('URL to the server documentation.'),
-  maintainer_name: z.string().describe('Name of the server maintainer.'),
-  maintainer_url: z
-    .string()
-    .url()
-    .describe("URL to the server maintainer's profile or website."),
-  icon_url: z
-    .string()
-    .url()
-    .describe('URL to the server icon image.')
-    .nullable(),
-  is_official: z
-    .boolean()
-    .describe('Indicates if the server is officially recognized.'),
-  user_id: z
-    .string()
-    .uuid()
-    .describe('User ID of the server maintainer.')
-    .nullable(),
-  status: z
-    .string()
-    .describe("Approval status of the server (e.g., 'approved')."),
-  created_at: z
-    .string()
-    .describe('Timestamp of when the server record was created.'),
-  updated_at: z
-    .string()
-    .describe('Timestamp of when the server record was last updated.')
-    .optional(),
-  average_rating: z
-    .number()
-    .describe('Average rating of the server.')
-    .nullable(),
-});
+export const discoverableMcpServerSchema = z
+  .object({
+    id: z.string().uuid().describe('Unique identifier of the server.'),
+    name: z.string().describe('Name of the server.'),
+    description: z.string().describe('Description of the server.'),
+    category: z
+      .string()
+      .describe("Category of the server (e.g., 'AI', 'Gaming')."),
+    mcp_url: z.string().url().describe('Primary URL of the MCP server.'),
+    authentication_type: z
+      .string()
+      .describe("Type of authentication supported (e.g., 'none', 'oauth')."),
+    dynamic_client_registration: z
+      .boolean()
+      .describe('Indicates if dynamic client registration is supported.'),
+    documentation_url: z
+      .string()
+      .url()
+      .describe('URL to the server documentation.'),
+    maintainer_name: z.string().describe('Name of the server maintainer.'),
+    maintainer_url: z
+      .string()
+      .url()
+      .describe("URL to the server maintainer's profile or website."),
+    icon_url: z
+      .string()
+      .url()
+      .describe('URL to the server icon image.')
+      .nullable(),
+    is_official: z
+      .boolean()
+      .describe('Indicates if the server is officially recognized.'),
+    user_id: z
+      .string()
+      .uuid()
+      .describe('User ID of the server maintainer.')
+      .nullable(),
+    status: z
+      .string()
+      .describe("Approval status of the server (e.g., 'approved')."),
+    created_at: z
+      .string()
+      .describe('Timestamp of when the server record was created.'),
+    updated_at: z
+      .string()
+      .describe('Timestamp of when the server record was last updated.')
+      .optional(),
+    average_rating: z
+      .number()
+      .describe('Average rating of the server.')
+      .nullable(),
+  })
+  .strip();
 
 // Zod schema for the paginated response structure
 export const paginatedServersSchema = z.object({
