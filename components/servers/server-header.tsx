@@ -4,6 +4,7 @@ import { CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { FileText } from 'lucide-react';
+import { getInitials } from '@/lib/utils';
 
 // Assuming DiscoverableMcpServer is your server type from the database
 interface ServerDetailCardProps {
@@ -14,12 +15,13 @@ export function ServerHeader({ server }: ServerDetailCardProps) {
   return (
     <div className="flex justify-between items-start gap-8 flex-wrap">
       <div className="flex gap-6 flex-wrap">
-        <Avatar className="h-24 w-24">
-          <AvatarImage
-            src={server.icon_url ?? undefined}
-            alt={`${server.name} logo`}
-          />
-          <AvatarFallback>{server.name.charAt(0)}</AvatarFallback>
+        <Avatar className="h-24 w-24 rounded-lg border bg-muted">
+          {' '}
+          {/* size="lg", variant="outlined", custom borderRadius */}
+          <AvatarImage src={server.icon_url ?? undefined} alt={server.name} />
+          <AvatarFallback className="rounded-lg text-sm">
+            {getInitials(server.name)}
+          </AvatarFallback>
         </Avatar>
         <div>
           <CardTitle className="text-3xl font-bold">

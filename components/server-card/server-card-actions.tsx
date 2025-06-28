@@ -55,16 +55,14 @@ export default function ServerCardActions({ server }: ServerCardActionsProps) {
         )}
         {copied ? 'Copied URL' : 'Copy URL'}
       </Button>
-      {server.documentation_url && (
-        <Button
-          className="flex-1" // fullWidth
-          asChild>
-          <Link href={`/servers/${server.id}`}>
-            <FileText className="mr-2 h-4 w-4" /> {/* startDecorator */}
-            Details
-          </Link>
-        </Button>
-      )}
+      <Button
+        className="flex-1" // fullWidth
+        asChild>
+        <Link href={`/servers/${server.id}`}>
+          <FileText className="mr-2 h-4 w-4" /> {/* startDecorator */}
+          Details
+        </Link>
+      </Button>
     </div>
   );
 }
