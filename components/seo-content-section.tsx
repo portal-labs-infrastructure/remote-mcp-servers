@@ -49,9 +49,9 @@ export default function SeoContentSection() {
             registry. It&apos;s easy to get started if you have an account.
           </p>
           <Link
-            href="/dashboard"
+            href="/auth/login?redirect=/servers/new"
             className="text-sm font-medium text-primary hover:underline">
-            Add your server &rarr;
+            Add your server&rarr;
           </Link>
         </div>
       </div>
