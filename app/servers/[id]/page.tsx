@@ -141,7 +141,7 @@ export default async function ServerDetailPage({
           {/* AI-Generated Summary */}
           {server.ai_summary && (
             <section>
-              <h2 className="text-2xl font-bold tracking-tight mb-6">
+              <h2 className="text-2xl font-bold tracking-tight mb-4">
                 Overview
               </h2>
               <article className="prose dark:prose-invert max-w-none">
