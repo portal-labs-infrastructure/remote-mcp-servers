@@ -35,11 +35,6 @@ export default function Footer() {
             </Link>
           </div>
           <div>
-            <Link href="/dashboard" className="hover:text-primary">
-              Add Your Server
-            </Link>
-          </div>
-          <div>
             <a
               href={githubUrl}
               target="_blank" // Opens in a new tab
