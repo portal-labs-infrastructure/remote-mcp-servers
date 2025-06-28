@@ -90,7 +90,10 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
             <div className="flex items-center gap-3">
               <ShieldCheck className="h-5 w-5 text-muted-foreground flex-shrink-0" />
               <p className="font-medium">
-                {server.authentication_type} Authentication
+                {server.authentication_type === 'None'
+                  ? 'No'
+                  : server.authentication_type}{' '}
+                Authentication
               </p>
             </div>
             {server.authentication_type === 'OAuth2' && (

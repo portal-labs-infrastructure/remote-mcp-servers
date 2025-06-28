@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default async function ServersPage() {
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
+    <div className="container mx-auto px-4 py-8 md:py-10">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center md:mb-12 mb-10">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70 mb-4 sm:mb-0">
           Remote MCP Servers
