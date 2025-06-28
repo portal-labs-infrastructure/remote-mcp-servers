@@ -1,6 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '../ui/button';
+import Link from 'next/link';
+import { FileText } from 'lucide-react';
 
 // Assuming DiscoverableMcpServer is your server type from the database
 interface ServerDetailCardProps {
@@ -22,9 +25,20 @@ export function ServerHeader({ server }: ServerDetailCardProps) {
           <CardTitle className="text-3xl font-bold">
             <h1>{server.name}</h1>
           </CardTitle>
-          <CardDescription className="text-lg mt-1">
+          <CardDescription className="text-lg mt-1 max-w-2xl">
             {server.description}
           </CardDescription>
+          <div className="mt-4">
+            <Button asChild variant="outline" size="sm">
+              <Link
+                href={`/servers/${server.id}.md`}
+                target="_blank"
+                rel="noopener noreferrer">
+                <FileText className="mr-2 h-4 w-4" />
+                View as Markdown
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
       <Badge variant="secondary" className="whitespace-nowrap text-sm">

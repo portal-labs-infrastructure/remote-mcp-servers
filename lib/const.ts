@@ -16,11 +16,6 @@ export type IconName = keyof typeof iconMap;
 
 export const baseNavLinks = [
   { href: '/servers', label: 'Browse', iconName: 'LayoutGrid' as IconName },
-  {
-    href: '/docs/what-is-mcp',
-    label: 'What is MCP?',
-    iconName: 'BookOpen' as IconName,
-  },
   { href: '/about', label: 'About', iconName: 'Info' as IconName },
   {
     href: GITHUB_URL,

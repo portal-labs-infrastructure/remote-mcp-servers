@@ -30,6 +30,11 @@ export default function Footer() {
             </Link>
           </div>
           <div>
+            <Link href="/docs/for-agents" className="hover:text-primary">
+              For AI Agents
+            </Link>
+          </div>
+          <div>
             <Link href="/servers" className="hover:text-primary">
               Browse Servers
             </Link>
