@@ -9,8 +9,8 @@ interface ServerDetailCardProps {
 
 export function ServerHeader({ server }: ServerDetailCardProps) {
   return (
-    <div className="flex justify-between items-start gap-8 flex-wrap">
-      <div className="flex gap-6 flex-wrap">
+    <div className="flex justify-between items-start flex-wrap">
+      <div className="flex gap-5 flex-wrap">
         <Avatar className="h-24 w-24 rounded-lg border bg-muted">
           {' '}
           {/* size="lg", variant="outlined", custom borderRadius */}
@@ -19,7 +19,7 @@ export function ServerHeader({ server }: ServerDetailCardProps) {
             {getInitials(server.name)}
           </AvatarFallback>
         </Avatar>
-        <div>
+        <div className="gap-4 md:gap-1 flex flex-col">
           <CardTitle className="text-5xl font-bold">
             <h1>{server.name}</h1>
           </CardTitle>

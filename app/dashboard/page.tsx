@@ -4,8 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Edit, PlusCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { DeleteServerButton } from '@/components/dashboard/delete-server-button';
-// Import your table or card components for displaying servers
-// import { UserServersTable } from '@/components/dashboard/UserServersTable';
+import { ProfileCard } from '@/components/dashboard/profile-card';
 
 async function getUserServers(
   userId: string,
@@ -14,7 +13,7 @@ async function getUserServers(
 
   const { data, error } = await supabase
     .from('discoverable_mcp_servers')
-    .select('*') // Select all columns or specific ones you need
+    .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
@@ -39,6 +38,10 @@ export default async function DashboardPage() {
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-6">
+      <div className="mb-12">
+        <ProfileCard userId={user.id} />
+      </div>
+
       <div className="flex justify-between items-center mb-8 gap-8 flex-wrap">
         <h1 className="text-3xl font-bold">Your MCP Servers</h1>
         <Button asChild>
@@ -55,8 +58,14 @@ export default async function DashboardPage() {
               key={server.id}
               className="p-4 border rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <h3 className="text-lg font-semibold">{server.name}</h3>
-                <p className="text-sm text-muted-foreground">
+                {/* --- START: Updated Server Name Link --- */}
+                <Link
+                  href={`/servers/${server.id}`}
+                  className="hover:underline">
+                  <h3 className="text-lg font-semibold">{server.name}</h3>
+                </Link>
+                {/* --- END: Updated Server Name Link --- */}
+                <p className="text-sm text-muted-foreground break-all">
                   {server.mcp_url}
                 </p>
                 <p className="text-sm pt-2">

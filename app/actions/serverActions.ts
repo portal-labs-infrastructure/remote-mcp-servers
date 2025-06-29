@@ -166,6 +166,7 @@ export async function submitReviewAction(payload: ReviewFormValues) {
   // Use upsert to create or update a review.
   // This relies on the unique constraint on (server_id, user_id) in your DB.
   const { error } = await supabase.from('server_reviews').upsert({
+    id: result.data.id || undefined, // Use the existing ID if provided, otherwise let Supabase generate a new one
     server_id: serverId,
     user_id: user.id,
     rating,

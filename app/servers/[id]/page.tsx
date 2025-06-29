@@ -39,21 +39,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   };
 }
-
-// Helper function to fetch all data in parallel
 async function getServerPageData(serverId: string) {
   const supabase = await createClient();
 
+  // 1. Fetch all data in parallel as before
   const serverPromise = supabase
     .from('discoverable_mcp_servers')
     .select('*')
     .eq('id', serverId)
-    .eq('status', 'approved') // Only show approved servers on the public details page
+    .eq('status', 'approved')
     .single();
 
   const reviewsPromise = supabase
     .from('server_reviews')
-    .select('*, profile:profiles(*)')
+    .select('*, profile:profiles(*)') // Fetching profile with avatar_url path
     .eq('server_id', serverId)
     .order('created_at', { ascending: false });
 
@@ -67,15 +66,38 @@ async function getServerPageData(serverId: string) {
   }
 
   const server = serverResult.data;
+  const reviews = reviewsResult.data || [];
 
-  // Now fetch related servers
+  // 2. Transform the avatar_url paths into full public URLs
+  const transformedReviews = reviews.map((review) => {
+    if (review.profile && review.profile.avatar_url) {
+      const {
+        data: { publicUrl },
+      } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(review.profile.avatar_url);
+
+      // Return a new review object with the full public URL
+      return {
+        ...review,
+        profile: {
+          ...review.profile,
+          avatar_url: publicUrl, // Overwrite the path with the full URL
+        },
+      };
+    }
+    // If there's no avatar, return the review as is
+    return review;
+  });
+
+  // 3. Fetch related servers as before
   const byMaintainerPromise = server.maintainer_name
     ? supabase
         .from('discoverable_mcp_servers')
         .select('*')
         .eq('maintainer_name', server.maintainer_name)
         .eq('status', 'approved')
-        .neq('id', server.id) // Exclude the current server
+        .neq('id', server.id)
         .limit(5)
     : Promise.resolve({ data: [] });
 
@@ -84,7 +106,7 @@ async function getServerPageData(serverId: string) {
     .select('*')
     .eq('category', server.category)
     .eq('status', 'approved')
-    .neq('id', server.id) // Exclude the current server
+    .neq('id', server.id)
     .limit(5);
 
   const [byMaintainerResult, similarResult] = await Promise.all([
@@ -92,9 +114,10 @@ async function getServerPageData(serverId: string) {
     similarPromise,
   ]);
 
+  // 4. Return the transformed reviews data
   return {
     server,
-    reviews: reviewsResult.data || [],
+    reviews: transformedReviews, // <-- Use the transformed data here
     byMaintainer: byMaintainerResult.data || [],
     similar: similarResult.data || [],
   };
@@ -131,16 +154,20 @@ export default async function ServerDetailPage({
       {/* Two-column grid layout starts here */}
       <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* --- Left Column (Main Content) --- */}
-        <div className="lg:col-span-2 space-y-12">
+        <div className="lg:col-span-2 space-y-16">
           <ServerHeader server={server} />
 
-          <Badge variant="secondary" className="whitespace-nowrap text-sm">
+          <Badge variant="secondary" className="whitespace-nowrap text-md">
             {server.category}
           </Badge>
 
+          <div className="block md:hidden">
+            <ServerDetailCard server={server} />
+          </div>
+
           {/* AI-Generated Summary */}
           {server.ai_summary && (
-            <section>
+            <section className="pb-4">
               <h2 className="text-2xl font-bold tracking-tight mb-4">
                 Overview
               </h2>

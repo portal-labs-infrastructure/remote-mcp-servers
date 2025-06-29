@@ -16,8 +16,8 @@ export const discoverableMcpServerSchema = z.object({
     .describe("Type of authentication supported (e.g., 'none', 'oauth')."),
   dynamic_client_registration: z
     .boolean()
-    .nullable()
-    .describe('Indicates if dynamic client registration is supported.'),
+    .describe('Indicates if dynamic client registration is supported.')
+    .nullable(),
   documentation_url: z.string().describe('URL to the server documentation.'),
   maintainer_name: z.string().describe('Name of the server maintainer.'),
   maintainer_url: z

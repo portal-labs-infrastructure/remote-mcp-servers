@@ -55,8 +55,8 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
   return (
     <Card className="w-full">
       {/* Section 3: Reorganized Information Grid */}
-      <CardContent className="pt-6">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-6">
+      <CardContent className="py-6">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-8">
           {/* Column 1: About this Server */}
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">About this Server</h3>
@@ -120,8 +120,8 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
         </div>
       </CardContent>
       <Separator /> {/* Divider */}
-      <div className="px-6 py-4  flex flex-wrap gap-4 bg-muted/40">
-        <Button asChild variant="outline" className="flex-1">
+      <div className="px-6 py-4  flex flex-wrap gap-3 ">
+        <Button asChild variant="secondary" className="flex-1">
           <Link
             href={`/servers/${server.id}.md`}
             target="_blank"
@@ -132,7 +132,7 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
         </Button>
 
         {server.documentation_url && (
-          <Button variant="outline" className="flex-1" asChild>
+          <Button variant="secondary" className="flex-1" asChild>
             <a
               href={server.documentation_url}
               target="_blank"

@@ -2,6 +2,7 @@ import z from 'zod';
 
 // Schema for validating the review form data
 export const reviewFormSchema = z.object({
+  id: z.string().optional(),
   rating: z.coerce.number().min(1, 'Rating is required.').max(5),
   comment: z
     .string()

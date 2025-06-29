@@ -1,6 +1,17 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Add supbase to image domains
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/avatars/**',
+      },
+    ],
+  },
   /* config options here */
   async rewrites() {
     return [
