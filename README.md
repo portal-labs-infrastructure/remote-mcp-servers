@@ -1,4 +1,4 @@
-# Remote MCP Server Registry
+# Remote MCP Servers
 
 A dynamic, community-driven registry of remote Model Context Protocol (MCP) servers. This web application allows users to discover, list, and submit MCP servers.
 
@@ -20,7 +20,7 @@ The Model Context Protocol (MCP) enables applications to securely share contextu
 - **Filtering & Pagination API:** A public API endpoint (`/api/servers`) allows fetching server data with support for filtering by various criteria (category, name/description query, official status, authentication type) and pagination.
 - **Server Details:** Shows name, description, category, maintainer, MCP URL, authentication type, and other relevant metadata.
 
-## MCP Server Registry API
+## MCP Servers API
 
 ### Main Endpoint
 

@@ -2,10 +2,10 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Remote MCP Server Registry | Discover Remote Model Context Protocol Servers',
-    short_name: 'Remove MCP Server Registry',
+    name: 'Remote MCP Servers | Discover Remote Model Context Protocol (MCP) Servers',
+    short_name: 'Remote MCP Servers',
     description:
-      'Explore a community-maintained list of remote Model Context Protocol (MCP) servers. Find, learn about, and check the reachability of MCP-enabled services.',
+      'Explore a community-maintained list of remote Model Context Protocol (MCP) servers. Find, learn about, and comment on MCP servers.',
     start_url: '/',
     display: 'standalone',
     background_color: '#fff',

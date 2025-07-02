@@ -5,7 +5,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { BASE_URL } from '@/const';
 
 export const metadata: Metadata = {
-  title: 'What is the Model Context Protocol (MCP)? | MCP Server Registry',
+  title: 'What is the Model Context Protocol (MCP)? | Remote MCP Servers',
   description:
     'Learn about the Model Context Protocol (MCP), an open protocol that standardizes how applications provide context to LLMs, and how it enables a new ecosystem of AI tools and integrations.',
   alternates: {
@@ -117,12 +117,12 @@ export default function WhatIsMcpPage() {
 
         <h2>How This Registry Relates to MCP</h2>
         <p>
-          The MCP Server Registry you&apos;re exploring is a community hub for
-          discovering publicly available **MCP Servers**. These servers
-          implement the Model Context Protocol, offering various capabilities
-          that can be integrated into MCP Hosts and Clients. Our goal is to make
-          it easier for developers to find and utilize these servers, fostering
-          growth and innovation within the MCP ecosystem.
+          This site you&apos;re exploring is a community hub for discovering
+          publicly available **MCP Servers**. These servers implement the Model
+          Context Protocol, offering various capabilities that can be integrated
+          into MCP Hosts and Clients. Our goal is to make it easier for
+          developers to find and utilize these servers, fostering growth and
+          innovation within the MCP ecosystem.
         </p>
 
         <h2>Dive Deeper into MCP</h2>
@@ -158,7 +158,7 @@ export default function WhatIsMcpPage() {
 
         <p className="mt-6">
           Ready to find a server?{' '}
-          <Link href="/servers">Browse the MCP Server Registry</Link>.
+          <Link href="/servers">Browse remote MCP servers</Link>.
         </p>
       </article>
     </div>

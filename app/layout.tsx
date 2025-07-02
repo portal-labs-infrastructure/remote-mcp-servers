@@ -19,9 +19,9 @@ export const metadata: Metadata = {
 
   // == SEO: Core Meta Tags ==
   title:
-    'Remote MCP Server Registry | Discover Remote Model Context Protocol Servers',
+    'Remote MCP Servers | Discover Remote Model Context Protocol (MCP) Servers',
   description:
-    'Explore a community-maintained list of remote Model Context Protocol (MCP) servers. Find, learn about, and check the reachability of MCP-enabled services.', // From your meta description
+    'Explore a community-maintained list of remote Model Context Protocol (MCP) servers. Find, learn about, and comment on MCP servers.',
   keywords: [
     'MCP',
     'Model Context Protocol',
@@ -55,19 +55,20 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     url: '/', // Will be combined with metadataBase
-    title: 'MCP Server Registry | Discover Model Context Protocol Servers', // Specific OG title
+    title:
+      'Remote MCP Servers | Discover Remote Model Context Protocol (MCP) Servers',
     description:
-      'Explore a community-maintained list of Model Context Protocol (MCP) servers. Find, learn about, and check the reachability of MCP-enabled services.', // Specific OG description
+      'Explore a community-maintained list of Remote Model Context Protocol (MCP) servers. Find, learn about, and comment on MCP servers.',
     images: [
       {
         url: '/mcp-registry-og-image.png', // Relative to metadataBase, assuming image is in `public` folder
         // or absolute: 'https://remote-mcp-servers.com/mcp-registry-og-image.png'
         width: 1200, // Optional, but recommended for OG
         height: 630, // Optional, but recommended for OG
-        alt: 'MCP Server Registry Open Graph Image', // Optional, but recommended
+        alt: 'Remote MCP Servers Open Graph Image', // Optional, but recommended
       },
     ],
-    siteName: 'MCP Server Registry', // From og:site_name
+    siteName: 'Remote MCP Servers', // From og:site_name
   },
 
   // == SEO: Twitter Card ==
@@ -75,9 +76,9 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     // url: '/', // Often inferred, but can be explicit. Will be combined with metadataBase.
     title:
-      'Remote MCP Server Registry | Discover Remote Model Context Protocol Servers', // Specific Twitter title
+      'Remote MCP Servers | Discover Remote Model Context Protocol (MCP) Servers', // Matches Open Graph title
     description:
-      'Explore a community-maintained list of remote Model Context Protocol (MCP) servers. Find, learn about, and check the reachability of MCP-enabled services.', // Specific Twitter description
+      'Explore a community-maintained list of Remote Model Context Protocol (MCP) servers. Find, learn about, and comment on MCP servers.', // Matches Open Graph description
     images: ['/mcp-registry-og-image.png'], // Relative to metadataBase, assuming image is in `public` folder
     // or absolute: 'https://remote-mcp-servers.com/mcp-registry-og-image.png'
     // site: '@yourtwitterhandle', // Optional: If you have a site Twitter handle

@@ -32,7 +32,7 @@ export default function ForAgentsPage() {
         <h1>Built for Humans and AI Agents</h1>
 
         <p>
-          The Remote MCP Server Registry is designed from the ground up to be a{' '}
+          Remote MCP Servers is designed from the ground up to be a{' '}
           <strong>first-class resource for both humans and machines</strong>. We
           believe that for AI agents to become truly capable, the web needs to
           be more programmatically accessible.
@@ -114,7 +114,7 @@ export default function ForAgentsPage() {
 
         <p className="mt-6">
           We are committed to improving the human-machine web. Ready to find a
-          server? <Link href="/servers">Browse the MCP Server Registry</Link>.
+          server? <Link href="/servers">Browse remote MCP servers</Link>.
         </p>
       </article>
     </div>

@@ -22,7 +22,7 @@ export default function CodeExamples() {
           />
           <CodeSnippet
             codeString={mcpRegistryConnectionUrl}
-            title="This Registry's MCP Url"
+            title="Connect to MCP Registry"
             language="plaintext"
           />
         </div>

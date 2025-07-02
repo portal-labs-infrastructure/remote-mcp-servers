@@ -29,9 +29,9 @@ export default function AboutPage() {
         <h1>About</h1>
 
         <p>
-          Welcome to the Remote MCP Server Registry! This platform is a
-          community-driven initiative dedicated to making it easier to discover,
-          share, and connect with remote Model Context Protocol (MCP) servers.
+          Welcome to Remote MCP Servers! This platform is a community-driven
+          initiative dedicated to making it easier to discover, share, and
+          connect with remote Model Context Protocol (MCP) servers.
         </p>
 
         <div className="my-8 p-6 bg-muted/50 rounded-lg not-prose">
