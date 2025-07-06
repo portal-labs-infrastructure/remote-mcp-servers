@@ -9,6 +9,100 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      benchmark_runs: {
+        Row: {
+          client_id: string | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          results: Json | null
+          status: Database["public"]["Enums"]["benchmark_status"]
+          success: boolean | null
+          time_to_completion_ms: number | null
+        }
+        Insert: {
+          client_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          results?: Json | null
+          status?: Database["public"]["Enums"]["benchmark_status"]
+          success?: boolean | null
+          time_to_completion_ms?: number | null
+        }
+        Update: {
+          client_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          results?: Json | null
+          status?: Database["public"]["Enums"]["benchmark_status"]
+          success?: boolean | null
+          time_to_completion_ms?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "benchmark_runs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      benchmark_sessions: {
+        Row: {
+          created_at: string
+          current_step: string | null
+          id: string
+          run_id: string
+          session_data: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_step?: string | null
+          id: string
+          run_id: string
+          session_data?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_step?: string | null
+          id?: string
+          run_id?: string
+          session_data?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "benchmark_sessions_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "benchmark_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          client_info: Json
+          created_at: string
+          id: string
+        }
+        Insert: {
+          client_info: Json
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          client_info?: Json
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       discoverable_mcp_servers: {
         Row: {
           ai_summary: string | null
@@ -168,7 +262,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      benchmark_status: "in_progress" | "completed" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -283,6 +377,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      benchmark_status: ["in_progress", "completed", "failed"],
+    },
   },
 } as const
