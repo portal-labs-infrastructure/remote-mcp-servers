@@ -1,9 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { Json } from '@/types/supabase';
 
-const client = await createClient();
-
 export async function createSession(sessionId: string, runId: string) {
+  const client = await createClient();
   const { error } = await client
     .from('benchmark_sessions')
     .insert({ id: sessionId, run_id: runId, current_step: 'initialized' });
@@ -15,6 +14,7 @@ export async function createSession(sessionId: string, runId: string) {
 export async function getClientInfoForSession(
   sessionId: string,
 ): Promise<Json | null> {
+  const client = await createClient();
   const { data, error } = await client
     .from('benchmark_sessions')
     .select('benchmark_runs ( clients ( client_info ) )')
