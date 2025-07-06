@@ -12,11 +12,3 @@ export async function createRun(clientId: string) {
   if (error) throw error;
   return data;
 }
-
-// We'll need this later for the 'submit' flow
-export async function finalizeRun(
-  runId: string,
-  result: { success: boolean; details?: any },
-) {
-  // ... logic to update the run with final status, time, etc.
-}
