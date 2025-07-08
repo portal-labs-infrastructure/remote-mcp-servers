@@ -1,11 +1,8 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server'; // Keep if still needed for user check
-import { Github, LogIn, LayoutDashboard } from 'lucide-react';
-import SearchForm from '@/components/search-form'; // Assuming this is in src/components/
-import { Badge } from './ui/badge';
-
-const GITHUB_REPO_URL = process.env.NEXT_PUBLIC_GITHUB_URL;
+import { createClient } from '@/lib/supabase/server';
+import { LogIn, LayoutDashboard } from 'lucide-react';
+import SearchForm from '@/components/search-form';
 
 export default async function Hero() {
   const supabase = await createClient();

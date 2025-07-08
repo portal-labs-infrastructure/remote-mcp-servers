@@ -33,7 +33,7 @@ export default async function RunDetailPage({ params }: RunDetailPageProps) {
   }
 
   // The 'results' column contains our scorecard object
-  console.log('Run details:', run.results);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const scorecard = (run.results as any).details as Scorecard;
 
   return (

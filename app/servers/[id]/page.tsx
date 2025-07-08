@@ -7,7 +7,6 @@ import { ServerHeader } from '@/components/servers/server-header';
 import { BASE_URL } from '@/const';
 import { Metadata } from 'next/types';
 import ReactMarkdown from 'react-markdown';
-import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';

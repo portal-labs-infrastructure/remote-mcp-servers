@@ -39,7 +39,7 @@ export function RunHistoryTable({
     const from = page * RUNS_PAGE_SIZE;
     const to = from + RUNS_PAGE_SIZE - 1;
 
-    const { data: newRuns, error } = await supabase
+    const { data: newRuns } = await supabase
       .from('benchmark_runs')
       .select('*')
       .eq('client_id', clientId)
