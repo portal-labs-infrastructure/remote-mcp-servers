@@ -11,14 +11,14 @@ import { Scorecard } from '@/lib/types';
 export const dynamic = 'force-dynamic';
 
 interface RunDetailPageProps {
-  params: {
+  params: Promise<{
     runId: string;
-  };
+  }>;
 }
 
 export default async function RunDetailPage({ params }: RunDetailPageProps) {
   const client = await createClient();
-  const { runId } = params;
+  const { runId } = await params;
 
   // Fetch the single run record
   const { data: run, error } = await client
