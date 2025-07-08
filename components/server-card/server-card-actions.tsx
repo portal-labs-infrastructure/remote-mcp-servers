@@ -57,6 +57,7 @@ export default function ServerCardActions({ server }: ServerCardActionsProps) {
       </Button>
       <Button
         className="flex-1" // fullWidth
+        variant="secondary" // color="primary"
         asChild>
         <Link href={`/servers/${server.id}`}>
           <FileText className="mr-2 h-4 w-4" /> {/* startDecorator */}

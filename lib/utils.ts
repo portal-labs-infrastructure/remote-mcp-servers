@@ -17,3 +17,5 @@ export const getInitials = (name: string) => {
   }
   return name.substring(0, 2).toUpperCase();
 };
+
+export const RUNS_PAGE_SIZE = 20;

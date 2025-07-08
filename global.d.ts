@@ -12,4 +12,6 @@ declare global {
       clients: Tables<'clients'>;
     };
   };
+
+  type BenchmarkRun = Tables<'benchmark_runs'>;
 }

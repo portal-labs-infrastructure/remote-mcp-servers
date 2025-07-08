@@ -133,7 +133,7 @@ export default function ServerBrowser() {
           const dataQueryBuilder = buildBaseQuery(); // This now returns a query builder already including .select('*')
 
           const { data, error: dbError } = await dataQueryBuilder
-            .order('name', { ascending: true })
+            .order('created_at', { ascending: false })
             .range(offset, offset + ITEMS_PER_PAGE - 1);
 
           if (dbError) {

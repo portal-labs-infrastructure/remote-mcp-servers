@@ -10,6 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -141,25 +142,21 @@ export default async function ServerDetailPage({
 
   return (
     // Main page container
-    <div className="container mx-auto py-12 px-4 md:px-6">
+    <div className="container mx-auto py-8 px-4 md:px-6">
       {/* Header remains at the top, spanning the full width */}
       <div className="mb-6">
-        <Link
-          href="/servers"
-          className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to all servers
-        </Link>
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/servers`}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Servers
+          </Link>
+        </Button>
       </div>
       {/* Two-column grid layout starts here */}
-      <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* --- Left Column (Main Content) --- */}
         <div className="lg:col-span-2 space-y-16">
           <ServerHeader server={server} />
-
-          <Badge variant="secondary" className="whitespace-nowrap text-md">
-            {server.category}
-          </Badge>
 
           <div className="block md:hidden">
             <ServerDetailCard server={server} />

@@ -20,7 +20,7 @@ export function ServerHeader({ server }: ServerDetailCardProps) {
           </AvatarFallback>
         </Avatar>
         <div className="gap-4 md:gap-1 flex flex-col">
-          <CardTitle className="text-5xl font-bold">
+          <CardTitle className="text-4xl font-bold">
             <h1>{server.name}</h1>
           </CardTitle>
           <CardDescription className="text-lg mt-1 max-w-2xl">

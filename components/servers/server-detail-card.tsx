@@ -8,6 +8,7 @@ import {
   FileText,
   Link as LinkIcon,
   ShieldCheck,
+  Tag,
   User,
   XCircle,
 } from 'lucide-react';
@@ -60,6 +61,13 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
           {/* Column 1: About this Server */}
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">About this Server</h3>
+            <div className="flex items-start gap-3">
+              <Tag className="h-5 w-5 text-muted-foreground mt-1 flex-shrink-0" />
+              <div>
+                <p className="text-sm text-muted-foreground">Category</p>
+                <p className="font-medium">{server.category}</p>
+              </div>
+            </div>
             <div className="flex items-start gap-3">
               <User className="h-5 w-5 text-muted-foreground mt-1 flex-shrink-0" />
               <div>
