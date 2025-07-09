@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
     // Pagination
     const offset = (page - 1) * limit;
     queryBuilder = queryBuilder
-      .order('name', { ascending: true })
+      .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
     // Query
