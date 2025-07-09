@@ -15,7 +15,8 @@ export const iconMap = {
 export type IconName = keyof typeof iconMap;
 
 export const baseNavLinks = [
-  { href: '/servers', label: 'Browse', iconName: 'LayoutGrid' as IconName },
+  { href: '/servers', label: 'Servers', iconName: 'LayoutGrid' as IconName },
+  { href: '/clients', label: 'Clients', iconName: 'BookOpen' as IconName },
   { href: '/about', label: 'About', iconName: 'Info' as IconName },
   {
     href: GITHUB_URL,

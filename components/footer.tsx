@@ -8,7 +8,7 @@ export default function Footer() {
   const githubUrl = process.env.NEXT_PUBLIC_GITHUB_URL || '';
 
   return (
-    <footer className="w-full flex border-t mx-auto pt-16 pb-32">
+    <footer className="w-full flex border-t mx-auto pt-16 pb-24">
       <div className="container m-auto max-w-7xl px-6 text-muted-foreground gap-4 flex flex-col">
         <Logo />
         <div className="mb-4">
