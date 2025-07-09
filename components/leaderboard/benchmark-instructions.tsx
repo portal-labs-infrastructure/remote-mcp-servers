@@ -1,5 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
+import Link from 'next/link';
 
 export function BenchmarkInstructions() {
   return (
@@ -8,8 +9,14 @@ export function BenchmarkInstructions() {
       <AlertTitle>How to Run the Benchmark</AlertTitle>
       <AlertDescription>
         <p className="mt-1">
-          Use the Client Benchmark MCP server to run a benchmark for your MCP
-          client and appear on the leaderboard.
+          Use the{' '}
+          <Link
+            href="/servers/d8c98576-1d83-42b4-9659-826721366d05"
+            className="text-blue-400 hover:underline">
+            MCP Client Benchmark
+          </Link>{' '}
+          MCP server to run a benchmark using your MCP client of choice. The
+          results will be automatically submitted to this leaderboard.
         </p>
         {/* <CodeSnippet title="Run Benchmark Command" codeString={commandToRun} /> */}
         <p className="mt-2 text-xs text-muted-foreground">
