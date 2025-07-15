@@ -60,7 +60,7 @@ export default async function ClientDetailPage({
 
       <div className="my-8">
         <StatsGrid
-          avgScore={clientDetails.avg_score}
+          highestScore={clientDetails.highest_score}
           successRate={clientDetails.success_rate}
           totalRuns={clientDetails.total_runs}
         />

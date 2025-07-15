@@ -66,7 +66,7 @@ export type Database = {
           created_at: string
           current_step: string | null
           id: string
-          run_id: string
+          run_id: string | null
           session_data: Json | null
           updated_at: string
         }
@@ -74,7 +74,7 @@ export type Database = {
           created_at?: string
           current_step?: string | null
           id: string
-          run_id: string
+          run_id?: string | null
           session_data?: Json | null
           updated_at?: string
         }
@@ -82,7 +82,7 @@ export type Database = {
           created_at?: string
           current_step?: string | null
           id?: string
-          run_id?: string
+          run_id?: string | null
           session_data?: Json | null
           updated_at?: string
         }
@@ -274,13 +274,17 @@ export type Database = {
         Args: { run_id_param: string; log_entry: Json }
         Returns: undefined
       }
+      cleanup_zombie_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       get_client_details: {
         Args: { client_id_in: string }
         Returns: {
           client_id: string
           client_name: string
           client_version: string
-          avg_score: number
+          highest_score: number
           success_rate: number
           total_runs: number
         }[]
