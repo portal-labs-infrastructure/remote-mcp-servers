@@ -13,7 +13,9 @@ interface LeaderboardRowProps {
 export function LeaderboardRow({ entry, rank }: LeaderboardRowProps) {
   const router = useRouter(); // <-- Initialize the router
 
-  const timeInSeconds = (entry.fastest_time_ms / 1000).toFixed(2);
+  const timeInSeconds = entry.fastest_time_ms
+    ? (entry.fastest_time_ms / 1000).toFixed(2) + 's'
+    : 'N/A';
   const lastRunDate = new Date(entry.last_run_at).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -41,7 +43,7 @@ export function LeaderboardRow({ entry, rank }: LeaderboardRowProps) {
         </div>
       </TableCell>
       <TableCell>{entry.highest_score}</TableCell>
-      <TableCell>{timeInSeconds}s</TableCell>
+      <TableCell>{timeInSeconds}</TableCell>
       <TableCell>{entry.total_runs}</TableCell>
       <TableCell className="text-right">{lastRunDate}</TableCell>
     </TableRow>
