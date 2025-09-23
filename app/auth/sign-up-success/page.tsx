@@ -51,7 +51,9 @@ export default function Page() {
             </div>
 
             <div className="space-y-3">
-              <h3 className="font-semibold text-foreground">What's next?</h3>
+              <h3 className="font-semibold text-foreground">
+                What&apos;s next?
+              </h3>
               <ul className="text-sm text-muted-foreground space-y-2">
                 <li className="flex items-center space-x-2">
                   <div className="h-1.5 w-1.5 bg-primary rounded-full"></div>

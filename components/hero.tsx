@@ -1,15 +1,6 @@
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
-import { LogIn, LayoutDashboard } from 'lucide-react';
 import SearchForm from '@/components/search-form';
 
 export default async function Hero() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   return (
     <section className="w-full py-24 md:py-32 lg:py-40 bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
       {/* Subtle background pattern - much more subtle in dark mode */}
@@ -28,8 +19,6 @@ export default async function Hero() {
         <div className="mb-12 md:mb-16">
           <SearchForm />
         </div>
-
-        {/* CODE SNIPPETS REMOVED FROM HERE */}
       </div>
     </section>
   );

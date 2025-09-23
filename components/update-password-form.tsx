@@ -117,8 +117,8 @@ export function UpdatePasswordForm({
 
           <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
             <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
-              After updating your password, you'll be redirected to your account
-              dashboard.
+              After updating your password, you&apos;ll be redirected to your
+              account dashboard.
             </p>
           </div>
         </CardContent>

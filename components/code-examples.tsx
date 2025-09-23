@@ -1,6 +1,7 @@
 // src/components/landing/CodeExamples.tsx
 import { CodeSnippet } from '@/components/ui/code-snippet'; // Assuming this is your custom component
 import { BASE_URL } from '@/const';
+import Link from 'next/link';
 
 export default function CodeExamples() {
   const exampleApiRequest = `curl -X GET "${BASE_URL}/api/servers?limit=3"`;
@@ -75,11 +76,11 @@ export default function CodeExamples() {
             examples and integration guides.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <a
+            <Link
               href="/servers"
               className="inline-flex items-center px-4 py-2 bg-card/80 hover:bg-card border border-border/50 text-foreground rounded-lg text-sm font-medium transition-colors duration-200">
               Browse Servers
-            </a>
+            </Link>
           </div>
         </div>
       </div>
