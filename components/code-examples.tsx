@@ -7,24 +7,80 @@ export default function CodeExamples() {
   const mcpRegistryConnectionUrl = `https://${new URL(BASE_URL).host}/api/mcp`;
 
   return (
-    <section className="py-20 md:py-24 lg:py-28 bg-muted/40">
-      {' '}
-      {/* Slightly different background */}
-      <div className="container mx-auto px-6">
-        <h2 className="text-3xl font-bold tracking-tight text-center mb-10 text-foreground">
-          Quick Connect
-        </h2>
-        <div className="flex flex-col gap-4 lg:gap-4 max-w-4xl mx-auto">
-          <CodeSnippet
-            codeString={exampleApiRequest}
-            title="List Servers (HTTP API)"
-            language="bash"
-          />
-          <CodeSnippet
-            codeString={mcpRegistryConnectionUrl}
-            title="Connect to MCP Registry"
-            language="plaintext"
-          />
+    <section className="relative py-20 md:py-24 lg:py-28 overflow-hidden">
+      {/* Enhanced background with gradient and pattern */}
+      <div className="absolute inset-0 bg-gradient-to-br from-muted/30 via-muted/40 to-muted/30"></div>
+      <div
+        className="absolute inset-0 opacity-[0.15] dark:opacity-[0.08]"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 25% 25%, rgba(24, 111, 170, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(39, 182, 214, 0.1) 0%, transparent 50%),
+            linear-gradient(90deg, transparent 0%, rgba(24, 111, 170, 0.03) 50%, transparent 100%)
+          `,
+        }}></div>
+
+      <div className="relative container mx-auto px-6">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
+            Quick Connect
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+            Get started instantly with our API endpoints. Copy and run these
+            examples to begin discovering MCP servers.
+          </p>
+        </div>
+
+        <div className="grid gap-6 lg:gap-8 max-w-5xl mx-auto">
+          <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                List Servers (HTTP API)
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Fetch a list of available MCP servers with filtering and
+                pagination support
+              </p>
+            </div>
+            <CodeSnippet
+              codeString={exampleApiRequest}
+              title="API Request"
+              language="bash"
+            />
+          </div>
+
+          <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                Connect to MCP Registry
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Direct MCP protocol connection URL for seamless integration with
+                MCP clients
+              </p>
+            </div>
+            <CodeSnippet
+              codeString={mcpRegistryConnectionUrl}
+              title="MCP Connection URL"
+              language="plaintext"
+            />
+          </div>
+        </div>
+
+        <div className="mt-12 text-center">
+          <p className="text-sm text-muted-foreground mb-4">
+            Need help getting started? Check out our documentation for more
+            examples and integration guides.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <a
+              href="/servers"
+              className="inline-flex items-center px-4 py-2 bg-card/80 hover:bg-card border border-border/50 text-foreground rounded-lg text-sm font-medium transition-colors duration-200">
+              Browse Servers
+            </a>
+          </div>
         </div>
       </div>
     </section>

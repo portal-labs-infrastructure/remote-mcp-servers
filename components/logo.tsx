@@ -6,14 +6,7 @@ export default function Logo() {
     <div className="flex gap-5 items-center font-semibold">
       <Link href="/" aria-label="Go to homepage">
         <div className="flex items-center gap-2">
-          <Image
-            src="/mcp.svg"
-            alt="MCP Logo"
-            width={24}
-            height={24}
-            className="dark:invert"
-          />
-          <p className="text-lg text-primary">RMCPS</p>
+          <Image src="/rmcps.png" alt="RMCPS Logo" width={128} height={54} />
         </div>
       </Link>
     </div>

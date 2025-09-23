@@ -140,67 +140,80 @@ export default async function ServerDetailPage({
   }
 
   return (
-    // Main page container
-    <div className="container mx-auto py-8 px-4 md:px-6">
-      {/* Header remains at the top, spanning the full width */}
-      <div className="mb-6">
-        <Button asChild variant="outline" size="sm">
-          <Link href={`/servers`}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Servers
-          </Link>
-        </Button>
-      </div>
-      {/* Two-column grid layout starts here */}
-      <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-12">
-        {/* --- Left Column (Main Content) --- */}
-        <div className="lg:col-span-2 space-y-16">
-          <ServerHeader server={server} />
-
-          <div className="block md:hidden">
-            <ServerDetailCard server={server} />
-          </div>
-
-          {/* AI-Generated Summary */}
-          {server.ai_summary && (
-            <section className="pb-4">
-              <h2 className="text-2xl font-bold tracking-tight mb-4">
-                Overview
-              </h2>
-              <article className="prose dark:prose-invert max-w-none">
-                <ReactMarkdown>{server.ai_summary}</ReactMarkdown>
-              </article>
-            </section>
-          )}
-
-          {/* Interactive Reviews Section */}
-          <ReviewsSection
-            serverId={server.id}
-            initialReviews={reviews}
-            currentUserId={user?.id}
-          />
-
-          {/* "More by" Strip */}
-          {byMaintainer.length > 0 && (
-            <ServerStrip
-              title={`More from ${server.maintainer_name}`}
-              servers={byMaintainer}
-            />
-          )}
-
-          {/* "Similar Servers" Strip */}
-          {similar.length > 0 && (
-            <ServerStrip
-              title={`Similar in ${server.category}`}
-              servers={similar}
-            />
-          )}
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/3">
+      {/* Main page container */}
+      <div className="container mx-auto py-8 px-4 md:px-6">
+        {/* Enhanced Back Button */}
+        <div className="mb-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md">
+            <Link href={`/servers`}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Servers
+            </Link>
+          </Button>
         </div>
 
-        {/* --- Right Column (Sticky Sidebar) --- */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-24 space-y-6">
-            <ServerDetailCard server={server} />
+        {/* Two-column grid layout with enhanced spacing */}
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+          {/* --- Left Column (Main Content) --- */}
+          <div className="lg:col-span-2 space-y-16">
+            <ServerHeader server={server} />
+
+            {/* Mobile detail card */}
+            <div className="block lg:hidden">
+              <ServerDetailCard server={server} />
+            </div>
+
+            {/* AI-Generated Summary with enhanced styling */}
+            {server.ai_summary && (
+              <section className="pb-4">
+                <h2 className="text-3xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+                  Overview
+                </h2>
+                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-sm">
+                  <article className="prose dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground">
+                    <ReactMarkdown>{server.ai_summary}</ReactMarkdown>
+                  </article>
+                </div>
+              </section>
+            )}
+
+            {/* Enhanced Reviews Section */}
+            <ReviewsSection
+              serverId={server.id}
+              initialReviews={reviews}
+              currentUserId={user?.id}
+            />
+
+            {/* Enhanced Server Strips */}
+            {byMaintainer.length > 0 && (
+              <div className="bg-card/30 backdrop-blur-sm border border-border/30 rounded-xl p-6 shadow-sm">
+                <ServerStrip
+                  title={`More from ${server.maintainer_name}`}
+                  servers={byMaintainer}
+                />
+              </div>
+            )}
+
+            {similar.length > 0 && (
+              <div className="bg-card/30 backdrop-blur-sm border border-border/30 rounded-xl p-6 shadow-sm">
+                <ServerStrip
+                  title={`Similar in ${server.category}`}
+                  servers={similar}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* --- Right Column (Enhanced Sticky Sidebar) --- */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24 space-y-6">
+              <ServerDetailCard server={server} />
+            </div>
           </div>
         </div>
       </div>

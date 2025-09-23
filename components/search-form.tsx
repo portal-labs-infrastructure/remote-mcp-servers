@@ -24,20 +24,20 @@ export default function SearchForm() {
   return (
     <form
       onSubmit={handleSearch}
-      className="w-full max-w-2xl mx-auto flex items-center gap-2" // Increased max-width for better presence
+      className="w-full max-w-3xl mx-auto flex items-center gap-3 p-2 bg-background/50 backdrop-blur-sm border border-border rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" // Enhanced container
     >
       <Input
         type="search"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search by keyword, hostname, or description..."
-        className="flex-grow text-base h-12" // Made input slightly larger
+        className="flex-grow text-base h-14 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground placeholder:text-muted-foreground/70" // Enhanced input
       />
-      <Button type="submit" size="lg" className="h-12">
-        {' '}
-        {/* Matched button height */}
-        <SearchIcon className="mr-2 h-5 w-5" />{' '}
-        {/* Icon always visible, text hidden on small screens */}
+      <Button
+        type="submit"
+        size="lg"
+        className="h-12 px-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
+        <SearchIcon className="mr-2 h-5 w-5" />
         <span className="hidden md:inline">Search</span>
       </Button>
     </form>

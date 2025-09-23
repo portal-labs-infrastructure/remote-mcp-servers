@@ -63,97 +63,120 @@ export default function ServerFilters({
   );
 
   return (
-    <aside className="w-full md:w-60 space-y-6 ">
-      {' '}
-      {/* Consider md:w-64 or md:w-72 if content feels cramped */}
-      <div className="flex justify-between items-center min-h-8">
-        <h3 className="text-lg font-semibold">Filters</h3>
-        {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClearFilters}
-            className="text-sm">
-            <X className="h-4 w-4 mr-1" /> Clear All
-          </Button>
-        )}
-      </div>
-      {/* Category Filter */}
-      <div>
-        <h4 className="font-medium mb-3">Category</h4>
-        <div className="space-y-4">
-          {availableCategories.map((category) => {
-            const isChecked = filters.categories?.includes(category) || false;
-            return (
-              <div key={category} className="flex items-center space-x-2">
+    <aside className="w-full lg:w-72 space-y-8">
+      <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-lg">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold text-foreground">Filters</h3>
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClearFilters}
+              className="text-sm hover:bg-destructive/10 hover:text-destructive transition-colors">
+              <X className="h-4 w-4 mr-1" />
+              Clear All
+            </Button>
+          )}
+        </div>
+
+        {/* Category Filter */}
+        <div className="mb-8">
+          <h4 className="font-semibold mb-4 text-foreground text-base">
+            Category
+          </h4>
+          <div className="space-y-3">
+            {availableCategories.map((category) => {
+              const isChecked = filters.categories?.includes(category) || false;
+              return (
+                <div
+                  key={category}
+                  className="flex items-center space-x-3 group">
+                  <Checkbox
+                    key={`${category}-${isChecked}`}
+                    id={`cat-${category}`}
+                    checked={isChecked}
+                    onCheckedChange={(checkedState) => {
+                      handleCategoryChange(category, !!checkedState);
+                    }}
+                    className="border-2 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label
+                    htmlFor={`cat-${category}`}
+                    className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
+                    {category}
+                  </Label>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Authentication Type Filter */}
+        <div className="mb-8">
+          <h4 className="font-semibold mb-4 text-foreground text-base">
+            Auth Type
+          </h4>
+          <div className="space-y-3">
+            {availableAuthTypes.map((authType) => (
+              <div key={authType} className="flex items-center space-x-3 group">
                 <Checkbox
-                  // Add a key that changes with the checked state to force re-mount
-                  key={`${category}-${isChecked}`}
-                  id={`cat-${category}`}
-                  checked={isChecked}
-                  onCheckedChange={(checkedState) => {
-                    // LOGGING:
-                    // console.log(`onCheckedChange for ${category} - new state from checkbox: ${checkedState}`);
-                    handleCategoryChange(category, !!checkedState);
-                  }}
+                  id={`auth-${authType}`}
+                  checked={filters.authTypes?.includes(authType) || false}
+                  onCheckedChange={(checkedState) =>
+                    handleAuthTypeChange(authType, !!checkedState)
+                  }
+                  className="border-2 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
-                <Label htmlFor={`cat-${category}`} className="font-normal">
-                  {category}
+                <Label
+                  htmlFor={`auth-${authType}`}
+                  className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
+                  {authType}
                 </Label>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </div>
-      {/* Authentication Type Filter */}
-      <div>
-        <h4 className="font-medium mb-3">Auth Type</h4>
-        <div className="space-y-4">
-          {availableAuthTypes.map((authType) => (
-            <div key={authType} className="flex items-center space-x-2">
+
+        {/* Boolean Filters */}
+        <div>
+          <h4 className="font-semibold mb-4 text-foreground text-base">
+            Features
+          </h4>
+          <div className="space-y-3">
+            <div className="flex items-center space-x-3 group">
               <Checkbox
-                id={`auth-${authType}`}
-                checked={filters.authTypes?.includes(authType) || false}
+                id="dynamicClientReg"
+                checked={!!filters.dynamicClientRegistration}
                 onCheckedChange={(checkedState) =>
-                  handleAuthTypeChange(authType, !!checkedState)
+                  handleBooleanFilterChange(
+                    'dynamicClientRegistration',
+                    !!checkedState,
+                  )
                 }
+                className="border-2 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
-              <Label htmlFor={`auth-${authType}`} className="font-normal">
-                {authType}
+              <Label
+                htmlFor="dynamicClientReg"
+                className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
+                Dynamic Client Registration
               </Label>
             </div>
-          ))}
-        </div>
-      </div>
-      {/* Boolean Filters */}
-      <div>
-        <h4 className="font-medium mb-3">Features</h4>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="dynamicClientReg"
-            checked={!!filters.dynamicClientRegistration} // This is fine, !!undefined is false
-            onCheckedChange={(checkedState) =>
-              handleBooleanFilterChange(
-                'dynamicClientRegistration',
-                !!checkedState,
-              )
-            }
-          />
-          <Label htmlFor="dynamicClientReg" className="font-normal">
-            DCR
-          </Label>
-        </div>
-        <div className="flex items-center space-x-2 mt-4">
-          <Checkbox
-            id="isOfficial"
-            checked={!!filters.isOfficial}
-            onCheckedChange={(checkedState) =>
-              handleBooleanFilterChange('isOfficial', !!checkedState)
-            }
-          />
-          <Label htmlFor="isOfficial" className="font-normal">
-            Official
-          </Label>
+            <div className="flex items-center space-x-3 group">
+              <Checkbox
+                id="isOfficial"
+                checked={!!filters.isOfficial}
+                onCheckedChange={(checkedState) =>
+                  handleBooleanFilterChange('isOfficial', !!checkedState)
+                }
+                className="border-2 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+              />
+              <Label
+                htmlFor="isOfficial"
+                className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
+                Official Server
+              </Label>
+            </div>
+          </div>
         </div>
       </div>
     </aside>

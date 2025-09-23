@@ -40,27 +40,25 @@ export default function ServerCardActions({ server }: ServerCardActionsProps) {
   };
 
   return (
-    // CardActions is just a div with padding/flex in Shadcn context
-    <div className="flex gap-4 p-0 flex-1">
-      {' '}
-      {/* CardActions usually has padding, but here it's part of CardFooter */}
+    <div className="flex gap-3 p-0 flex-1">
       <Button
-        variant="outline" // color="neutral"
+        variant="outline"
         onClick={handleCopyMcpUrl}
-        disabled={!server.mcp_url}>
+        disabled={!server.mcp_url}
+        className="transition-all duration-200 hover:scale-105 hover:shadow-md border-border/50 hover:border-primary/30">
         {copied ? (
-          <CheckCircle2 className="mr-2 h-4 w-4" />
+          <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" />
         ) : (
           <Copy className="mr-2 h-4 w-4" />
         )}
         {copied ? 'Copied URL' : 'Copy URL'}
       </Button>
       <Button
-        className="flex-1" // fullWidth
-        variant="secondary" // color="primary"
+        className="flex-1 transition-all duration-200 hover:scale-105 hover:shadow-md"
+        variant="default"
         asChild>
         <Link href={`/servers/${server.id}`}>
-          <FileText className="mr-2 h-4 w-4" /> {/* startDecorator */}
+          <FileText className="mr-2 h-4 w-4" />
           Details
         </Link>
       </Button>

@@ -11,45 +11,22 @@ export default async function Hero() {
   } = await supabase.auth.getUser();
 
   return (
-    <section className="w-full py-20 md:py-24 lg:py-24 bg-gradient-to-b ">
-      {' '}
-      {/* Example gradient */}
-      <div className="m-auto container px-6 md:px-6 text-center">
-        <div className="mb-8 md:mb-10 text-left md:text-center">
-          <h1 className="text-4xl max-w-1xl mb-6 m-auto font-bold tracking-tighter sm:text-4xl md:text-4xl lg:text-5xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
-            Discover Remote MCP Servers
+    <section className="w-full py-24 md:py-32 lg:py-40 bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
+      {/* Subtle background pattern - much more subtle in dark mode */}
+      <div className="absolute inset-0 bg-grid-slate-200/20 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))]" />
+
+      <div className="relative m-auto container px-6 md:px-6 text-center">
+        <div className="mb-12 md:mb-16 text-left md:text-center">
+          <h1 className="text-5xl max-w-4xl mb-8 m-auto font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary to-primary/70 leading-tight">
+            Remote MCP Registry
           </h1>
-          <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg">
-            A community-driven registry of remote MCP servers, enabling seamless
-            integration with MCP clients. Find, add, and manage remote MCP
-            servers effortlessly.
+          <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl text-lg leading-relaxed">
+            Find, add, and manage remote MCP servers effortlessly.
           </p>
         </div>
 
-        <div className="mb-10 md:mb-12">
+        <div className="mb-12 md:mb-16">
           <SearchForm />
-        </div>
-
-        <div className="mb-10 md:mb-12 flex flex-wrap justify-left md:justify-center items-center gap-3 sm:gap-4">
-          {user ? (
-            <Button asChild size="lg" className="min-w-[200px]">
-              <Link href="/dashboard">
-                <LayoutDashboard className="mr-2 h-5 w-5" />
-                Go to Dashboard
-              </Link>
-            </Button>
-          ) : (
-            <Button
-              asChild
-              size="lg"
-              variant="default"
-              className="min-w-[160px]">
-              <Link href="/auth/login">
-                <LogIn className="mr-2 h-5 w-5" />
-                Add Your Server
-              </Link>
-            </Button>
-          )}
         </div>
 
         {/* CODE SNIPPETS REMOVED FROM HERE */}

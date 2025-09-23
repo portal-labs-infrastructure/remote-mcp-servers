@@ -12,26 +12,19 @@ export default function ServerCardHeader({ server }: ServerCardHeaderProps) {
   // Fallback initials for Avatar
 
   return (
-    <div className="flex flex-row gap-3">
-      {' '}
-      {/* Replaces Stack direction="row" gap={1.5} */}
-      <Avatar className="h-16 w-16 rounded-lg border bg-muted">
-        {' '}
-        {/* size="lg", variant="outlined", custom borderRadius */}
+    <div className="flex flex-row gap-4">
+      <Avatar className="h-16 w-16 rounded-xl border-2 border-border/50 bg-muted shadow-sm">
         <AvatarImage src={server.icon_url ?? undefined} alt={server.name} />
-        <AvatarFallback className="rounded-lg text-sm">
+        <AvatarFallback className="rounded-xl text-sm font-semibold bg-gradient-to-br from-primary/10 to-primary/5 text-primary">
           {getInitials(server.name)}
         </AvatarFallback>
       </Avatar>
-      <div className="flex flex-col">
-        {' '}
-        {/* Replaces Stack (default direction column) */}
-        <h3 className="text-lg font-semibold leading-tight">
+      <div className="flex flex-col justify-center">
+        <h3 className="text-xl font-bold leading-tight text-foreground mb-1">
           {server.name}
-        </h3>{' '}
-        {/* Typography level="title-lg" */}
+        </h3>
         {server.maintainer_name && server.maintainer_url && (
-          <p className="text-xs text-muted-foreground hover:text-primary truncate block max-w-[200px] sm:max-w-[250px]">
+          <p className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer truncate block max-w-[200px] sm:max-w-[250px]">
             {server.maintainer_name}
           </p>
         )}

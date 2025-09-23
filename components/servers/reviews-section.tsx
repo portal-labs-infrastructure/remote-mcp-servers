@@ -46,28 +46,37 @@ export function ReviewsSection({
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Ratings & Reviews</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+          Ratings & Reviews
+        </h2>
         {showLeaveReviewButton && (
-          <Button onClick={() => setEditingReview({} as ReviewWithProfile)}>
+          <Button
+            onClick={() => setEditingReview({} as ReviewWithProfile)}
+            className="transition-all duration-200 hover:scale-105 hover:shadow-md">
             Leave a Review
           </Button>
         )}
       </div>
-      {/* Card bg is muted when the form is open: */}
-      <Card className={editingReview ? 'bg-muted' : 'bg-background'}>
-        <CardContent className="pt-6">
+
+      <Card
+        className={`shadow-lg transition-all duration-200 border-border/50 ${editingReview ? 'bg-muted/50 backdrop-blur-sm' : 'bg-card/80 backdrop-blur-sm'}`}>
+        <CardContent className="pt-8">
           <div className="flex flex-col gap-12">
             {initialReviews.length === 0 && !showForm && (
-              <div className="text-center py-12">
-                <MessageSquarePlus className="mx-auto h-12 w-12 text-muted-foreground" />
-                <h3 className="mt-4 text-lg font-semibold">No Reviews Yet</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
+              <div className="text-center py-16">
+                <div className="p-4 rounded-full bg-primary/10 w-fit mx-auto mb-4">
+                  <MessageSquarePlus className="h-12 w-12 text-primary" />
+                </div>
+                <h3 className="mt-4 text-xl font-bold text-foreground">
+                  No Reviews Yet
+                </h3>
+                <p className="mt-2 text-muted-foreground">
                   Be the first to share your experience.
                 </p>
                 {currentUserId && (
                   <Button
-                    className="mt-6"
+                    className="mt-8 transition-all duration-200 hover:scale-105 hover:shadow-md"
                     onClick={() => setEditingReview({} as ReviewWithProfile)}>
                     Leave the First Review
                   </Button>
@@ -76,44 +85,52 @@ export function ReviewsSection({
             )}
 
             {initialReviews.length > 0 && (
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {initialReviews.map((review) => (
-                  <div key={review.id} className="flex gap-4">
-                    <Avatar>
+                  <div
+                    key={review.id}
+                    className="flex gap-4 p-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
+                    <Avatar className="h-12 w-12 border-2 border-border/50">
                       <AvatarImage
                         src={review.profile.avatar_url ?? undefined}
                         alt={review.profile.username ?? 'User avatar'}
                       />
-                      <AvatarFallback>
+                      <AvatarFallback className="font-semibold bg-primary/10 text-primary">
                         {review.profile.username?.[0].toUpperCase() ?? 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold">
+                      <div className="flex items-center gap-3 mb-2">
+                        <p className="font-bold text-foreground">
                           {review.profile.username}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
                           {new Date(review.created_at).toLocaleDateString()}
                         </p>
                       </div>
-                      <p className="text-yellow-500">
-                        {'★'.repeat(review.rating)}
-                        {'☆'.repeat(5 - review.rating)}
-                      </p>
-                      <p className="mt-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="text-yellow-500 text-lg">
+                          {'★'.repeat(review.rating)}
+                          {'☆'.repeat(5 - review.rating)}
+                        </div>
+                        <span className="text-sm text-muted-foreground font-medium">
+                          {review.rating}/5
+                        </span>
+                      </div>
+                      <p className="text-foreground leading-relaxed">
                         {review.comment}
                       </p>
 
                       {review.profile.user_id === currentUserId &&
                         !editingReview && (
-                          <div className="flex items-start gap-1 mt-2">
+                          <div className="flex items-start gap-1 mt-4">
                             <Button
                               variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
+                              size="sm"
+                              className="h-8 transition-all duration-200 hover:scale-105"
                               onClick={() => handleEditClick(review)}>
-                              <Edit className="h-4 w-4" />
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit
                             </Button>
                             <DeleteReviewDialog
                               reviewId={review.id}
@@ -128,19 +145,22 @@ export function ReviewsSection({
             )}
 
             {showForm && (
-              <Card>
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-                    {userHasReviewed ? 'Edit Your Review' : 'Leave a Review'}
+                  <CardTitle className="flex items-center justify-between text-xl font-bold">
+                    <span>
+                      {userHasReviewed ? 'Edit Your Review' : 'Leave a Review'}
+                    </span>
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="sm"
+                      className="transition-all duration-200 hover:scale-105"
                       onClick={() => setEditingReview(null)}>
-                      <Edit className="h-4 w-4" />
+                      ✕
                     </Button>
                   </CardTitle>
                   <CardDescription>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground">
                       {userHasReviewed
                         ? 'Update your review details below.'
                         : 'Share your experience with this server.'}

@@ -13,18 +13,14 @@ interface ServerCardProps {
 
 export default function ServerCard({ server }: ServerCardProps) {
   return (
-    <Card className="shadow-sm h-full flex flex-col overflow-hidden">
-      {' '}
-      {/* sx.boxShadow, height, display, flexDirection */}
-      <CardContent className="flex-grow flex flex-col gap-4 p-4 md:p-5">
-        {' '}
-        {/* sx.flexGrow, display, flexDirection, gap, padding */}
+    <Card className="shadow-lg hover:shadow-xl h-full flex flex-col overflow-hidden transition-all duration-200 hover:scale-[1.02] border-border/50 bg-card/50 backdrop-blur-sm">
+      <CardContent className="flex-grow flex flex-col gap-5 p-5 md:p-6">
         <ServerCardHeader server={server} />
         <ServerCardBody server={server} />
         <ServerCardTags server={server} />
       </CardContent>
-      <Separator /> {/* Divider */}
-      <CardContent className="flex flex-col p-4 md:p-5 bg-muted/40">
+      <Separator className="bg-border/30" />
+      <CardContent className="flex flex-col p-5 md:p-6 bg-muted/20">
         <ServerCardActions server={server} />
       </CardContent>
     </Card>

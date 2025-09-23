@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   // == Favicon ==
   icons: {
     icon: [
-      { url: '/mcp.svg', type: 'image/svg+xml' }, // Matches your existing favicon
+      { url: '/icon.png', type: 'image/png' }, // Matches your existing favicon
       // { url: '/favicon.ico', type: 'image/x-icon', sizes: 'any' } // Example for .ico
     ],
     // apple: '/apple-touch-icon.png', // If you add an Apple touch icon

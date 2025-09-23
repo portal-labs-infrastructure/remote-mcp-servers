@@ -264,16 +264,21 @@ export default function ServerBrowser() {
     }, 0);
 
   return (
-    <div className="flex flex-col md:flex-row gap-4">
-      <div className="hidden md:block">
-        <ServerFilters
-          filters={currentFilters}
-          onFilterChange={handleFilterChange}
-          availableCategories={availableCategories} // Pass fetched/static categories
-          availableAuthTypes={availableAuthTypes} // Pass fetched/static auth types
-          onClearFilters={handleClearFilters}
-        />
+    <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+      {/* Desktop Filters Sidebar */}
+      <div className="hidden lg:block">
+        <div className="sticky top-6">
+          <ServerFilters
+            filters={currentFilters}
+            onFilterChange={handleFilterChange}
+            availableCategories={availableCategories}
+            availableAuthTypes={availableAuthTypes}
+            onClearFilters={handleClearFilters}
+          />
+        </div>
       </div>
+
+      {/* Mobile Filters */}
       <ServerFiltersMobile
         filters={currentFilters}
         onFilterChange={handleFilterChange}
@@ -283,16 +288,19 @@ export default function ServerBrowser() {
         activeFilterCount={activeFilterCount}
       />
 
-      <ServerResults
-        initialSearchTerm={currentFilters.q || ''}
-        onSearchSubmit={handleSearchSubmit}
-        servers={servers}
-        totalCount={totalCount}
-        loading={loading}
-        error={error}
-        currentPage={currentFilters.page || 1}
-        onPageChange={handlePageChange}
-      />
+      {/* Main Content Area */}
+      <div className="flex-1">
+        <ServerResults
+          initialSearchTerm={currentFilters.q || ''}
+          onSearchSubmit={handleSearchSubmit}
+          servers={servers}
+          totalCount={totalCount}
+          loading={loading}
+          error={error}
+          currentPage={currentFilters.page || 1}
+          onPageChange={handlePageChange}
+        />
+      </div>
     </div>
   );
 }

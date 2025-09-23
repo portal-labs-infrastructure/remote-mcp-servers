@@ -17,27 +17,41 @@ export const metadata: Metadata = {
 
 export default async function ServersPage() {
   return (
-    <div className="container mx-auto px-4 py-8 md:py-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center md:mb-12 mb-10">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70 mb-4 sm:mb-0">
-          Remote MCP Servers
-        </h1>
-        {/* You could add a "Submit Server" button here if desired */}
-        <Button variant="secondary" asChild>
-          <Link href="/servers/new">
-            <PlusCircle className="mr-2 h-5 w-5" /> Add New Server
-          </Link>
-        </Button>
-      </div>
-      <Suspense
-        fallback={
-          <div className="flex flex-col items-center justify-center text-center py-10">
-            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-muted-foreground">Loading...</p>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/3">
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center md:mb-16 mb-12">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary to-primary/70 mb-2">
+              Remote MCP Servers
+            </h1>
+            <p className="text-muted-foreground text-lg md:text-xl">
+              Discover and browse community-driven MCP servers
+            </p>
           </div>
-        }>
-        <ServerBrowser />
-      </Suspense>
+          <Button
+            variant="default"
+            asChild
+            className="mt-6 sm:mt-0 transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md">
+            <Link href="/servers/new">
+              <PlusCircle className="mr-2 h-5 w-5" />
+              Add New Server
+            </Link>
+          </Button>
+        </div>
+        <Suspense
+          fallback={
+            <div className="flex flex-col items-center justify-center text-center py-16">
+              <div className="p-4 rounded-full bg-primary/10 mb-4">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+              </div>
+              <p className="text-muted-foreground text-lg">
+                Loading servers...
+              </p>
+            </div>
+          }>
+          <ServerBrowser />
+        </Suspense>
+      </div>
     </div>
   );
 }
