@@ -21,61 +21,65 @@ export default function CodeExamples() {
           `,
         }}></div>
 
-      <div className="relative container mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
+      <div className="relative container mx-auto px-4 sm:px-6 max-w-full overflow-hidden">
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
             Quick Connect
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+          <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">
             Get started instantly with our API endpoints. Copy and run these
             examples to begin discovering MCP servers.
           </p>
         </div>
 
-        <div className="grid gap-6 lg:gap-8 max-w-5xl mx-auto">
-          <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
+        <div className="grid gap-4 sm:gap-6 lg:gap-8 max-w-5xl mx-auto w-full">
+          <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01] w-full min-w-0">
             <div className="mb-4">
-              <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
-                <div className="w-2 h-2 bg-primary rounded-full"></div>
-                List Servers (HTTP API)
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
+                <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                <span className="min-w-0">List Servers (HTTP API)</span>
               </h3>
               <p className="text-sm text-muted-foreground">
                 Fetch a list of available MCP servers with filtering and
                 pagination support
               </p>
             </div>
-            <CodeSnippet
-              codeString={exampleApiRequest}
-              title="API Request"
-              language="bash"
-            />
+            <div className="min-w-0">
+              <CodeSnippet
+                codeString={exampleApiRequest}
+                title="API Request"
+                language="bash"
+              />
+            </div>
           </div>
 
-          <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
+          <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01] w-full min-w-0">
             <div className="mb-4">
-              <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
-                <div className="w-2 h-2 bg-primary rounded-full"></div>
-                Connect to MCP Registry
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
+                <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                <span className="min-w-0">Connect to MCP Registry</span>
               </h3>
               <p className="text-sm text-muted-foreground">
                 Direct MCP protocol connection URL for seamless integration with
                 MCP clients
               </p>
             </div>
-            <CodeSnippet
-              codeString={mcpRegistryConnectionUrl}
-              title="MCP Connection URL"
-              language="plaintext"
-            />
+            <div className="min-w-0">
+              <CodeSnippet
+                codeString={mcpRegistryConnectionUrl}
+                title="MCP Connection URL"
+                language="plaintext"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-8 md:mt-12 text-center">
           <p className="text-sm text-muted-foreground mb-4">
             Need help getting started? Check out our documentation for more
             examples and integration guides.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
             <Link
               href="/servers"
               className="inline-flex items-center px-4 py-2 bg-card/80 hover:bg-card border border-border/50 text-foreground rounded-lg text-sm font-medium transition-colors duration-200">
