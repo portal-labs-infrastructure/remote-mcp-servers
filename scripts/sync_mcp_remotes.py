@@ -1,41 +1,86 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 import requests
-import json
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
 # --- Configuration ---
 load_dotenv()
 
-# Official MCP Registry API endpoint
+# --- API and Table Names ---
 OFFICIAL_REGISTRY_URL = "https://registry.modelcontextprotocol.io/v0/servers"
+SUPABASE_TABLE_NAME = "mcp_servers_v1"  # Your NEW spec-compliant table
+# Namespace for your custom fields inside the 'meta' column.
+# Using a reverse-domain format is a good practice.
+CUSTOM_META_NAMESPACE = "com.remote-mcp-servers.metadata"
 
-# Your Supabase table name
-SUPABASE_TABLE_NAME = (
-    "discoverable_mcp_servers"  # Change this if your table is named differently
-)
+
+# --- Supabase Client Initialization ---
+def init_supabase_client():
+    """Initializes and returns the Supabase client."""
+    supabase_url = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
+    supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    if not supabase_url or not supabase_key:
+        raise ValueError(
+            "Error: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in .env file."
+        )
+    return create_client(supabase_url, supabase_key)
+
 
 # --- Main Script Logic ---
 
 
-def fetch_all_official_servers():
+def get_last_sync_timestamp(supabase: Client) -> str | None:
     """
-    Fetches all servers from the official MCP registry, handling pagination.
+    Queries our database to find the most recent 'updated_at' timestamp.
+    This is the key to performing an incremental sync.
+    """
+    try:
+        response = (
+            supabase.table(SUPABASE_TABLE_NAME)
+            .select("updated_at")
+            .order("updated_at", desc=True)
+            .limit(1)
+            .execute()
+        )
+        if response.data:
+            last_updated_at = response.data[0]["updated_at"]
+            print(f"Last sync timestamp found in our DB: {last_updated_at}")
+            return last_updated_at
+        else:
+            print("No existing data found. Will perform a full sync.")
+            return None
+    except Exception as e:
+        print(f"Error fetching last sync timestamp: {e}. Proceeding with a full sync.")
+        return None
+
+
+def fetch_updated_servers(last_sync_timestamp: str | None):
+    """
+    Fetches servers from the official registry that have been updated since our last sync.
+    Uses 'version=latest' to avoid manual de-duplication.
     """
     servers = []
     next_cursor = None
 
-    print("Starting fetch from official MCP registry...")
+    params = {"version": "latest"}
+    if last_sync_timestamp:
+        params["updated_since"] = last_sync_timestamp
+
+    print(f"Starting fetch from official registry with params: {params}")
 
     while True:
-        url = OFFICIAL_REGISTRY_URL
-        if next_cursor:
-            url += f"?cursor={next_cursor}"
-
         try:
-            response = requests.get(url, headers={"Accept": "application/json"})
-            response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+            paginated_params = params.copy()
+            if next_cursor:
+                paginated_params["cursor"] = next_cursor
+
+            response = requests.get(
+                OFFICIAL_REGISTRY_URL,
+                params=paginated_params,
+                headers={"Accept": "application/json"},
+            )
+            response.raise_for_status()
             data = response.json()
 
             new_servers = data.get("servers", [])
@@ -44,175 +89,133 @@ def fetch_all_official_servers():
 
             next_cursor = data.get("metadata", {}).get("next_cursor")
             if not next_cursor:
-                break  # No more pages
+                break
 
         except requests.exceptions.RequestException as e:
             print(f"Error fetching data from registry: {e}")
             return None
 
-    print(f"Finished fetching. Total official servers found: {len(servers)}")
+    print(f"Finished fetching. Total new/updated servers found: {len(servers)}")
     return servers
 
 
-def transform_server_data(official_server):
+def transform_server_data(official_server: dict):
     """
-    Transforms a single server object from the official schema to our Supabase schema.
-    Returns None if it's not a remote server.
+    Transforms a single server object from the official schema to our new
+    spec-compliant Supabase schema.
     """
-    remotes = official_server.get("remotes")
-    if not remotes or not isinstance(remotes, list) or len(remotes) == 0:
+    # The official metadata block is the source of truth for IDs and timestamps
+    official_meta = official_server.get("_meta", {}).get(
+        "io.modelcontextprotocol.registry/official", {}
+    )
+    server_id = official_meta.get("serverId")
+
+    if not server_id:
+        print(
+            f"Skipping server with no serverId in _meta: {official_server.get('name')}"
+        )
         return None
 
-    full_namespace = official_server.get("name")
-    if not full_namespace:
-        return None  # Skip if the server has no name
-
-    primary_remote = remotes[0]
-
-    # --- Parse provider and server name from the namespace ---
-    provider_name = None
-    server_name_part = full_namespace
-
-    if "/" in full_namespace:
-        parts = full_namespace.split("/", 1)
-        provider_name = parts[0]
-        server_name_part = parts[1]
-
-    # Create a more human-friendly name for display
+    # --- Create the custom metadata block for our app-specific fields ---
+    # This is where all your old custom columns now live.
+    full_namespace = official_server.get("name", "")
+    server_name_part = full_namespace.split("/", 1)[-1]
     human_friendly_name = server_name_part.replace("-", " ").replace("_", " ").title()
 
-    # --- NEW: Format the maintainer name from reverse domain to normal domain ---
-    formatted_maintainer = provider_name
-    if provider_name and "." in provider_name:
-        domain_parts = provider_name.split(".")
-        domain_parts.reverse()
-        formatted_maintainer = ".".join(domain_parts)
-
-    # --- Field Mapping ---
-    transformed = {
-        "official_id": full_namespace,
-        "name": human_friendly_name,
-        "description": official_server.get("description"),
-        "mcp_url": primary_remote.get("url"),
-        "is_official": True,
-        "status": "approved",
-        "documentation_url": official_server.get("website_url"),
-        "maintainer_name": formatted_maintainer,  # Use the newly formatted name
-        "maintainer_url": official_server.get("repository", {}).get("url"),
+    custom_meta_block = {
+        "human_friendly_name": human_friendly_name,
         "icon_url": f"https://remote-mcp-servers.com/logos/{full_namespace.replace('/', '-')}.png",
-        "category": "Uncategorized",
+        "is_official": True,
+        "category": "Uncategorized",  # You can add more advanced logic here later
         "authentication_type": "Unknown",
         "dynamic_client_registration": False,
         "ai_summary": None,
+    }
+
+    # --- Combine official meta with our custom meta ---
+    # Start with the full meta object from the source
+    final_meta = official_server.get("_meta", {})
+    # Add our custom data under its own safe namespace
+    final_meta[CUSTOM_META_NAMESPACE] = custom_meta_block
+
+    # --- Map to the new table schema ---
+    transformed = {
+        "id": server_id,
+        "name": official_server.get("name"),
+        "description": official_server.get("description"),
+        "status": official_server.get("status", "active"),
+        "latest_version": official_server.get("version"),
+        "website_url": official_server.get("websiteUrl"),
+        "repository": official_server.get("repository"),
+        "packages": official_server.get("packages"),
+        "remotes": official_server.get("remotes"),
+        "meta": final_meta,
+        "published_at": official_meta.get("publishedAt"),
+        "updated_at": official_meta.get("updatedAt"),
     }
     return transformed
 
 
 def main():
-    """
-    Main function to run the sync process.
-    """
-    # 1. Initialize Supabase client
-    supabase_url = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
-    supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-    if not supabase_url or not supabase_key:
-        print("Error: SUPABASE_URL and SUPABASE_KEY must be set in .env file.")
-        return
-
-    supabase: Client = create_client(supabase_url, supabase_key)
-    print("Supabase client initialized.")
-
-    # 2. Fetch all servers from the official registry
-    official_servers = fetch_all_official_servers()
-    if official_servers is None:
-        print("Aborting due to fetch error.")
-        return
-
-    # 3. De-duplicate the server list, keeping the best version
-    print(f"De-duplicating {len(official_servers)} fetched servers...")
-    unique_servers = {}
-    for server in official_servers:
-        name = server.get("name")
-        if not name:
-            continue  # Skip servers without a name
-
-        # Helper to safely get nested metadata
-        def get_meta(s):
-            return s.get("_meta", {}).get(
-                "io.modelcontextprotocol.registry/official", {}
-            )
-
-        current_meta = get_meta(server)
-
-        if name not in unique_servers:
-            unique_servers[name] = server
-        else:
-            # We have a duplicate, decide which one to keep
-            existing_server = unique_servers[name]
-            existing_meta = get_meta(existing_server)
-
-            # Prioritize the one marked as 'is_latest'
-            if current_meta.get("is_latest") and not existing_meta.get("is_latest"):
-                unique_servers[name] = server  # Current one is better
-                continue
-            elif not current_meta.get("is_latest") and existing_meta.get("is_latest"):
-                continue  # Existing one is better, do nothing
-
-            # If 'is_latest' is the same (or missing), compare by 'updated_at'
-            try:
-                current_date = datetime.fromisoformat(
-                    current_meta.get("updated_at", "").replace("Z", "+00:00")
-                )
-                existing_date = datetime.fromisoformat(
-                    existing_meta.get("updated_at", "").replace("Z", "+00:00")
-                )
-                if current_date > existing_date:
-                    unique_servers[name] = server  # Current one is newer
-            except (ValueError, TypeError):
-                # If dates are invalid or missing, just keep the first one we saw
-                continue
-
-    deduplicated_list = list(unique_servers.values())
-    print(f"De-duplication complete. Found {len(deduplicated_list)} unique servers.")
-
-    # 4. Filter for remote servers and transform data
-    transformed_servers = []
-    for server in deduplicated_list:
-        transformed = transform_server_data(server)
-        if transformed:
-            transformed_servers.append(transformed)
-
-    print(f"Found {len(transformed_servers)} remote servers to sync.")
-
-    if not transformed_servers:
-        print("No remote servers found to sync. Exiting.")
-        return
-
-    # 5. Upsert data into your Supabase table
-    # NOTE: I changed your table name here to match the previous error log
-    SUPABASE_TABLE_NAME = "discoverable_mcp_servers"
-    print(
-        f"Upserting {len(transformed_servers)} servers into '{SUPABASE_TABLE_NAME}' table..."
-    )
+    """Main function to run the sync process."""
     try:
-        # And REPLACE it with this:
+        supabase = init_supabase_client()
+        print("Supabase client initialized.")
+
+        # 1. Get the last sync time to fetch only new updates
+        last_sync = get_last_sync_timestamp(supabase)
+
+        # 2. Fetch new/updated servers from the official registry
+        servers_to_sync = fetch_updated_servers(last_sync)
+        if servers_to_sync is None:
+            print("Aborting due to fetch error.")
+            return
+        if not servers_to_sync:
+            print("No new server updates found. Sync complete.")
+            return
+
+        # 3. Transform data to our new schema
+        transformed_servers = []
+        for server in servers_to_sync:
+            transformed = transform_server_data(server)
+            if transformed:
+                transformed_servers.append(transformed)
+
+        if not transformed_servers:
+            print("No valid servers to sync after transformation. Exiting.")
+            return
+
+        # 4. Upsert data into our new Supabase table
+        print(
+            f"Upserting {len(transformed_servers)} servers into '{SUPABASE_TABLE_NAME}' table..."
+        )
+
         response = (
             supabase.table(SUPABASE_TABLE_NAME)
             .upsert(
-                transformed_servers,
-                on_conflict="official_id",  # <-- Use the new unique ID column
-            )
+                transformed_servers, on_conflict="id"
+            )  # The primary key is now 'id'
             .execute()
         )
 
-        if response.data:
-            print("Sync complete!")
+        # Supabase-py v1 returns data in a list, v2 returns an object with a data attribute
+        data = getattr(response, "data", response)
+
+        if data:
+            print(f"Sync complete! {len(data)} rows were upserted.")
         else:
-            print("Sync might have had issues. Check your Supabase logs.")
-            print("Response:", response)
+            # Check for errors if they exist on the response object
+            error = getattr(response, "error", None)
+            if error:
+                print(f"Sync failed with error: {error}")
+            else:
+                print(
+                    "Sync completed, but the response contained no data. This might be normal or indicate an issue."
+                )
+            print("Full Response:", response)
 
     except Exception as e:
-        print(f"An error occurred during Supabase upsert: {e}")
+        print(f"An unexpected error occurred during the sync process: {e}")
 
 
 if __name__ == "__main__":

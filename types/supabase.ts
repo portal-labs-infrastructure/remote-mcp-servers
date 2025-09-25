@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -117,9 +117,9 @@ export type Database = {
       discoverable_mcp_servers: {
         Row: {
           ai_summary: string | null
-          authentication_type: string
+          authentication_type: string | null
           average_rating: number | null
-          category: string
+          category: string | null
           created_at: string | null
           description: string
           documentation_url: string | null
@@ -127,19 +127,20 @@ export type Database = {
           icon_url: string | null
           id: string
           is_official: boolean | null
-          maintainer_name: string
-          maintainer_url: string
+          maintainer_name: string | null
+          maintainer_url: string | null
           mcp_url: string
           name: string
+          official_id: string | null
           status: string
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
           ai_summary?: string | null
-          authentication_type: string
+          authentication_type?: string | null
           average_rating?: number | null
-          category: string
+          category?: string | null
           created_at?: string | null
           description: string
           documentation_url?: string | null
@@ -147,19 +148,20 @@ export type Database = {
           icon_url?: string | null
           id?: string
           is_official?: boolean | null
-          maintainer_name: string
-          maintainer_url: string
+          maintainer_name?: string | null
+          maintainer_url?: string | null
           mcp_url: string
           name: string
+          official_id?: string | null
           status?: string
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
           ai_summary?: string | null
-          authentication_type?: string
+          authentication_type?: string | null
           average_rating?: number | null
-          category?: string
+          category?: string | null
           created_at?: string | null
           description?: string
           documentation_url?: string | null
@@ -167,10 +169,11 @@ export type Database = {
           icon_url?: string | null
           id?: string
           is_official?: boolean | null
-          maintainer_name?: string
-          maintainer_url?: string
+          maintainer_name?: string | null
+          maintainer_url?: string | null
           mcp_url?: string
           name?: string
+          official_id?: string | null
           status?: string
           updated_at?: string | null
           user_id?: string | null
@@ -184,6 +187,54 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      mcp_servers_v1: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          latest_version: string
+          meta: Json | null
+          name: string
+          packages: Json | null
+          published_at: string
+          remotes: Json | null
+          repository: Json | null
+          status: string
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id: string
+          latest_version: string
+          meta?: Json | null
+          name: string
+          packages?: Json | null
+          published_at: string
+          remotes?: Json | null
+          repository?: Json | null
+          status?: string
+          updated_at: string
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          latest_version?: string
+          meta?: Json | null
+          name?: string
+          packages?: Json | null
+          published_at?: string
+          remotes?: Json | null
+          repository?: Json | null
+          status?: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -271,7 +322,7 @@ export type Database = {
     }
     Functions: {
       append_to_log: {
-        Args: { run_id_param: string; log_entry: Json }
+        Args: { log_entry: Json; run_id_param: string }
         Returns: undefined
       }
       cleanup_zombie_sessions: {
@@ -295,10 +346,10 @@ export type Database = {
           client_id: string
           client_name: string
           client_version: string
-          highest_score: number
           fastest_time_ms: number
-          total_runs: number
+          highest_score: number
           last_run_at: string
+          total_runs: number
         }[]
       }
     }

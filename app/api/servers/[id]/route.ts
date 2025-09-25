@@ -16,7 +16,7 @@ export async function GET(
   try {
     // Await the params since it's a Promise in newer Next.js versions
     const resolvedParams = await params;
-    
+
     // Validate the ID parameter
     const validatedParams = paramsSchema.safeParse(resolvedParams);
 
