@@ -7,6 +7,7 @@ import { ITEMS_PER_PAGE, ServerFilterParams } from './types';
 import ServerFilters from './server-filters';
 import ServerResults from './server-results';
 import ServerFiltersMobile from './server-filters-mobile';
+import { safeParseJson } from '@/lib/types';
 
 export default function ServerBrowser() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function ServerBrowser() {
   const searchParams = useSearchParams();
   const supabase = createClient();
 
-  const [servers, setServers] = useState<DiscoverableMcpServer[]>([]);
+  const [servers, setServers] = useState<SpecServerObject[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,9 +39,9 @@ export default function ServerBrowser() {
   useEffect(() => {
     const fetchFilterOptions = async () => {
       // Fetch unique categories
-      const { data: catData, error: catError } = await supabase
-        .from('unique_categories')
-        .select('*');
+      const { data: catData, error: catError } = await supabase.rpc(
+        'get_unique_meta_categories',
+      );
 
       if (catError) {
         console.error('Error fetching categories:', catError);
@@ -54,9 +55,9 @@ export default function ServerBrowser() {
       }
 
       // Fetch unique authentication types
-      const { data: authData, error: authError } = await supabase
-        .from('unique_authentication_types')
-        .select('*');
+      const { data: authData, error: authError } = await supabase.rpc(
+        'get_unique_meta_auth_types',
+      );
 
       if (authError) {
         console.error('Error fetching auth types:', authError);
@@ -82,14 +83,18 @@ export default function ServerBrowser() {
       const page = currentFilters.page || 1;
       const offset = (page - 1) * ITEMS_PER_PAGE;
 
-      // Your updated buildBaseQuery function
-      const buildBaseQuery = (
-        selectConfig?: { count?: 'exact'; head?: boolean }, // More specific type for selectConfig
-      ) => {
+      // The namespace for our custom data inside the meta column
+      const metaNamespace = 'com.remote-mcp-servers.metadata';
+
+      const buildBaseQuery = (selectConfig?: {
+        count?: 'exact';
+        head?: boolean;
+      }) => {
         let qb = supabase
-          .from('discoverable_mcp_servers')
+          .from('mcp_servers_v1')
           .select('*', selectConfig)
-          .eq('status', 'approved');
+          // FIXED: The status in the new table is 'active', not 'approved'
+          .eq('status', 'active');
 
         if (currentFilters.q?.trim()) {
           qb = qb.or(
@@ -97,19 +102,28 @@ export default function ServerBrowser() {
           );
         }
         if (currentFilters.categories && currentFilters.categories.length > 0) {
-          qb = qb.in('category', currentFilters.categories);
+          qb = qb.in(
+            `meta->${metaNamespace}->>category`,
+            currentFilters.categories,
+          );
         }
         if (currentFilters.authTypes && currentFilters.authTypes.length > 0) {
-          qb = qb.in('authentication_type', currentFilters.authTypes);
+          qb = qb.in(
+            `meta->${metaNamespace}->>authentication_type`,
+            currentFilters.authTypes,
+          );
         }
         if (currentFilters.dynamicClientRegistration !== undefined) {
           qb = qb.eq(
-            'dynamic_client_registration',
-            currentFilters.dynamicClientRegistration,
+            `meta->${metaNamespace}->>dynamic_client_registration`,
+            String(currentFilters.dynamicClientRegistration),
           );
         }
         if (currentFilters.isOfficial !== undefined) {
-          qb = qb.eq('is_official', currentFilters.isOfficial);
+          qb = qb.eq(
+            `meta->${metaNamespace}->>is_official`,
+            String(currentFilters.isOfficial),
+          );
         }
         return qb;
       };
@@ -126,25 +140,29 @@ export default function ServerBrowser() {
         }
         setTotalCount(count || 0);
 
-        let fetchedServers: DiscoverableMcpServer[] = [];
+        let fetchedServers: McpServer[] = [];
         if (count && count > 0) {
-          // 2. Fetch actual data for the current page
-          // Pass '*' for select, then chain .order() and .range()
-          const dataQueryBuilder = buildBaseQuery(); // This now returns a query builder already including .select('*')
-
+          const dataQueryBuilder = buildBaseQuery();
+          // CHANGED: Order by 'updated_at' for recency
           const { data, error: dbError } = await dataQueryBuilder
-            .order('created_at', { ascending: false })
+            .order('updated_at', { ascending: false })
             .range(offset, offset + ITEMS_PER_PAGE - 1);
 
-          if (dbError) {
-            console.error('Supabase DB Data Error:', dbError);
+          if (dbError)
             throw new Error(`Database data error: ${dbError.message}`);
-          }
-
           fetchedServers = data || [];
         }
 
-        setServers(fetchedServers);
+        const processedServers: SpecServerObject[] = fetchedServers.map(
+          (server) => ({
+            ...server,
+            repository: safeParseJson<Repository>(server.repository),
+            remotes: safeParseJson<Remote[]>(server.remotes),
+            meta: safeParseJson<Meta>(server.meta),
+            packages: null, // Assuming packages are not used in this context
+          }),
+        );
+        setServers(processedServers);
       } catch (err) {
         console.error('Unexpected error fetching discoverable servers:', err);
         const message =

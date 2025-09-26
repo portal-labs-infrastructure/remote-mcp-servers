@@ -10,11 +10,11 @@ import { createClient } from '@/lib/supabase/server';
 // import { cookies } from 'next/headers';
 
 // Helper function to fetch featured servers (can be in this file or a lib file)
-async function getFeaturedServers(): Promise<DiscoverableMcpServer[]> {
+async function getFeaturedServers(): Promise<SpecServerObject[]> {
   const supabase = await createClient(); // Use your server-side Supabase client
   try {
     const { data, error } = await supabase
-      .from('discoverable_mcp_servers') // Your actual table name
+      .from('mcp_servers_v1') // Your actual table name
       .select('*') // Select all columns, or specify needed ones for ServerCard
       .eq('status', 'approved') // Filter for approved servers
       .order('created_at', { ascending: false }) // Order by most recently created
@@ -24,7 +24,7 @@ async function getFeaturedServers(): Promise<DiscoverableMcpServer[]> {
       console.error('Error fetching featured servers:', error.message);
       return []; // Return empty array on error
     }
-    return data || [];
+    return (data || []) as SpecServerObject[];
   } catch (err) {
     console.error('Unexpected error in getFeaturedServers:', err);
     return [];

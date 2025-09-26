@@ -9,9 +9,8 @@ load_dotenv()
 
 # --- API and Table Names ---
 OFFICIAL_REGISTRY_URL = "https://registry.modelcontextprotocol.io/v0/servers"
-SUPABASE_TABLE_NAME = "mcp_servers_v1"  # Your NEW spec-compliant table
-# Namespace for your custom fields inside the 'meta' column.
-# Using a reverse-domain format is a good practice.
+SUPABASE_TABLE_NAME = "mcp_servers_v1"
+# This is correct for your registry's domain.
 CUSTOM_META_NAMESPACE = "com.remote-mcp-servers.metadata"
 
 
@@ -31,10 +30,7 @@ def init_supabase_client():
 
 
 def get_last_sync_timestamp(supabase: Client) -> str | None:
-    """
-    Queries our database to find the most recent 'updated_at' timestamp.
-    This is the key to performing an incremental sync.
-    """
+    """Queries our database to find the most recent 'updated_at' timestamp."""
     try:
         response = (
             supabase.table(SUPABASE_TABLE_NAME)
@@ -56,25 +52,19 @@ def get_last_sync_timestamp(supabase: Client) -> str | None:
 
 
 def fetch_updated_servers(last_sync_timestamp: str | None):
-    """
-    Fetches servers from the official registry that have been updated since our last sync.
-    Uses 'version=latest' to avoid manual de-duplication.
-    """
+    """Fetches all updated servers from the official registry."""
     servers = []
     next_cursor = None
-
     params = {"version": "latest"}
     if last_sync_timestamp:
         params["updated_since"] = last_sync_timestamp
 
     print(f"Starting fetch from official registry with params: {params}")
-
     while True:
         try:
             paginated_params = params.copy()
             if next_cursor:
                 paginated_params["cursor"] = next_cursor
-
             response = requests.get(
                 OFFICIAL_REGISTRY_URL,
                 params=paginated_params,
@@ -82,42 +72,44 @@ def fetch_updated_servers(last_sync_timestamp: str | None):
             )
             response.raise_for_status()
             data = response.json()
-
             new_servers = data.get("servers", [])
             servers.extend(new_servers)
             print(f"Fetched {len(new_servers)} servers. Total so far: {len(servers)}")
-
             next_cursor = data.get("metadata", {}).get("next_cursor")
             if not next_cursor:
                 break
-
         except requests.exceptions.RequestException as e:
             print(f"Error fetching data from registry: {e}")
             return None
-
     print(f"Finished fetching. Total new/updated servers found: {len(servers)}")
     return servers
 
 
-def transform_server_data(official_server: dict):
+def transform_and_filter_server(official_server: dict):
     """
-    Transforms a single server object from the official schema to our new
-    spec-compliant Supabase schema.
+    Transforms a server object and filters out any that are not remote servers.
+    Returns the transformed object or None if it should be skipped.
     """
-    # The official metadata block is the source of truth for IDs and timestamps
+    # --- ADDED: Filter for remote servers ---
+    # A server is only a "remote server" if it has a non-empty 'remotes' array.
+    remotes = official_server.get("remotes")
+    if not remotes or not isinstance(remotes, list) or len(remotes) == 0:
+        print(
+            f"  -> Skipping package-based server (no remotes): {official_server.get('name')}"
+        )
+        return None
+    # --- END of filter logic ---
+
     official_meta = official_server.get("_meta", {}).get(
         "io.modelcontextprotocol.registry/official", {}
     )
     server_id = official_meta.get("serverId")
-
     if not server_id:
         print(
-            f"Skipping server with no serverId in _meta: {official_server.get('name')}"
+            f"  -> Skipping server with no serverId in _meta: {official_server.get('name')}"
         )
         return None
 
-    # --- Create the custom metadata block for our app-specific fields ---
-    # This is where all your old custom columns now live.
     full_namespace = official_server.get("name", "")
     server_name_part = full_namespace.split("/", 1)[-1]
     human_friendly_name = server_name_part.replace("-", " ").replace("_", " ").title()
@@ -126,34 +118,38 @@ def transform_server_data(official_server: dict):
         "human_friendly_name": human_friendly_name,
         "icon_url": f"https://remote-mcp-servers.com/logos/{full_namespace.replace('/', '-')}.png",
         "is_official": True,
-        "category": "Uncategorized",  # You can add more advanced logic here later
+        "category": "Uncategorized",
         "authentication_type": "Unknown",
         "dynamic_client_registration": False,
         "ai_summary": None,
     }
 
-    # --- Combine official meta with our custom meta ---
-    # Start with the full meta object from the source
     final_meta = official_server.get("_meta", {})
-    # Add our custom data under its own safe namespace
     final_meta[CUSTOM_META_NAMESPACE] = custom_meta_block
 
-    # --- Map to the new table schema ---
-    transformed = {
+    # Sanitize status to prevent database constraint errors
+    allowed_statuses = {"active", "deprecated"}
+    raw_status = official_server.get("status")
+    status = raw_status if raw_status in allowed_statuses else "active"
+    if raw_status and raw_status not in allowed_statuses:
+        print(
+            f"  -> Warning: Server '{full_namespace}' has unsupported status '{raw_status}'. Defaulting to 'active'."
+        )
+
+    return {
         "id": server_id,
-        "name": official_server.get("name"),
+        "name": full_namespace,
         "description": official_server.get("description"),
-        "status": official_server.get("status", "active"),
+        "status": status,
         "latest_version": official_server.get("version"),
         "website_url": official_server.get("websiteUrl"),
         "repository": official_server.get("repository"),
         "packages": official_server.get("packages"),
-        "remotes": official_server.get("remotes"),
+        "remotes": remotes,
         "meta": final_meta,
         "published_at": official_meta.get("publishedAt"),
         "updated_at": official_meta.get("updatedAt"),
     }
-    return transformed
 
 
 def main():
@@ -162,56 +158,48 @@ def main():
         supabase = init_supabase_client()
         print("Supabase client initialized.")
 
-        # 1. Get the last sync time to fetch only new updates
         last_sync = get_last_sync_timestamp(supabase)
+        servers_to_process = fetch_updated_servers(last_sync)
 
-        # 2. Fetch new/updated servers from the official registry
-        servers_to_sync = fetch_updated_servers(last_sync)
-        if servers_to_sync is None:
+        if servers_to_process is None:
             print("Aborting due to fetch error.")
             return
-        if not servers_to_sync:
+        if not servers_to_process:
             print("No new server updates found. Sync complete.")
             return
 
-        # 3. Transform data to our new schema
+        print(
+            f"\nFiltering {len(servers_to_process)} servers for remote connections..."
+        )
         transformed_servers = []
-        for server in servers_to_sync:
-            transformed = transform_server_data(server)
+        for server in servers_to_process:
+            transformed = transform_and_filter_server(server)
             if transformed:
                 transformed_servers.append(transformed)
 
+        print(f"\nFound {len(transformed_servers)} remote servers to sync.")
         if not transformed_servers:
-            print("No valid servers to sync after transformation. Exiting.")
+            print("No new remote servers to sync. Exiting.")
             return
 
-        # 4. Upsert data into our new Supabase table
         print(
             f"Upserting {len(transformed_servers)} servers into '{SUPABASE_TABLE_NAME}' table..."
         )
-
         response = (
             supabase.table(SUPABASE_TABLE_NAME)
-            .upsert(
-                transformed_servers, on_conflict="id"
-            )  # The primary key is now 'id'
+            .upsert(transformed_servers, on_conflict="id")
             .execute()
         )
 
-        # Supabase-py v1 returns data in a list, v2 returns an object with a data attribute
         data = getattr(response, "data", response)
-
         if data:
             print(f"Sync complete! {len(data)} rows were upserted.")
         else:
-            # Check for errors if they exist on the response object
             error = getattr(response, "error", None)
             if error:
                 print(f"Sync failed with error: {error}")
             else:
-                print(
-                    "Sync completed, but the response contained no data. This might be normal or indicate an issue."
-                )
+                print("Sync completed, but the response contained no data.")
             print("Full Response:", response)
 
     except Exception as e:

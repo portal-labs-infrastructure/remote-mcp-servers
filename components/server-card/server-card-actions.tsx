@@ -1,28 +1,33 @@
-'use client'; // This component uses client-side hooks and interactions
+'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button'; // Shadcn Button
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { FileText, Copy, CheckCircle2 } from 'lucide-react'; // Lucide icons
+import { FileText, Copy, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
+// CHANGED: The component now accepts the full server object to access 'id' and 'remotes'.
 interface ServerCardActionsProps {
-  server: Pick<DiscoverableMcpServer, 'id' | 'documentation_url' | 'mcp_url'>;
+  server: SpecServerObject;
 }
 
 export default function ServerCardActions({ server }: ServerCardActionsProps) {
   const [copied, setCopied] = useState(false);
 
+  // --- Data Extraction ---
+  // Safely get the primary connection URL from the 'remotes' array.
+  // Optional chaining (?.) prevents errors if 'remotes' is null or empty.
+  const mcpUrl = server.remotes?.[0]?.url;
+
   const handleCopyMcpUrl = () => {
-    if (server.mcp_url) {
+    // CHANGED: Check the extracted 'mcpUrl' variable.
+    if (mcpUrl) {
       navigator.clipboard
-        .writeText(server.mcp_url)
+        .writeText(mcpUrl) // Use the extracted URL
         .then(() => {
           setCopied(true);
           toast('Copied to clipboard!', {
-            // title: 'Copied to clipboard!',
             description: 'MCP URL has been copied.',
-            // variant: 'default', // Or 'success' if you have a custom variant
             duration: 2000,
           });
           setTimeout(() => setCopied(false), 2000);
@@ -30,9 +35,7 @@ export default function ServerCardActions({ server }: ServerCardActionsProps) {
         .catch((err) => {
           console.error('Failed to copy MCP URL: ', err);
           toast('Copy Failed', {
-            // title: 'Copy Failed',
             description: 'Could not copy MCP URL to clipboard.',
-            // variant: 'destructive',
             duration: 3000,
           });
         });
@@ -44,7 +47,8 @@ export default function ServerCardActions({ server }: ServerCardActionsProps) {
       <Button
         variant="outline"
         onClick={handleCopyMcpUrl}
-        disabled={!server.mcp_url}
+        // CHANGED: The button is disabled if there's no mcpUrl.
+        disabled={!mcpUrl}
         className="transition-all duration-200 hover:scale-105 hover:shadow-md border-border/50 hover:border-primary/30">
         {copied ? (
           <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" />
@@ -55,8 +59,9 @@ export default function ServerCardActions({ server }: ServerCardActionsProps) {
       </Button>
       <Button
         className="flex-1 transition-all duration-200 hover:scale-105 hover:shadow-md"
-        variant="default"
+        variant="outline"
         asChild>
+        {/* This link is already correct as 'id' is a top-level property. */}
         <Link href={`/servers/${server.id}`}>
           <FileText className="mr-2 h-4 w-4" />
           Details

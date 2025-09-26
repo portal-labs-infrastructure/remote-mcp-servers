@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
 interface FeaturedServersProps {
-  servers: DiscoverableMcpServer[];
+  servers: SpecServerObject[];
 }
 
 export default function FeaturedServers({ servers }: FeaturedServersProps) {

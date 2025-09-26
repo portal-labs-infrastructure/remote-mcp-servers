@@ -1,9 +1,10 @@
+import { processRawServerData } from '@/lib/types';
 import ServerCard from './server-card';
 import { createClient } from '@/lib/supabase/server';
 
 // Helper function to fetch and validate servers
 async function getDiscoverableServersFromSupabase(): Promise<{
-  servers: DiscoverableMcpServer[] | null;
+  servers: SpecServerObject[] | null;
   error: string | null;
 }> {
   const supabase = await createClient();
@@ -11,7 +12,7 @@ async function getDiscoverableServersFromSupabase(): Promise<{
   try {
     // Replace 'discoverable_mcp_servers' with your actual table name
     const { data, error: dbError } = await supabase
-      .from('discoverable_mcp_servers')
+      .from('mcp_servers_v1')
       .select(`*`) // Fetch all columns
       .eq('status', 'approved') // Filter for approved servers
       .order('name', { ascending: true }); // Optional: order by name
@@ -25,8 +26,11 @@ async function getDiscoverableServersFromSupabase(): Promise<{
       // Query successful but no data returned (e.g., table is empty)
       return { servers: [], error: null };
     }
+    const processedServers = data
+      .map(processRawServerData)
+      .filter((s): s is SpecServerObject => s !== null);
 
-    return { servers: data, error: null };
+    return { servers: processedServers, error: null };
   } catch (err) {
     console.error('Unexpected error fetching discoverable servers:', err);
     const message =

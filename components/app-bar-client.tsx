@@ -97,7 +97,7 @@ export default function AppBarClient({
     'flex items-center gap-3 py-3 text-base text-muted-foreground font-medium transition-colors hover:text-primary';
 
   return (
-    <nav className="sticky top-0 z-50 w-full flex justify-center border-b border-b-foreground/10 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full flex justify-center border-b border-b-foreground/10 h-24 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="w-full max-w-7xl flex justify-between items-center p-3 px-4 md:px-6 text-sm">
         <div className="flex items-center gap-x-4 md:gap-x-6">
           <Logo />

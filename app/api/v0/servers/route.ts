@@ -69,7 +69,9 @@ export async function GET(request: NextRequest) {
         );
       } catch (e) {
         return NextResponse.json(
-          { error: 'Invalid or malformed cursor' },
+          {
+            error: `Invalid or malformed cursor: ${e instanceof Error ? e.message : String(e)}`,
+          },
           { status: 400 },
         );
       }
@@ -92,7 +94,6 @@ export async function GET(request: NextRequest) {
       // We fetched one extra item, so we know there's a next page.
       // The last item is the cursor for the next page.
       const cursorItem = servers[limit - 1]; // The last item to be displayed
-      const nextCursorItem = servers[limit]; // The item that proves there's a next page
 
       // Create the cursor from the last item that will be displayed on the *current* page
       const cursorData = `${cursorItem.updated_at}_${cursorItem.id}`;

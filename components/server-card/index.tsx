@@ -8,7 +8,7 @@ import ServerCardActions from './server-card-actions';
 import ServerCardTags from './server-card-tags';
 
 interface ServerCardProps {
-  server: DiscoverableMcpServer;
+  server: SpecServerObject;
 }
 
 export default function ServerCard({ server }: ServerCardProps) {

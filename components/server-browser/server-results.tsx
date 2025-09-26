@@ -13,7 +13,7 @@ import { Skeleton } from '../ui/skeleton';
 interface ServerResultsProps {
   initialSearchTerm: string;
   onSearchSubmit: (searchTerm: string) => void;
-  servers: DiscoverableMcpServer[];
+  servers: SpecServerObject[];
   totalCount: number;
   loading: boolean;
   error: string | null;

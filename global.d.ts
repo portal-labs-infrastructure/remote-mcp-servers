@@ -14,4 +14,25 @@ declare global {
   };
 
   type BenchmarkRun = Tables<'benchmark_runs'>;
+
+  type McpServer = Tables<'mcp_servers_v1'>;
+
+  type Meta = {
+    'com.remote-mcp-servers.metadata': { [key: string]: any };
+  };
+
+  type SpecServerObject = Tables<'mcp_servers_v1'> & {
+    repository: Repository | null;
+    packages: null;
+    remotes: Remote[] | null;
+    meta: Meta | null;
+  };
+
+  type Repository = { url?: string; [key: string]: any };
+
+  type Remote = {
+    name: string;
+    url: string;
+    [key: string]: any;
+  };
 }

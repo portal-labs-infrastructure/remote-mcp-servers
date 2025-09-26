@@ -10,140 +10,195 @@ import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { safeParseJson } from '@/lib/types';
 
 type Props = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>; // Params are not a promise here
 };
 
+// --- METADATA GENERATION ---
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const supabase = await createClient();
+
+  // CHANGED: Query the new table
   const { data: server } = await supabase
-    .from('discoverable_mcp_servers')
+    .from('mcp_servers_v1')
     .select('id, name, description')
     .eq('id', id)
     .single();
 
   if (!server) {
-    return {
-      title: 'Server Not Found',
-    };
+    return { title: 'Server Not Found' };
   }
 
   return {
     title: `${server.name} | Remote MCP Servers`,
     description: server.description,
-    // This is the crucial part that fixes the error
     alternates: {
       canonical: `${BASE_URL}/servers/${server.id}`,
     },
   };
 }
+
+function processRawServer(rawServer: McpServer): SpecServerObject | null {
+  if (!rawServer) return null;
+  return {
+    ...rawServer,
+    meta: rawServer.meta ? safeParseJson<Meta>(rawServer.meta) : null,
+    repository: safeParseJson<Repository>(rawServer.repository),
+    remotes: safeParseJson<Remote[]>(rawServer.remotes),
+    packages: null, // Assuming packages are not used in this context
+  };
+}
+
+// --- DATA FETCHING LOGIC ---
 async function getServerPageData(serverId: string) {
   const supabase = await createClient();
+  const metaNamespace = 'com.remote-mcp-servers.metadata';
 
-  // 1. Fetch all data in parallel as before
-  const serverPromise = supabase
-    .from('discoverable_mcp_servers')
+  // 1. Fetch the main server object (as raw data)
+  const { data: rawServer, error: serverError } = await supabase
+    .from('mcp_servers_v1')
     .select('*')
     .eq('id', serverId)
-    .eq('status', 'approved')
+    .eq('status', 'active')
     .single();
 
+  if (serverError) {
+    console.error('Error fetching server:', serverError);
+  }
+
+  if (!rawServer) {
+    return {
+      server: null,
+      reviews: [],
+      byMaintainer: [],
+      similar: [],
+      derived: {},
+    };
+  }
+
+  // 2. Process the raw data into our clean SpecServerObject type
+  const server = processRawServer(rawServer);
+
+  if (serverError || !server) {
+    return {
+      server: null,
+      reviews: [],
+      byMaintainer: [],
+      similar: [],
+      derived: {},
+    };
+  }
+
+  // 3. Fetch reviews (unchanged)
   const reviewsPromise = supabase
     .from('server_reviews')
-    .select('*, profile:profiles(*)') // Fetching profile with avatar_url path
+    .select('*, profile:profiles(*)')
     .eq('server_id', serverId)
     .order('created_at', { ascending: false });
 
-  const [serverResult, reviewsResult] = await Promise.all([
-    serverPromise,
-    reviewsPromise,
-  ]);
+  // 4. DERIVE properties from the now-processed server object
+  const customMeta = server.meta?.[metaNamespace] || {};
+  const category = (customMeta as { category?: string }).category;
+  const aiSummary = (customMeta as { ai_summary?: string }).ai_summary;
 
-  if (serverResult.error || !serverResult.data) {
-    return { server: null, reviews: [], byMaintainer: [], similar: [] };
+  let maintainerName: string | null = null;
+  // Accessing server.repository.url is now safe because it has been parsed.
+  if (server.repository?.url) {
+    try {
+      const urlParts = new URL(server.repository.url).pathname.split('/');
+      if (urlParts.length > 1 && urlParts[1]) maintainerName = urlParts[1];
+    } catch {}
   }
 
-  const server = serverResult.data;
-  const reviews = reviewsResult.data || [];
+  // 5. Build subsequent queries (unchanged)
+  const byMaintainerPromise = maintainerName
+    ? supabase
+        .from('mcp_servers_v1')
+        .select('*')
+        .like('repository->>url', `%/${maintainerName}/%`)
+        .eq('status', 'active')
+        .neq('id', server.id)
+        .limit(5)
+    : Promise.resolve({ data: [] });
 
-  // 2. Transform the avatar_url paths into full public URLs
-  const transformedReviews = reviews.map((review) => {
-    if (review.profile && review.profile.avatar_url) {
+  const similarPromise = category
+    ? supabase
+        .from('mcp_servers_v1')
+        .select('*')
+        .eq(`meta->${metaNamespace}->>category`, category)
+        .eq('status', 'active')
+        .neq('id', server.id)
+        .limit(5)
+    : Promise.resolve({ data: [] });
+
+  // 6. Execute all promises
+  const [reviewsResult, byMaintainerResult, similarResult] = await Promise.all([
+    reviewsPromise,
+    byMaintainerPromise,
+    similarPromise,
+  ]);
+
+  // 7. Process ALL fetched server data consistently
+  const byMaintainer = (byMaintainerResult.data || [])
+    .map(processRawServer)
+    .filter((s): s is SpecServerObject => s !== null);
+  const similar = (similarResult.data || [])
+    .map(processRawServer)
+    .filter((s): s is SpecServerObject => s !== null);
+
+  // Transform review avatars (unchanged)
+
+  // Transform review avatar URLs (unchanged logic)
+  const reviews = (reviewsResult.data || []).map((review) => {
+    if (review.profile?.avatar_url) {
       const {
         data: { publicUrl },
       } = supabase.storage
         .from('avatars')
         .getPublicUrl(review.profile.avatar_url);
-
-      // Return a new review object with the full public URL
       return {
         ...review,
-        profile: {
-          ...review.profile,
-          avatar_url: publicUrl, // Overwrite the path with the full URL
-        },
+        profile: { ...review.profile, avatar_url: publicUrl },
       };
     }
-    // If there's no avatar, return the review as is
     return review;
   });
-
-  // 3. Fetch related servers as before
-  const byMaintainerPromise = server.maintainer_name
-    ? supabase
-        .from('discoverable_mcp_servers')
-        .select('*')
-        .eq('maintainer_name', server.maintainer_name)
-        .eq('status', 'approved')
-        .neq('id', server.id)
-        .limit(5)
-    : Promise.resolve({ data: [] });
-
-  const similarPromise = supabase
-    .from('discoverable_mcp_servers')
-    .select('*')
-    .eq('category', server.category)
-    .eq('status', 'approved')
-    .neq('id', server.id)
-    .limit(5);
-
-  const [byMaintainerResult, similarResult] = await Promise.all([
-    byMaintainerPromise,
-    similarPromise,
-  ]);
-
-  // 4. Return the transformed reviews data
+  // 8. Return the fully processed, type-safe data
   return {
     server,
-    reviews: transformedReviews, // <-- Use the transformed data here
-    byMaintainer: byMaintainerResult.data || [],
-    similar: similarResult.data || [],
+    reviews,
+    byMaintainer,
+    similar,
+    derived: { maintainerName, category, aiSummary },
   };
 }
-export default async function ServerDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+
+// --- PAGE COMPONENT ---
+export default async function ServerDetailPage({ params }: Props) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   const { id } = await params;
-  const { server, reviews, byMaintainer, similar } =
+  const { server, reviews, byMaintainer, similar, derived } =
     await getServerPageData(id);
 
   if (!server) {
-    notFound(); // Renders the not-found.tsx file
+    notFound();
   }
 
+  console.log('Derived data:', derived);
+  console.log('Server data:', server);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/3">
-      {/* Main page container */}
-      <div className="container mx-auto py-8 px-4 md:px-6">
-        {/* Enhanced Back Button */}
+    <div className="min-h-screen  bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
+      {/* Subtle background pattern - much more subtle in dark mode */}
+      <div className="absolute inset-0 bg-grid-slate-200/20 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))]" />
+
+      <div className="max-w-6xl relative container mx-auto py-8 px-4 md:px-6">
         <div className="mb-8">
           <Button
             asChild
@@ -157,59 +212,55 @@ export default async function ServerDetailPage({
           </Button>
         </div>
 
-        {/* Two-column grid layout with enhanced spacing */}
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
-          {/* --- Left Column (Main Content) --- */}
           <div className="lg:col-span-2 space-y-16">
+            {/* These child components will also need to be updated to accept the new server type */}
             <ServerHeader server={server} />
-
-            {/* Mobile detail card */}
             <div className="block lg:hidden">
               <ServerDetailCard server={server} />
             </div>
 
-            {/* AI-Generated Summary with enhanced styling */}
-            {server.ai_summary && (
+            {/* CHANGED: Use the derived aiSummary from the meta object */}
+            {derived.aiSummary && (
               <section className="pb-4">
                 <h2 className="text-3xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
                   Overview
                 </h2>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-sm">
                   <article className="prose dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground">
-                    <ReactMarkdown>{server.ai_summary}</ReactMarkdown>
+                    <ReactMarkdown>{derived.aiSummary}</ReactMarkdown>
                   </article>
                 </div>
               </section>
             )}
 
-            {/* Enhanced Reviews Section */}
             <ReviewsSection
               serverId={server.id}
               initialReviews={reviews}
               currentUserId={user?.id}
             />
 
-            {/* Enhanced Server Strips */}
-            {byMaintainer.length > 0 && (
+            {/* CHANGED: Use derived maintainerName for the title */}
+            {byMaintainer.length > 0 && derived.maintainerName && (
               <div className="bg-card/30 backdrop-blur-sm border border-border/30 rounded-xl p-6 shadow-sm">
                 <ServerStrip
-                  title={`More from ${server.maintainer_name}`}
+                  title={`More from ${derived.maintainerName}`}
                   servers={byMaintainer}
                 />
               </div>
             )}
 
-            {similar.length > 0 && (
+            {/* CHANGED: Use derived category for the title */}
+            {similar.length > 0 && derived.category && (
               <div className="bg-card/30 backdrop-blur-sm border border-border/30 rounded-xl p-6 shadow-sm">
                 <ServerStrip
-                  title={`Similar in ${server.category}`}
+                  title={`Similar in ${derived.category}`}
                   servers={similar}
                 />
               </div>
             )}
           </div>
 
-          {/* --- Right Column (Enhanced Sticky Sidebar) --- */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
               <ServerDetailCard server={server} />

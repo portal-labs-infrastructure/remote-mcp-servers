@@ -3,7 +3,6 @@
 import {
   BookOpen,
   CheckCircle,
-  CheckCircle2,
   Copy,
   FileText,
   Link as LinkIcon,
@@ -11,6 +10,7 @@ import {
   Tag,
   User,
   XCircle,
+  CheckCircle2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,24 +19,46 @@ import { toast } from 'sonner';
 import { Separator } from '../ui/separator';
 import Link from 'next/link';
 
-// Assuming DiscoverableMcpServer is your server type from the database
 interface ServerDetailCardProps {
-  server: DiscoverableMcpServer;
+  server: SpecServerObject;
 }
 
 export function ServerDetailCard({ server }: ServerDetailCardProps) {
   const [copied, setCopied] = useState(false);
 
+  // --- DATA EXTRACTION BLOCK ---
+  // Centralize all data access and transformation here to keep JSX clean.
+  const customMeta = server.meta?.['com.remote-mcp-servers.metadata'] || {};
+
+  // "About" section data
+  const category = customMeta.category;
+  const repoUrl = server.repository?.url;
+  let maintainerName: string | null = null;
+  if (repoUrl) {
+    try {
+      const urlParts = new URL(repoUrl).pathname.split('/');
+      if (urlParts.length > 1 && urlParts[1]) maintainerName = urlParts[1];
+    } catch {}
+  }
+
+  // "Capabilities" section data
+  const authType = customMeta.authentication_type;
+  const hasDcr = customMeta.dynamic_client_registration === true;
+  const isOfficial = customMeta.is_official === true;
+
+  // Footer button data
+  const documentationUrl = server.website_url; // Spec uses 'website_url' for this
+  const mcpUrl = server.remotes?.[0]?.url;
+
+  // --- HANDLER FUNCTIONS ---
   const handleCopyMcpUrl = () => {
-    if (server.mcp_url) {
+    if (mcpUrl) {
       navigator.clipboard
-        .writeText(server.mcp_url)
+        .writeText(mcpUrl)
         .then(() => {
           setCopied(true);
           toast('Copied to clipboard!', {
-            // title: 'Copied to clipboard!',
             description: 'MCP URL has been copied.',
-            // variant: 'default', // Or 'success' if you have a custom variant
             duration: 2000,
           });
           setTimeout(() => setCopied(false), 2000);
@@ -44,9 +66,7 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
         .catch((err) => {
           console.error('Failed to copy MCP URL: ', err);
           toast('Copy Failed', {
-            // title: 'Copy Failed',
             description: 'Could not copy MCP URL to clipboard.',
-            // variant: 'destructive',
             duration: 3000,
           });
         });
@@ -57,53 +77,57 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
     <Card className="w-full shadow-lg hover:shadow-xl transition-all duration-200 border-border/50 bg-card/80 backdrop-blur-sm">
       <CardContent className="py-8">
         <div className="grid grid-cols-1 gap-x-8 gap-y-8">
-          {/* About this Server section with enhanced styling */}
+          {/* --- About this Server --- */}
           <div className="space-y-6">
             <h3 className="font-bold text-xl text-foreground">
               About this Server
             </h3>
             <div className="space-y-5">
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Tag className="h-5 w-5 text-primary flex-shrink-0" />
+              {category && (
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Tag className="h-5 w-5 text-primary flex-shrink-0" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground font-medium">
+                      Category
+                    </p>
+                    <p className="font-semibold text-foreground text-base">
+                      {category}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground font-medium">
-                    Category
-                  </p>
-                  <p className="font-semibold text-foreground text-base">
-                    {server.category}
-                  </p>
+              )}
+              {maintainerName && (
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <User className="h-5 w-5 text-primary flex-shrink-0" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground font-medium">
+                      Maintained by
+                    </p>
+                    <p className="font-semibold text-foreground text-base">
+                      {maintainerName}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <User className="h-5 w-5 text-primary flex-shrink-0" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground font-medium">
-                    Maintained by
-                  </p>
-                  <p className="font-semibold text-foreground text-base">
-                    {server.maintainer_name}
-                  </p>
-                </div>
-              </div>
-              {server.maintainer_url && (
+              )}
+              {repoUrl && (
                 <div className="flex items-start gap-4">
                   <div className="p-2 rounded-lg bg-primary/10">
                     <LinkIcon className="h-5 w-5 text-primary flex-shrink-0" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground font-medium">
-                      Maintainer Site
+                      Repository
                     </p>
                     <a
-                      href={server.maintainer_url}
+                      href={repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-semibold text-primary hover:text-primary/80 transition-colors text-base hover:underline">
-                      {server.maintainer_url.replace(/^https?:\/\//, '')}
+                      className="font-semibold text-primary hover:text-primary/80 transition-colors text-base hover:underline break-all">
+                      {repoUrl.replace(/^https?:\/\//, '')}
                     </a>
                   </div>
                 </div>
@@ -111,25 +135,24 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
             </div>
           </div>
 
-          {/* Capabilities section with enhanced styling */}
+          {/* --- Capabilities --- */}
           <div className="space-y-6">
             <h3 className="font-bold text-xl text-foreground">Capabilities</h3>
             <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <ShieldCheck className="h-5 w-5 text-primary flex-shrink-0" />
+              {authType && (
+                <div className="flex items-center gap-4">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <ShieldCheck className="h-5 w-5 text-primary flex-shrink-0" />
+                  </div>
+                  <p className="font-semibold text-foreground text-base">
+                    {authType === 'None' ? 'No' : authType} Authentication
+                  </p>
                 </div>
-                <p className="font-semibold text-foreground text-base">
-                  {server.authentication_type === 'None'
-                    ? 'No'
-                    : server.authentication_type}{' '}
-                  Authentication
-                </p>
-              </div>
-              {server.authentication_type === 'OAuth2' && (
+              )}
+              {authType === 'OAuth2' && (
                 <div className="flex items-center gap-4">
                   <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
-                    {server.dynamic_client_registration ? (
+                    {hasDcr ? (
                       <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
                     ) : (
                       <XCircle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
@@ -142,7 +165,7 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
               )}
               <div className="flex items-center gap-4">
                 <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                  {server.is_official ? (
+                  {isOfficial ? (
                     <CheckCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                   ) : (
                     <XCircle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
@@ -170,14 +193,13 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
             View as Markdown
           </Link>
         </Button>
-
-        {server.documentation_url && (
+        {documentationUrl && (
           <Button
             variant="secondary"
             className="flex-1 transition-all duration-200 hover:scale-105 hover:shadow-md"
             asChild>
             <a
-              href={server.documentation_url}
+              href={documentationUrl}
               target="_blank"
               rel="noopener noreferrer">
               <BookOpen className="mr-2 h-4 w-4" />
@@ -188,7 +210,7 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
         <Button
           onClick={handleCopyMcpUrl}
           className="flex-1 transition-all duration-200 hover:scale-105 hover:shadow-md"
-          disabled={!server.mcp_url}>
+          disabled={!mcpUrl}>
           {copied ? (
             <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" />
           ) : (

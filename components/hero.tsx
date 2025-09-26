@@ -12,7 +12,8 @@ export default async function Hero() {
             Remote MCP Registry
           </h1>
           <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl text-lg leading-relaxed">
-            Find, add, and manage remote MCP servers effortlessly.
+            Discover, add, and manage remote MCP servers through a powerful,
+            standards-compliant API.
           </p>
         </div>
 

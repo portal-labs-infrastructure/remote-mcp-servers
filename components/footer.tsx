@@ -9,7 +9,7 @@ export default function Footer() {
 
   return (
     <footer className="w-full flex border-t mx-auto pt-16 pb-24">
-      <div className="container m-auto max-w-7xl px-6 text-muted-foreground gap-4 flex flex-col">
+      <div className="container m-auto max-w-7xl px-6 text-muted-foreground gap-6 flex flex-col">
         <Logo />
         <div className="mb-4">
           <p>Discover and share remote Model Context Protocol servers.</p>

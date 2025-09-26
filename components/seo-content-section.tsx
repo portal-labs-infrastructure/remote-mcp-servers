@@ -25,8 +25,8 @@ export default function SeoContentSection() {
             Why This Registry?
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            The canonical source for MCP servers. Fully searchable and indexed
-            for discovery by both developers and AI agents.
+            Built on the official MCP Registry Specification, providing a stable
+            and predictable discovery experience for developers and AI agents.
           </p>
           <Link
             href="/about"
@@ -35,19 +35,20 @@ export default function SeoContentSection() {
           </Link>
         </div>
 
-        {/* Column 3: How to Contribute (Unchanged) */}
+        {/* Column 3: Easy Integration */}
         <div className="space-y-2">
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-            How to Contribute
+            Instant Access
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            Help grow the MCP ecosystem! Submit your public MCP server to the
-            registry. It&apos;s easy to get started if you have an account.
+            Connect your MCP client or host to our registry endpoint and
+            instantly access hundreds of remote servers from the official
+            registry.
           </p>
           <Link
-            href="/auth/login?redirect=/servers/new"
+            href="/docs/for-agents"
             className="text-sm font-medium text-primary hover:underline">
-            Add your server &rarr;
+            Integration guide &rarr;
           </Link>
         </div>
       </div>

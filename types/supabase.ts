@@ -352,6 +352,18 @@ export type Database = {
           total_runs: number
         }[]
       }
+      get_unique_meta_auth_types: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          authentication_type: string
+        }[]
+      }
+      get_unique_meta_categories: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          category: string
+        }[]
+      }
     }
     Enums: {
       benchmark_status: "in_progress" | "completed" | "failed"

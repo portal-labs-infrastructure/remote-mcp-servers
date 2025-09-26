@@ -17,6 +17,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
     "@modelcontextprotocol/sdk": "^1.13.0",
+    "@prometheus-protocol/ic-js": "^1.6.1",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-checkbox": "^1.3.1",
