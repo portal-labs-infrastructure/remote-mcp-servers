@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/sync-mcp-remotes",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/sync-blockchain",
+      "schedule": "30 */12 * * *"
+    }
+  ]
+}

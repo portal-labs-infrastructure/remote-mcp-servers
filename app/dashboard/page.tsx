@@ -5,6 +5,7 @@ import { Edit, PlusCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { DeleteServerButton } from '@/components/dashboard/delete-server-button';
 import { ProfileCard } from '@/components/dashboard/profile-card';
+import { SyncDashboard } from '@/components/dashboard/sync-dashboard';
 
 async function getUserServers(
   userId: string,
@@ -36,11 +37,20 @@ export default async function DashboardPage() {
 
   const userServers = await getUserServers(user.id);
 
+  // Check if user is admin (you can adjust this logic based on your admin system)
+  const isAdmin = user.email?.includes('jesse@portal.one'); // Replace with your admin logic
+
   return (
     <div className="container mx-auto py-8 px-4 md:px-6">
       <div className="mb-12">
         <ProfileCard userId={user.id} />
       </div>
+
+      {isAdmin && (
+        <div className="mb-12">
+          <SyncDashboard />
+        </div>
+      )}
 
       <div className="flex justify-between items-center mb-8 gap-8 flex-wrap">
         <h1 className="text-3xl font-bold">Your MCP Servers</h1>
