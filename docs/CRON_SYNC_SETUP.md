@@ -49,6 +49,7 @@ CRON_SECRET=your_generated_secret_string
 ### 2. Cron Schedule
 
 Current schedule in `vercel.json`:
+
 - **MCP Registry**: `0 */6 * * *` (every 6 hours at 00:00, 06:00, 12:00, 18:00 UTC)
 - **Blockchain**: `30 */12 * * *` (every 12 hours at 00:30, 12:30 UTC)
 
@@ -70,6 +71,7 @@ To change the schedule, update the `schedule` field in `vercel.json`:
 ```
 
 Common cron expressions:
+
 - Every hour: `0 * * * *`
 - Every 12 hours: `0 */12 * * *`
 - Daily at midnight: `0 0 * * *`
@@ -78,18 +80,21 @@ Common cron expressions:
 ## API Endpoints
 
 ### `/api/sync-mcp-remotes` (MCP Registry Cron)
+
 - **Method**: GET or POST
 - **Authentication**: Bearer token with `CRON_SECRET`
 - **Purpose**: Triggered automatically by Vercel Cron for official MCP registry
 - **Response**: JSON with sync results
 
 ### `/api/sync-blockchain` (Blockchain Cron)
+
 - **Method**: GET or POST
 - **Authentication**: Bearer token with `CRON_SECRET`
 - **Purpose**: Triggered automatically by Vercel Cron for blockchain registry
 - **Response**: JSON with sync results
 
 ### `/api/manual-sync` (Manual Trigger)
+
 - **Method**: POST
 - **Authentication**: Authenticated user session
 - **Body**: `{ "type": "mcp-remotes" | "blockchain" }`
@@ -97,6 +102,7 @@ Common cron expressions:
 - **Response**: JSON with sync results
 
 ### `/api/sync-status` (Status Check)
+
 - **Method**: GET
 - **Authentication**: None (public)
 - **Purpose**: Check sync system health for both sources
@@ -105,6 +111,7 @@ Common cron expressions:
 ## Security
 
 ### Cron Protection
+
 The cron endpoint is protected by a secret token:
 
 1. Generate a strong random string (32+ characters)
@@ -112,13 +119,16 @@ The cron endpoint is protected by a secret token:
 3. Vercel automatically includes this in cron requests
 
 ### Manual Sync Protection
+
 The manual sync endpoint requires:
+
 - User authentication via Supabase Auth
 - Optional: Admin role check (customize in the code)
 
 ## Dashboard Access
 
 Admins can access the sync dashboard at `/dashboard` which includes:
+
 - Manual sync trigger button
 - Sync status and logs
 - Last sync information
@@ -127,16 +137,20 @@ Admins can access the sync dashboard at `/dashboard` which includes:
 ## Monitoring
 
 ### Vercel Logs
+
 View sync execution logs in your Vercel dashboard:
+
 1. Go to your project dashboard
 2. Click on "Functions"
 3. Find the sync function executions
 4. View logs for each run
 
 ### Status Endpoint
+
 Check system health: `GET /api/sync-status`
 
 Example response:
+
 ```json
 {
   "status": "healthy",
@@ -158,12 +172,14 @@ Example response:
 ## Deployment
 
 1. **Update Requirements** (if you modify Python dependencies):
+
    ```bash
    # Regenerate requirements.txt from pyproject.toml for Vercel
    uv pip compile pyproject.toml -o requirements.txt
    ```
 
 2. **Add Environment Variables**:
+
    ```bash
    # In Vercel dashboard, add:
    CRON_SECRET=your-secret-here
@@ -172,13 +188,14 @@ Example response:
    ```
 
 3. **Deploy to Vercel**:
+
    ```bash
    git add .
    git commit -m "Add automated sync system"
    git push origin main
    ```
 
-3. **Verify Cron Jobs**:
+4. **Verify Cron Jobs**:
    - Check Vercel dashboard → Cron tab
    - Confirm the job is scheduled
    - Wait for first execution or trigger manually
@@ -186,21 +203,25 @@ Example response:
 ## Troubleshooting
 
 ### Cron Not Running
+
 - Verify `vercel.json` is in project root
 - Check Vercel dashboard → Cron tab
 - Ensure `CRON_SECRET` is set
 
 ### Script Execution Errors
+
 - Check Vercel function logs
 - Verify Python dependencies in `requirements.txt`
 - Ensure environment variables are accessible
 
 ### Authentication Errors
+
 - Verify Supabase credentials
 - Check service role key permissions
 - Ensure database table exists
 
 ### Manual Sync Issues
+
 - Check user authentication
 - Verify admin permissions in code
 - Review browser console for errors
@@ -208,19 +229,24 @@ Example response:
 ## Customization
 
 ### Adding More Sync Scripts
+
 1. Create new API endpoint: `/api/sync-other-source/route.ts`
 2. Add to `vercel.json` crons array
 3. Update dashboard if needed
 
 ### Changing Admin Logic
+
 Edit the admin check in `/app/dashboard/page.tsx`:
+
 ```typescript
-const isAdmin = user.email?.includes('your-domain') || 
-                user.user_metadata?.role === 'admin';
+const isAdmin =
+  user.email?.includes('your-domain') || user.user_metadata?.role === 'admin';
 ```
 
 ### Custom Notifications
+
 Add notification logic to sync endpoints:
+
 - Email on failures
 - Slack/Discord webhooks
 - Database logging

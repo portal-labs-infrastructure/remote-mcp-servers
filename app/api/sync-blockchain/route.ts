@@ -7,10 +7,13 @@ export async function GET(request: NextRequest) {
     // Security: Verify the request is from Vercel Cron
     const authHeader = request.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
-    
+
     if (!cronSecret) {
       console.error('CRON_SECRET environment variable is not set');
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 },
+      );
     }
 
     if (authHeader !== `Bearer ${cronSecret}`) {
@@ -19,10 +22,14 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('Starting blockchain sync...');
-    
+
     // Execute the Python blockchain sync script
-    const scriptPath = path.join(process.cwd(), 'scripts', 'sync_blockchain_servers.py');
-    
+    const scriptPath = path.join(
+      process.cwd(),
+      'scripts',
+      'sync_blockchain_servers.py',
+    );
+
     try {
       const result = execSync(`python3 ${scriptPath}`, {
         encoding: 'utf8',
@@ -32,35 +39,42 @@ export async function GET(request: NextRequest) {
           // Ensure Python has access to environment variables
           NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
           SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-        }
+        },
       });
-      
+
       console.log('Blockchain sync completed successfully');
       console.log('Script output:', result);
-      
-      return NextResponse.json({ 
-        success: true, 
+
+      return NextResponse.json({
+        success: true,
         message: 'Blockchain sync completed successfully',
-        output: result
+        output: result,
       });
+    } catch (execError: unknown) {
+      const errorMessage = execError instanceof Error ? execError.message : 'Unknown error';
+      const stderr = (execError as { stderr?: string }).stderr;
       
-    } catch (execError: any) {
-      console.error('Error executing blockchain sync script:', execError.message);
-      console.error('Script stderr:', execError.stderr);
-      
-      return NextResponse.json({ 
-        error: 'Blockchain sync script execution failed',
-        details: execError.message,
-        stderr: execError.stderr
-      }, { status: 500 });
+      console.error('Error executing blockchain sync script:', errorMessage);
+      console.error('Script stderr:', stderr);
+
+      return NextResponse.json(
+        {
+          error: 'Blockchain sync script execution failed',
+          details: errorMessage,
+          stderr: stderr,
+        },
+        { status: 500 },
+      );
     }
-    
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Unexpected error in blockchain sync endpoint:', error);
-    return NextResponse.json({ 
-      error: 'Internal server error',
-      details: error.message 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 },
+    );
   }
 }
 

@@ -81,29 +81,29 @@ export async function POST(request: NextRequest) {
         triggeredBy: user.email,
         syncType: syncType,
       });
-    } catch (execError: any) {
-      console.error(
-        `Error executing ${syncName} sync script:`,
-        execError.message,
-      );
-      console.error('Script stderr:', execError.stderr);
+    } catch (execError: unknown) {
+      const errorMessage = execError instanceof Error ? execError.message : 'Unknown error';
+      const stderr = (execError as { stderr?: string }).stderr;
+      
+      console.error(`Error executing ${syncName} sync script:`, errorMessage);
+      console.error('Script stderr:', stderr);
 
       return NextResponse.json(
         {
           error: `${syncName} sync script execution failed`,
-          details: execError.message,
-          stderr: execError.stderr,
+          details: errorMessage,
+          stderr: stderr,
           syncType: syncType,
         },
         { status: 500 },
       );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Unexpected error in manual sync endpoint:', error);
     return NextResponse.json(
       {
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },
     );

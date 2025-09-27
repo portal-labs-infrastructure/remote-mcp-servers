@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
 
@@ -45,22 +45,23 @@ export async function GET(request: NextRequest) {
       totalServers: count || 0,
       officialServers: officialCount || 0,
       blockchainServers: blockchainCount || 0,
-      lastSyncedServer: latestServer ? {
-        name: latestServer.name,
-        updatedAt: latestServer.updated_at
-      } : null,
+      lastSyncedServer: latestServer
+        ? {
+            name: latestServer.name,
+            updatedAt: latestServer.updated_at,
+          }
+        : null,
       systemTime: new Date().toISOString(),
       cronSchedules: {
-        'mcp-remotes': '0 */6 * * *',   // Every 6 hours
-        'blockchain': '30 */12 * * *',  // Every 12 hours at 30 minutes past
+        'mcp-remotes': '0 */6 * * *', // Every 6 hours
+        blockchain: '30 */12 * * *', // Every 12 hours at 30 minutes past
       },
     });
-
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in sync status endpoint:', error);
     return NextResponse.json({
       status: 'error',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       systemTime: new Date().toISOString(),
     }, { status: 500 });
   }
