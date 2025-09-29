@@ -16,7 +16,7 @@ async function getFeaturedServers(): Promise<SpecServerObject[]> {
     const { data, error } = await supabase
       .from('mcp_servers_v1') // Your actual table name
       .select('*') // Select all columns, or specify needed ones for ServerCard
-      .eq('status', 'approved') // Filter for approved servers
+      .eq('status', 'active') // Filter for active servers
       .order('created_at', { ascending: false }) // Order by most recently created
       .limit(6); // Limit to 6 servers
 
