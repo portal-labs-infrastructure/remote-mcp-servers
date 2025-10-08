@@ -1,10 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-// Note: We need to use dynamic imports for ES modules in Vercel's Node.js runtime
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse,
-) {
+const handler = async (req: VercelRequest, res: VercelResponse) => {
   // Security: Only allow requests with the correct secret
   const authHeader = req.headers.authorization;
   const cronSecret = process.env.CRON_SECRET;
@@ -199,4 +195,7 @@ export default async function handler(
       stack: error instanceof Error ? error.stack : undefined,
     });
   }
-}
+};
+
+module.exports = handler;
+export default handler;
