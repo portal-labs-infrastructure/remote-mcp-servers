@@ -17,7 +17,7 @@ const handler = async (req, res) => {
     // Dynamic import for ES modules
     const icJs = await import('@prometheus-protocol/ic-js');
     const { createClient } = await import('@supabase/supabase-js');
-    const crypto = await import('crypto');
+    const { v5: uuidv5 } = await import('uuid');
 
     const { getAppStoreListings, getAppDetailsByNamespace, configure } = icJs;
 
@@ -34,14 +34,6 @@ const handler = async (req, res) => {
     const CUSTOM_META_NAMESPACE = 'org.prometheusprotocol.metadata';
     const BLOCKCHAIN_NAMESPACE_UUID = '02ffac85-92a0-4bb2-adf4-c715b3c93b0d';
 
-    function uuidv5(namespace, name) {
-      const hash = crypto
-        .createHash('sha1')
-        .update(namespace + name)
-        .digest('hex');
-      return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-5${hash.slice(13, 16)}-${hash.slice(16, 20)}-${hash.slice(20, 32)}`;
-    }
-
     function transformServerData(serverData) {
       const namespace_string = serverData.namespace;
       if (!namespace_string) {
@@ -52,8 +44,8 @@ const handler = async (req, res) => {
       }
 
       const deterministic_id = uuidv5(
-        BLOCKCHAIN_NAMESPACE_UUID,
         namespace_string,
+        BLOCKCHAIN_NAMESPACE_UUID,
       );
 
       const details = serverData.details || {};
