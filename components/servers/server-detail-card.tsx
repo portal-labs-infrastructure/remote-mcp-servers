@@ -6,10 +6,8 @@ import {
   Copy,
   FileText,
   Link as LinkIcon,
-  ShieldCheck,
   Tag,
   User,
-  XCircle,
   CheckCircle2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
