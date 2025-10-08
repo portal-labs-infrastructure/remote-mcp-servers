@@ -26,13 +26,10 @@ interface ServerDetailCardProps {
 export function ServerDetailCard({ server }: ServerDetailCardProps) {
   const [copied, setCopied] = useState(false);
 
-  // --- DATA EXTRACTION BLOCK ---
-  // Centralize all data access and transformation here to keep JSX clean.
-  const customMeta = server.meta?.['com.remote-mcp-servers.metadata'] || {};
-
-  // "About" section data
-  const category = customMeta.category;
+  // Use only standard MCP registry spec fields
   const repoUrl = server.repository?.url;
+  const repoSource = server.repository?.source;
+  
   let maintainerName: string | null = null;
   if (repoUrl) {
     try {
@@ -41,14 +38,21 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
     } catch {}
   }
 
-  // "Capabilities" section data
-  const authType = customMeta.authentication_type;
-  const hasDcr = customMeta.dynamic_client_registration === true;
-  const isOfficial = customMeta.is_official === true;
+  // Determine which registry this is from based on metadata namespaces
+  let registrySource = 'Community';
+  if (server.meta) {
+    if ('io.modelcontextprotocol.metadata' in server.meta) {
+      registrySource = 'Official MCP Registry';
+    } else if ('org.prometheusprotocol.metadata' in server.meta) {
+      registrySource = 'Prometheus Protocol Blockchain';
+    } else if ('com.remote-mcp-servers.metadata' in server.meta) {
+      registrySource = 'Community Submitted';
+    }
+  }
 
-  // Footer button data
-  const documentationUrl = server.website_url; // Spec uses 'website_url' for this
+  const documentationUrl = server.website_url;
   const mcpUrl = server.remotes?.[0]?.url;
+  const version = server.latest_version;
 
   // --- HANDLER FUNCTIONS ---
   const handleCopyMcpUrl = () => {
@@ -74,59 +78,44 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
   };
 
   return (
-    <Card className="w-full shadow-lg hover:shadow-xl transition-all duration-200 border-border/50 bg-card/80 backdrop-blur-sm">
-      <CardContent className="py-8">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-8">
+    <Card className="w-full shadow-md border-2 border-border/50 bg-card/90 backdrop-blur-sm">
+      <CardContent className="py-6">
+        <div className="space-y-8">
           {/* --- About this Server --- */}
-          <div className="space-y-6">
-            <h3 className="font-bold text-xl text-foreground">
+          <div className="space-y-4">
+            <h3 className="font-bold text-lg text-foreground">
               About this Server
             </h3>
-            <div className="space-y-5">
-              {category && (
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Tag className="h-5 w-5 text-primary flex-shrink-0" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium">
-                      Category
-                    </p>
-                    <p className="font-semibold text-foreground text-base">
-                      {category}
-                    </p>
-                  </div>
-                </div>
-              )}
+            <div className="space-y-4">
               {maintainerName && (
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <User className="h-5 w-5 text-primary flex-shrink-0" />
+                <div className="flex items-start gap-3">
+                  <div className="p-1.5 rounded-md bg-primary/10 mt-0.5">
+                    <User className="h-4 w-4 text-primary flex-shrink-0" />
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground font-medium mb-0.5">
                       Maintained by
                     </p>
-                    <p className="font-semibold text-foreground text-base">
+                    <p className="font-semibold text-foreground text-sm">
                       {maintainerName}
                     </p>
                   </div>
                 </div>
               )}
               {repoUrl && (
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <LinkIcon className="h-5 w-5 text-primary flex-shrink-0" />
+                <div className="flex items-start gap-3">
+                  <div className="p-1.5 rounded-md bg-primary/10 mt-0.5">
+                    <LinkIcon className="h-4 w-4 text-primary flex-shrink-0" />
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground font-medium mb-0.5">
                       Repository
                     </p>
                     <a
                       href={repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-semibold text-primary hover:text-primary/80 transition-colors text-base hover:underline break-all">
+                      className="font-semibold text-primary hover:text-primary/80 transition-colors text-sm hover:underline break-all block">
                       {repoUrl.replace(/^https?:\/\//, '')}
                     </a>
                   </div>
@@ -135,48 +124,59 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
             </div>
           </div>
 
+          <Separator />
+
           {/* --- Capabilities --- */}
-          <div className="space-y-6">
-            <h3 className="font-bold text-xl text-foreground">Capabilities</h3>
-            <div className="space-y-4">
-              {authType && (
-                <div className="flex items-center gap-4">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <ShieldCheck className="h-5 w-5 text-primary flex-shrink-0" />
-                  </div>
-                  <p className="font-semibold text-foreground text-base">
-                    {authType === 'None' ? 'No' : authType} Authentication
+          <div className="space-y-4">
+            <h3 className="font-bold text-lg text-foreground">Capabilities</h3>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 rounded-md bg-blue-100 dark:bg-blue-900/30 mt-0.5">
+                  <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-muted-foreground font-medium mb-0.5">
+                    Registry Source
+                  </p>
+                  <p className="font-semibold text-foreground text-sm">
+                    {registrySource}
                   </p>
                 </div>
-              )}
-              {authType === 'OAuth2' && (
-                <div className="flex items-center gap-4">
-                  <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
-                    {hasDcr ? (
-                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
-                    ) : (
-                      <XCircle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                    )}
-                  </div>
-                  <span className="font-medium text-foreground">
-                    Dynamic Client Registration
-                  </span>
-                </div>
-              )}
-              <div className="flex items-center gap-4">
-                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                  {isOfficial ? (
-                    <CheckCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                  ) : (
-                    <XCircle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                  )}
-                </div>
-                <span className="font-medium text-foreground">
-                  From Official Registry
-                </span>
               </div>
+              {version && (
+                <div className="flex items-start gap-3">
+                  <div className="p-1.5 rounded-md bg-primary/10 mt-0.5">
+                    <Tag className="h-4 w-4 text-primary flex-shrink-0" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground font-medium mb-0.5">
+                      Latest Version
+                    </p>
+                    <p className="font-semibold text-foreground text-sm">
+                      v{version}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {repoSource && (
+                <div className="flex items-start gap-3">
+                  <div className="p-1.5 rounded-md bg-primary/10 mt-0.5">
+                    <LinkIcon className="h-4 w-4 text-primary flex-shrink-0" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground font-medium mb-0.5">
+                      Source Platform
+                    </p>
+                    <p className="font-semibold text-foreground text-sm capitalize">
+                      {repoSource}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
+
+          <Separator />
         </div>
       </CardContent>
       <Separator className="bg-border/30" />

@@ -64,7 +64,7 @@ export function ReviewsSection({
         <CardContent className="pt-8">
           <div className="flex flex-col gap-12">
             {initialReviews.length === 0 && !showForm && (
-              <div className="text-center py-16">
+              <div className="text-center py-16 border-2 border-dashed border-border/50 rounded-xl bg-muted/20">
                 <div className="p-4 rounded-full bg-primary/10 w-fit mx-auto mb-4">
                   <MessageSquarePlus className="h-12 w-12 text-primary" />
                 </div>

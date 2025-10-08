@@ -126,7 +126,7 @@ export default function ServerResults({
               {totalCount === 1 ? 'server' : 'servers'} found
             </p>
           </div>
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             {servers.map((server) => (
               <ServerCard server={server} key={server.id} />
             ))}
@@ -154,7 +154,7 @@ export default function ServerResults({
             )}
             {!loadingMore && !hasMore && servers.length > 0 && (
               <p className="text-center text-muted-foreground py-4">
-                You've reached the end of the list
+                You&apos;ve reached the end of the list
               </p>
             )}
           </div>

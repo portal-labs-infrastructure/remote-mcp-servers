@@ -10,7 +10,7 @@ export default function DashboardLayout({
     <main className="min-h-screen flex flex-col items-center">
       <div className="flex-1 w-full flex flex-col items-center">
         <AppBar />
-        <div className="flex-1 py-6 flex flex-col gap-16 max-w-6xl w-full">
+        <div className="flex-1 py-6 flex flex-col gap-16 max-w-7xl w-full">
           {children}
         </div>
 

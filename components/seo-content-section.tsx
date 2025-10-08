@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function SeoContentSection() {
   return (
     <section className="py-20 md:py-24 lg:py-28 bg-background">
-      <div className="container max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-12">
+      <div className="container max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12">
         {/* Column 1: What is MCP? (Unchanged) */}
         <div className="space-y-2">
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">

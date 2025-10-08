@@ -18,7 +18,7 @@ export default function FeaturedServers({ servers }: FeaturedServersProps) {
     <section className="py-20 md:py-24 lg:py-28 bg-muted/40">
       {' '}
       {/* Or bg-muted/20 for slight differentiation */}
-      <div className="container max-w-6xl mx-auto px-6 ">
+      <div className="container max-w-7xl mx-auto px-6 ">
         <div className="flex justify-between items-center mb-6 md:mb-8 flex-wrap gap-8">
           <h2 className="text-3xl font-bold tracking-tight text-foreground">
             Recently Added

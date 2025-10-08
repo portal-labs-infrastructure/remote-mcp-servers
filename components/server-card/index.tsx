@@ -13,14 +13,14 @@ interface ServerCardProps {
 
 export default function ServerCard({ server }: ServerCardProps) {
   return (
-    <Card className="shadow-lg hover:shadow-xl h-full flex flex-col overflow-hidden transition-all duration-200 hover:scale-[1.02] border-border/50 bg-card/50 backdrop-blur-sm">
+    <Card className="shadow-xl hover:shadow-2xl h-full flex flex-col overflow-hidden transition-all duration-300 hover:scale-[1.02] border-2 border-border/80 hover:border-primary/50 bg-card backdrop-blur-sm">
       <CardContent className="flex-grow flex flex-col gap-5 p-5 md:p-6">
         <ServerCardHeader server={server} />
         <ServerCardBody server={server} />
         <ServerCardTags server={server} />
       </CardContent>
-      <Separator className="bg-border/30" />
-      <CardContent className="flex flex-col p-5 md:p-6 bg-muted/20">
+      <Separator className="bg-border/50" />
+      <CardContent className="flex flex-col p-5 md:p-6 bg-muted/30">
         <ServerCardActions server={server} />
       </CardContent>
     </Card>

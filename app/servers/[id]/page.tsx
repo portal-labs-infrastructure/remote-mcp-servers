@@ -194,17 +194,17 @@ export default async function ServerDetailPage({ params }: Props) {
   console.log('Server data:', server);
 
   return (
-    <div className="min-h-screen  bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
-      {/* Subtle background pattern - much more subtle in dark mode */}
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
+      {/* Subtle background pattern */}
       <div className="absolute inset-0 bg-grid-slate-200/20 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))]" />
 
-      <div className="max-w-6xl relative container mx-auto py-8 px-4 md:px-6">
-        <div className="mb-8">
+      <div className="max-w-7xl relative container mx-auto py-6 px-4 md:px-6">
+        <div className="mb-6">
           <Button
             asChild
             variant="outline"
             size="sm"
-            className="hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md">
+            className="hover:scale-105 transition-all duration-200">
             <Link href={`/servers`}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Servers
@@ -212,9 +212,8 @@ export default async function ServerDetailPage({ params }: Props) {
           </Button>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
-          <div className="lg:col-span-2 space-y-16">
-            {/* These child components will also need to be updated to accept the new server type */}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-12">
             <ServerHeader server={server} />
             <div className="block lg:hidden">
               <ServerDetailCard server={server} />
@@ -222,12 +221,12 @@ export default async function ServerDetailPage({ params }: Props) {
 
             {/* CHANGED: Use the derived aiSummary from the meta object */}
             {derived.aiSummary && (
-              <section className="pb-4">
-                <h2 className="text-3xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+              <section>
+                <h2 className="text-2xl font-bold tracking-tight mb-4 text-foreground">
                   Overview
                 </h2>
-                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-sm">
-                  <article className="prose dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground">
+                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-5 shadow-sm">
+                  <article className="prose dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-sm">
                     <ReactMarkdown>{derived.aiSummary}</ReactMarkdown>
                   </article>
                 </div>
@@ -242,7 +241,7 @@ export default async function ServerDetailPage({ params }: Props) {
 
             {/* CHANGED: Use derived maintainerName for the title */}
             {byMaintainer.length > 0 && derived.maintainerName && (
-              <div className="bg-card/30 backdrop-blur-sm border border-border/30 rounded-xl p-6 shadow-sm">
+              <div className="bg-card/30 backdrop-blur-sm border border-border/30 rounded-lg p-5">
                 <ServerStrip
                   title={`More from ${derived.maintainerName}`}
                   servers={byMaintainer}
@@ -252,7 +251,7 @@ export default async function ServerDetailPage({ params }: Props) {
 
             {/* CHANGED: Use derived category for the title */}
             {similar.length > 0 && derived.category && (
-              <div className="bg-card/30 backdrop-blur-sm border border-border/30 rounded-xl p-6 shadow-sm">
+              <div className="bg-card/30 backdrop-blur-sm border border-border/30 rounded-lg p-5">
                 <ServerStrip
                   title={`Similar in ${derived.category}`}
                   servers={similar}
@@ -261,8 +260,8 @@ export default async function ServerDetailPage({ params }: Props) {
             )}
           </div>
 
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-6">
+          <div className="lg:col-span-1 hidden lg:block">
+            <div className="sticky top-20">
               <ServerDetailCard server={server} />
             </div>
           </div>
