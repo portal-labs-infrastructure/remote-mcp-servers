@@ -1,51 +1,48 @@
 import { Badge } from '@/components/ui/badge';
-// Make sure this import path is correct for your project structure
+import { Server, Package } from 'lucide-react';
 
-// CHANGED: The component now accepts the full server object to access its 'meta' property.
 interface ServerCardTagsProps {
   server: SpecServerObject;
 }
 
 export default function ServerCardTags({ server }: ServerCardTagsProps) {
-  // --- Data Extraction ---
-  // Safely access our custom metadata from the nested 'meta' object.
-  // The '|| {}' provides a safe fallback if the namespace doesn't exist.
-  const customMeta = server.meta?.['com.remote-mcp-servers.metadata'] || {};
-
-  // Extract the specific values we need for the badges.
-  const authType = customMeta.authentication_type;
-  const hasDcr = customMeta.dynamic_client_registration === true;
-  const isOfficial = customMeta.is_official === true;
+  // Use only standard MCP registry spec fields
+  const hasRemotes = server.remotes && server.remotes.length > 0;
+  const latestVersion = server.latest_version;
+  
+  // Get repository source for badge
+  const repoSource = server.repository?.source;
 
   return (
     <div className="flex flex-col gap-4 flex-grow">
-      {/* mt-auto pushes the content to the bottom of the flex container */}
       <div className="flex flex-col gap-3 mt-auto">
         <div className="flex flex-row flex-wrap gap-2">
-          {/* CHANGED: Conditionally render the auth type badge only if it exists */}
-          {authType && (
+          {/* Show remote type badge */}
+          {hasRemotes && (
             <Badge
               variant="secondary"
-              className="text-xs font-medium px-2 py-1 bg-secondary/50 hover:bg-secondary/70 transition-colors">
-              {authType}
+              className="text-xs font-medium px-2 py-1 bg-secondary/50 hover:bg-secondary/70 transition-colors flex items-center gap-1">
+              <Server className="h-3 w-3" />
+              Remote
             </Badge>
           )}
 
-          {/* CHANGED: Check the 'hasDcr' variable */}
-          {hasDcr && (
+          {/* Show repository source */}
+          {repoSource && (
             <Badge
               variant="secondary"
-              className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 hover:bg-green-200 transition-colors dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50">
-              DCR
+              className="text-xs font-medium px-2 py-1 bg-secondary/50 hover:bg-secondary/70 transition-colors flex items-center gap-1">
+              <Package className="h-3 w-3" />
+              {repoSource}
             </Badge>
           )}
 
-          {/* CHANGED: Check the 'isOfficial' variable */}
-          {isOfficial && (
+          {/* Show version if available */}
+          {latestVersion && (
             <Badge
-              variant="secondary"
-              className="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50">
-              Official
+              variant="outline"
+              className="text-xs font-medium px-2 py-1">
+              v{latestVersion}
             </Badge>
           )}
         </div>
