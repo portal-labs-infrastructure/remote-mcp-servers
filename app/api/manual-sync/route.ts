@@ -54,11 +54,12 @@ export async function POST(request: NextRequest) {
       }
 
       // Build the full URL for the Python API
-      const baseUrl = process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : `http://localhost:${process.env.PORT || 3000}`;
+      // Use the current request URL to construct the API endpoint
+      const protocol = request.headers.get('x-forwarded-proto') || 'http';
+      const host = request.headers.get('host') || 'localhost:3000';
+      const syncUrl = `${protocol}://${host}${syncPath}`;
 
-      const syncUrl = `${baseUrl}${syncPath}`;
+      console.log(`Calling Python API at: ${syncUrl}`);
 
       // Call the Python API endpoint
       const response = await fetch(syncUrl, {
@@ -68,6 +69,17 @@ export async function POST(request: NextRequest) {
           'Content-Type': 'application/json',
         },
       });
+
+      console.log(`Response status: ${response.status}`);
+      console.log(`Response headers:`, response.headers);
+
+      // Check if response is actually JSON before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const textResponse = await response.text();
+        console.error(`Non-JSON response received: ${textResponse.substring(0, 500)}`);
+        throw new Error(`Python API returned non-JSON response (${response.status}): ${textResponse.substring(0, 200)}`);
+      }
 
       const result = await response.json();
 

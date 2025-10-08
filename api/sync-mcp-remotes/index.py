@@ -1,51 +1,74 @@
 from http.server import BaseHTTPRequestHandler
 import os
 import sys
+import json
+import traceback
 
 # Add the scripts directory to the path so we can import the sync script
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "scripts"))
 
-from sync_mcp_remotes import main as sync_main
-
 
 class handler(BaseHTTPRequestHandler):
+    def _send_json_response(self, status_code, data):
+        """Helper to ensure we always send valid JSON"""
+        self.send_response(status_code)
+        self.send_header("Content-type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+        self.wfile.write(json.dumps(data).encode())
+
     def do_GET(self):
-        # Security: Verify the request is from Vercel Cron
-        auth_header = self.headers.get("Authorization")
-        cron_secret = os.environ.get("CRON_SECRET")
-
-        if not cron_secret:
-            self.send_response(500)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(b'{"error": "CRON_SECRET not configured"}')
-            return
-
-        if auth_header != f"Bearer {cron_secret}":
-            self.send_response(401)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(b'{"error": "Unauthorized"}')
-            return
-
-        try:
-            # Run the sync
-            sync_main()
-
-            self.send_response(200)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(
-                b'{"success": true, "message": "MCP remotes sync completed successfully"}'
-            )
-        except Exception as e:
-            self.send_response(500)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            error_msg = f'{{"error": "Sync failed", "details": "{str(e)}"}}'
-            self.wfile.write(error_msg.encode())
-        return
+        return self._handle_request()
 
     def do_POST(self):
-        # Handle POST requests the same as GET
-        return self.do_GET()
+        return self._handle_request()
+
+    def _handle_request(self):
+        try:
+            # Security: Verify the request is from Vercel Cron
+            auth_header = self.headers.get("Authorization")
+            cron_secret = os.environ.get("CRON_SECRET")
+
+            if not cron_secret:
+                return self._send_json_response(
+                    500, {"error": "CRON_SECRET not configured"}
+                )
+
+            if auth_header != f"Bearer {cron_secret}":
+                return self._send_json_response(401, {"error": "Unauthorized"})
+
+            # Import here to avoid import errors if dependencies aren't available yet
+            from sync_mcp_remotes import main as sync_main
+
+            # Run the sync
+            print("Starting MCP remotes sync...")
+            sync_main()
+            print("MCP remotes sync completed successfully")
+
+            return self._send_json_response(
+                200,
+                {
+                    "success": True,
+                    "message": "MCP remotes sync completed successfully",
+                },
+            )
+
+        except ImportError as e:
+            error_trace = traceback.format_exc()
+            print(f"Import error: {error_trace}")
+            return self._send_json_response(
+                500,
+                {
+                    "error": "Import failed",
+                    "details": str(e),
+                    "trace": error_trace,
+                },
+            )
+
+        except Exception as e:
+            error_trace = traceback.format_exc()
+            print(f"Sync failed: {error_trace}")
+            return self._send_json_response(
+                500,
+                {"error": "Sync failed", "details": str(e), "trace": error_trace},
+            )
