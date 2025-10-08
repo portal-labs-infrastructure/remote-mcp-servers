@@ -36,9 +36,7 @@ export function ServerHeader({ server }: ServerHeaderProps) {
         </Avatar>
         <div className="flex-1 min-w-0">
           <CardTitle className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
-            <h1 className="text-foreground">
-              {displayName}
-            </h1>
+            <h1 className="text-foreground">{displayName}</h1>
           </CardTitle>
           <CardDescription className="text-base md:text-lg leading-relaxed text-muted-foreground">
             {server.description}

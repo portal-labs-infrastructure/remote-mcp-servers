@@ -77,8 +77,12 @@ export async function POST(request: NextRequest) {
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const textResponse = await response.text();
-        console.error(`Non-JSON response received: ${textResponse.substring(0, 500)}`);
-        throw new Error(`Python API returned non-JSON response (${response.status}): ${textResponse.substring(0, 200)}`);
+        console.error(
+          `Non-JSON response received: ${textResponse.substring(0, 500)}`,
+        );
+        throw new Error(
+          `Python API returned non-JSON response (${response.status}): ${textResponse.substring(0, 200)}`,
+        );
       }
 
       const result = await response.json();

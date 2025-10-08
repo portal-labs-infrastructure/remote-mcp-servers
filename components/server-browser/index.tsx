@@ -48,7 +48,11 @@ export default function ServerBrowser() {
           );
         }
 
-        const { data, count, error: dbError } = await query
+        const {
+          data,
+          count,
+          error: dbError,
+        } = await query
           .order('updated_at', { ascending: false })
           .range(offset, offset + ITEMS_PER_PAGE - 1);
 
@@ -72,7 +76,8 @@ export default function ServerBrowser() {
         }
 
         setHasMore(
-          processedServers.length === ITEMS_PER_PAGE && (count || 0) > offset + ITEMS_PER_PAGE,
+          processedServers.length === ITEMS_PER_PAGE &&
+            (count || 0) > offset + ITEMS_PER_PAGE,
         );
       } catch (err) {
         console.error('Error fetching servers:', err);

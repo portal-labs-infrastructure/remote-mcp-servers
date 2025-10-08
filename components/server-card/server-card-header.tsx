@@ -8,13 +8,17 @@ interface ServerCardHeaderProps {
 export default function ServerCardHeader({ server }: ServerCardHeaderProps) {
   // Use only standard MCP registry spec fields
   const displayName = server.name;
-  
+
   // Try to get icon from any metadata namespace that has it
   let iconUrl: string | undefined;
   if (server.meta) {
     // Check all metadata namespaces for an icon_url
     for (const namespace of Object.values(server.meta)) {
-      if (namespace && typeof namespace === 'object' && 'icon_url' in namespace) {
+      if (
+        namespace &&
+        typeof namespace === 'object' &&
+        'icon_url' in namespace
+      ) {
         iconUrl = namespace.icon_url as string;
         break;
       }

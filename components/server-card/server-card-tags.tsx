@@ -9,7 +9,7 @@ export default function ServerCardTags({ server }: ServerCardTagsProps) {
   // Use only standard MCP registry spec fields
   const hasRemotes = server.remotes && server.remotes.length > 0;
   const latestVersion = server.latest_version;
-  
+
   // Get repository source for badge
   const repoSource = server.repository?.source;
 
@@ -39,9 +39,7 @@ export default function ServerCardTags({ server }: ServerCardTagsProps) {
 
           {/* Show version if available */}
           {latestVersion && (
-            <Badge
-              variant="outline"
-              className="text-xs font-medium px-2 py-1">
+            <Badge variant="outline" className="text-xs font-medium px-2 py-1">
               v{latestVersion}
             </Badge>
           )}

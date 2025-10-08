@@ -27,7 +27,7 @@ export function ServerDetailCard({ server }: ServerDetailCardProps) {
   // Use only standard MCP registry spec fields
   const repoUrl = server.repository?.url;
   const repoSource = server.repository?.source;
-  
+
   let maintainerName: string | null = null;
   if (repoUrl) {
     try {

@@ -19,10 +19,7 @@ const replacer = (_key: string, value: unknown) => {
   return typeof value === 'bigint' ? value.toString() : value;
 };
 
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse,
-) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Security: Only allow requests with the correct secret
   const authHeader = req.headers.authorization;
   const cronSecret = process.env.CRON_SECRET;
@@ -70,9 +67,9 @@ export default async function handler(
       `Successfully fetched ${allServerDetails.length} servers from blockchain`,
     );
 
-    return res.status(200).json(
-      JSON.parse(JSON.stringify(allServerDetails, replacer)),
-    );
+    return res
+      .status(200)
+      .json(JSON.parse(JSON.stringify(allServerDetails, replacer)));
   } catch (error) {
     console.error('Error fetching blockchain data:', error);
     return res.status(500).json({

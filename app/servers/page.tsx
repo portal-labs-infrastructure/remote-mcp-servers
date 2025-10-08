@@ -17,21 +17,21 @@ export const metadata: Metadata = {
 
 export default async function ServersPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/3">
-      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center md:mb-16 mb-12">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-10">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 md:mb-10">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary to-primary/70 mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-2">
               Remote MCP Servers
             </h1>
-            <p className="text-muted-foreground text-lg md:text-xl">
+            <p className="text-muted-foreground text-base md:text-lg">
               Discover and browse community-driven MCP servers
             </p>
           </div>
           <Button
             variant="default"
             asChild
-            className="mt-6 sm:mt-0 transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md">
+            className="mt-4 sm:mt-0 transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md">
             <Link href="/servers/new">
               <PlusCircle className="mr-2 h-5 w-5" />
               Add New Server
@@ -40,7 +40,7 @@ export default async function ServersPage() {
         </div>
         <Suspense
           fallback={
-            <div className="flex flex-col items-center justify-center text-center py-16">
+            <div className="flex flex-col items-center justify-center text-center py-16 bg-card/30 border border-border/50 rounded-xl">
               <div className="p-4 rounded-full bg-primary/10 mb-4">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
               </div>

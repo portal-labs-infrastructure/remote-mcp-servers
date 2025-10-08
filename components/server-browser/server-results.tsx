@@ -2,7 +2,12 @@
 
 import ServerCard from '@/components/server-card';
 import { Input } from '@/components/ui/input';
-import { Search as SearchIcon, AlertTriangle, ListX, Loader2 } from 'lucide-react';
+import {
+  Search as SearchIcon,
+  AlertTriangle,
+  ListX,
+  Loader2,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect, RefObject } from 'react';
 import { Button } from '../ui/loading-button';
@@ -65,25 +70,27 @@ export default function ServerResults({
   }
 
   return (
-    <div className="flex-1 space-y-8">
+    <div className="flex-1 space-y-6">
       {/* Enhanced Search Form */}
-      <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-lg">
+      <div className="bg-card/80 backdrop-blur-sm border-2 border-border/50 rounded-xl p-5 shadow-md">
         <form
           onSubmit={handleSearchFormSubmit}
-          className="flex items-center gap-4">
-          <Input
-            type="search"
-            value={searchTermInput}
-            onChange={(e) => setSearchTermInput(e.target.value)}
-            placeholder="Search servers by name or description..."
-            className="flex-grow h-12 border-border/50 bg-background/50 focus-visible:ring-primary focus-visible:border-primary"
-          />
+          className="flex items-center gap-3">
+          <div className="relative flex-1">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+            <Input
+              type="search"
+              value={searchTermInput}
+              onChange={(e) => setSearchTermInput(e.target.value)}
+              placeholder="Search servers by name or description..."
+              className="pl-10 h-11 border-2 border-border/50 bg-background/80 focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
+            />
+          </div>
           <Button
             loading={loading}
             type="submit"
-            className="h-12 px-6 transition-all duration-200 hover:scale-105 hover:shadow-md">
-            <SearchIcon className="mr-2 h-5 w-5" />
-            <span className="hidden sm:inline">Search</span>
+            className="h-11 px-6 transition-all duration-200 hover:scale-105 hover:shadow-md">
+            <span>Search</span>
           </Button>
         </form>
       </div>
@@ -95,7 +102,9 @@ export default function ServerResults({
             <ListX className="h-16 w-16 text-muted-foreground" />
           </div>
           <h3 className="text-xl font-bold text-foreground mb-2">
-            {initialSearchTerm.trim() ? 'No servers found' : 'No servers available'}
+            {initialSearchTerm.trim()
+              ? 'No servers found'
+              : 'No servers available'}
           </h3>
           <p className="text-muted-foreground text-lg max-w-md">
             {initialSearchTerm.trim()
@@ -117,27 +126,27 @@ export default function ServerResults({
 
       {/* Results Grid */}
       {servers.length > 0 && (
-        <div className="space-y-8">
-          <div className="flex items-center justify-between">
-            <p className="text-muted-foreground">
-              <span className="font-semibold text-foreground">
+        <div className="space-y-6">
+          <div className="bg-muted/30 border border-border/50 rounded-lg px-4 py-3">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-bold text-foreground text-lg">
                 {totalCount}
               </span>{' '}
               {totalCount === 1 ? 'server' : 'servers'} found
             </p>
           </div>
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             {servers.map((server) => (
               <ServerCard server={server} key={server.id} />
             ))}
           </div>
 
           {/* Infinite Scroll Trigger */}
-          <div ref={observerTarget} className="py-4">
+          <div ref={observerTarget} className="py-2">
             {loadingMore && (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <span className="ml-3 text-muted-foreground">
+              <div className="flex items-center justify-center py-6 bg-muted/20 border border-border/30 rounded-lg">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <span className="ml-3 text-sm text-muted-foreground">
                   Loading more servers...
                 </span>
               </div>
@@ -147,15 +156,18 @@ export default function ServerResults({
                 <Button
                   onClick={onLoadMore}
                   variant="outline"
-                  className="hover:scale-105 transition-all duration-200">
+                  size="lg"
+                  className="hover:scale-105 transition-all duration-200 border-2">
                   Load More Servers
                 </Button>
               </div>
             )}
             {!loadingMore && !hasMore && servers.length > 0 && (
-              <p className="text-center text-muted-foreground py-4">
-                You&apos;ve reached the end of the list
-              </p>
+              <div className="text-center py-4 bg-muted/20 border border-border/30 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  You&apos;ve reached the end of the list
+                </p>
+              </div>
             )}
           </div>
         </div>
@@ -164,11 +176,10 @@ export default function ServerResults({
       {/* Loading Skeletons */}
       {loading && servers.length === 0 && (
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          {Array.from({ length: 10 }).map((_, index) => (
-            <Skeleton
-              key={index}
-              className="w-full h-[300px] rounded-xl bg-muted/20"
-            />
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="space-y-4">
+              <Skeleton className="w-full h-[280px] rounded-xl bg-muted/30 border border-border/30" />
+            </div>
           ))}
         </div>
       )}
