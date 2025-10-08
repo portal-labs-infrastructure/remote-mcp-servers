@@ -1,104 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import {
-  getAppStoreListings,
-  getAppDetailsByNamespace,
-  configure,
-} from '@prometheus-protocol/ic-js';
-import { createClient } from '@supabase/supabase-js';
 
-// Configure the IC canister IDs
-configure({
-  canisterIds: {
-    MCP_REGISTRY: 'grhdx-gqaaa-aaaai-q32va-cai',
-    MCP_ORCHESTRATOR: 'ez54s-uqaaa-aaaai-q32za-cai',
-    USAGE_TRACKER: 'm63pw-fqaaa-aaaai-q33pa-cai',
-  },
-});
-
-const SUPABASE_TABLE_NAME = 'mcp_servers_v1';
-const CUSTOM_META_NAMESPACE = 'org.prometheusprotocol.metadata';
-const BLOCKCHAIN_NAMESPACE_UUID = '02ffac85-92a0-4bb2-adf4-c715b3c93b0d';
-
-// Helper to prevent circular reference issues when stringifying BigInts
-const replacer = (_key: string, value: unknown) => {
-  return typeof value === 'bigint' ? value.toString() : value;
-};
-
-function uuidv5(namespace: string, name: string): string {
-  // Simple UUID v5 implementation for deterministic IDs
-  const crypto = require('crypto');
-  const hash = crypto
-    .createHash('sha1')
-    .update(namespace + name)
-    .digest('hex');
-  return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-5${hash.slice(13, 16)}-${hash.slice(16, 20)}-${hash.slice(20, 32)}`;
-}
-
-function transformServerData(serverData: any) {
-  const namespace_string = serverData.namespace;
-  if (!namespace_string) {
-    console.log(
-      `Skipping server with no namespace: ${serverData.name || 'unknown'}`,
-    );
-    return null;
-  }
-
-  // Generate deterministic UUID for the primary key
-  const deterministic_id = uuidv5(BLOCKCHAIN_NAMESPACE_UUID, namespace_string);
-
-  const details = serverData.details || {};
-  const latest_version_details = details.latestVersion || {};
-  const build_info = latest_version_details.buildInfo || {};
-  const repo_url = build_info.repoUrl;
-
-  // Determine repository source
-  let repo_source = null;
-  if (repo_url && repo_url.includes('github.com')) {
-    repo_source = 'github';
-  }
-
-  // Determine remote type
-  const remote_url = latest_version_details.serverUrl;
-  let remote_type = 'streamable-http';
-  if (remote_url && remote_url.includes('sse')) {
-    remote_type = 'sse';
-  }
-
-  // Construct the custom metadata block
-  const custom_meta_block = {
-    human_friendly_name: serverData.name,
-    icon_url: serverData.iconUrl,
-    is_official: false,
-    category: serverData.category,
-    authentication_type: 'Unknown',
-    dynamic_client_registration: false,
-    ai_summary: null,
-    publisher: serverData.publisher,
-    wasm_id: latest_version_details.wasmId,
-    security_tier: latest_version_details.securityTier,
-    banner_url: serverData.bannerUrl,
-  };
-
-  const transformed = {
-    id: deterministic_id,
-    name: namespace_string,
-    description: serverData.description,
-    status:
-      latest_version_details.status === 'Verified' ? 'active' : 'deprecated',
-    latest_version: latest_version_details.versionString,
-    website_url: null,
-    repository:
-      repo_url && repo_source ? { url: repo_url, source: repo_source } : null,
-    packages: null,
-    remotes: remote_url ? [{ url: remote_url, type: remote_type }] : [],
-    meta: { [CUSTOM_META_NAMESPACE]: custom_meta_block },
-    published_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
-
-  return transformed;
-}
-
+// Note: We need to use dynamic imports for ES modules in Vercel's Node.js runtime
 export default async function handler(
   req: VercelRequest,
   res: VercelResponse,
@@ -117,6 +19,102 @@ export default async function handler(
 
   try {
     console.log('Starting complete blockchain sync...');
+
+    // Dynamic import for ES modules
+    const icJs = await import('@prometheus-protocol/ic-js');
+    const { createClient } = await import('@supabase/supabase-js');
+    const crypto = await import('crypto');
+
+    const { getAppStoreListings, getAppDetailsByNamespace, configure } = icJs;
+
+    // Configure the IC canister IDs
+    configure({
+      canisterIds: {
+        MCP_REGISTRY: 'grhdx-gqaaa-aaaai-q32va-cai',
+        MCP_ORCHESTRATOR: 'ez54s-uqaaa-aaaai-q32za-cai',
+        USAGE_TRACKER: 'm63pw-fqaaa-aaaai-q33pa-cai',
+      },
+    });
+
+    const SUPABASE_TABLE_NAME = 'mcp_servers_v1';
+    const CUSTOM_META_NAMESPACE = 'org.prometheusprotocol.metadata';
+    const BLOCKCHAIN_NAMESPACE_UUID = '02ffac85-92a0-4bb2-adf4-c715b3c93b0d';
+
+    function uuidv5(namespace: string, name: string): string {
+      const hash = crypto
+        .createHash('sha1')
+        .update(namespace + name)
+        .digest('hex');
+      return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-5${hash.slice(13, 16)}-${hash.slice(16, 20)}-${hash.slice(20, 32)}`;
+    }
+
+    function transformServerData(serverData: any) {
+      const namespace_string = serverData.namespace;
+      if (!namespace_string) {
+        console.log(
+          `Skipping server with no namespace: ${serverData.name || 'unknown'}`,
+        );
+        return null;
+      }
+
+      const deterministic_id = uuidv5(
+        BLOCKCHAIN_NAMESPACE_UUID,
+        namespace_string,
+      );
+
+      const details = serverData.details || {};
+      const latest_version_details = details.latestVersion || {};
+      const build_info = latest_version_details.buildInfo || {};
+      const repo_url = build_info.repoUrl;
+
+      let repo_source = null;
+      if (repo_url && repo_url.includes('github.com')) {
+        repo_source = 'github';
+      }
+
+      const remote_url = latest_version_details.serverUrl;
+      let remote_type = 'streamable-http';
+      if (remote_url && remote_url.includes('sse')) {
+        remote_type = 'sse';
+      }
+
+      const custom_meta_block = {
+        human_friendly_name: serverData.name,
+        icon_url: serverData.iconUrl,
+        is_official: false,
+        category: serverData.category,
+        authentication_type: 'Unknown',
+        dynamic_client_registration: false,
+        ai_summary: null,
+        publisher: serverData.publisher,
+        wasm_id: latest_version_details.wasmId,
+        security_tier: latest_version_details.securityTier,
+        banner_url: serverData.bannerUrl,
+      };
+
+      const transformed = {
+        id: deterministic_id,
+        name: namespace_string,
+        description: serverData.description,
+        status:
+          latest_version_details.status === 'Verified'
+            ? 'active'
+            : 'deprecated',
+        latest_version: latest_version_details.versionString,
+        website_url: null,
+        repository:
+          repo_url && repo_source
+            ? { url: repo_url, source: repo_source }
+            : null,
+        packages: null,
+        remotes: remote_url ? [{ url: remote_url, type: remote_type }] : [],
+        meta: { [CUSTOM_META_NAMESPACE]: custom_meta_block },
+        published_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      return transformed;
+    }
 
     // Set the network environment
     process.env.DFX_NETWORK = 'ic';
