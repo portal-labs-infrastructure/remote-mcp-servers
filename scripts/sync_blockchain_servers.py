@@ -1,6 +1,6 @@
 import os
 import json
-import subprocess
+import requests
 from datetime import datetime, timezone
 import uuid
 from dotenv import load_dotenv
@@ -30,28 +30,55 @@ def init_supabase_client():
 
 def fetch_blockchain_data():
     """
-    Executes the Node.js wrapper script to fetch all server data from the blockchain.
+    Calls the Node.js serverless function to fetch all server data from the blockchain.
     Returns the parsed JSON data.
     """
-    print("Starting Node.js script to fetch blockchain data...")
+    print("Calling Node.js API to fetch blockchain data...")
     try:
-        # We use 'node' to run the .mjs file.
-        process = subprocess.run(
-            ["node", "scripts/fetch_blockchain_data.mjs"],
-            capture_output=True,
-            text=True,
-            check=True,  # This will raise an exception if the script exits with an error
-            encoding="utf-8",
+        # Get the CRON_SECRET to authenticate with our own API
+        cron_secret = os.environ.get("CRON_SECRET")
+        if not cron_secret:
+            raise ValueError("CRON_SECRET environment variable not set")
+
+        # Determine the base URL
+        # In production, we're already running on Vercel, so we can use a relative path
+        # But we need to construct the full URL for the fetch
+        vercel_url = os.environ.get("VERCEL_URL")
+        if vercel_url:
+            base_url = f"https://{vercel_url}"
+        else:
+            # Local development
+            base_url = "http://localhost:3000"
+
+        api_url = f"{base_url}/api/fetch-blockchain-data"
+
+        print(f"Fetching from: {api_url}")
+
+        # Make the request to our Node.js API
+        response = requests.post(
+            api_url,
+            headers={
+                "Authorization": f"Bearer {cron_secret}",
+                "Content-Type": "application/json",
+            },
+            timeout=300,  # 5 minutes timeout for blockchain fetching
         )
-        print("Node.js script finished successfully.")
-        # The JSON output is in stdout
-        return json.loads(process.stdout)
-    except subprocess.CalledProcessError as e:
-        print("Error executing Node.js script:")
-        print("Stderr:", e.stderr)
+
+        if not response.ok:
+            error_text = response.text
+            raise Exception(
+                f"Node.js API returned status {response.status_code}: {error_text}"
+            )
+
+        data = response.json()
+        print(f"Node.js API returned {len(data)} servers successfully.")
+        return data
+
+    except requests.RequestException as e:
+        print(f"Error calling Node.js API: {e}")
         raise e
     except json.JSONDecodeError as e:
-        print("Failed to parse JSON output from Node.js script.")
+        print("Failed to parse JSON response from Node.js API.")
         raise e
 
 
