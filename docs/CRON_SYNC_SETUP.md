@@ -15,20 +15,21 @@ The system consists of:
 ## Files Structure
 
 ```
+├── api/                                  # Python serverless functions (Vercel)
+│   ├── sync-mcp-remotes/index.py        # Official MCP registry Python handler
+│   └── sync-blockchain/index.py         # Blockchain Python handler
 ├── app/api/
-│   ├── sync-mcp-remotes/route.ts     # Official MCP registry cron endpoint
-│   ├── sync-blockchain/route.ts      # Blockchain cron endpoint
-│   ├── manual-sync/route.ts          # Manual trigger endpoint (both types)
-│   └── sync-status/route.ts          # Status monitoring endpoint
+│   ├── manual-sync/route.ts             # Manual trigger endpoint (calls Python APIs)
+│   └── sync-status/route.ts             # Status monitoring endpoint
 ├── components/dashboard/
-│   └── sync-dashboard.tsx            # Admin dashboard component
+│   └── sync-dashboard.tsx               # Admin dashboard component
 ├── scripts/
-│   ├── sync_mcp_remotes.py           # Official MCP registry sync script
-│   ├── sync_blockchain_servers.py    # Blockchain sync script
-│   └── fetch_blockchain_data.mjs     # Node.js blockchain data fetcher
-├── vercel.json                       # Cron job configuration (both syncs)
-├── requirements.txt                  # Python dependencies (generated from pyproject.toml)
-└── pyproject.toml                    # UV project file (source of truth)
+│   ├── sync_mcp_remotes.py              # Official MCP registry sync script
+│   ├── sync_blockchain_servers.py       # Blockchain sync script
+│   └── fetch_blockchain_data.mjs        # Node.js blockchain data fetcher
+├── vercel.json                          # Cron job configuration (both syncs)
+├── requirements.txt                     # Python dependencies (generated from pyproject.toml)
+└── pyproject.toml                       # UV project file (source of truth)
 ```
 
 ## Configuration

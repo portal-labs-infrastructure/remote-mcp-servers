@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { execSync } from 'child_process';
-import path from 'path';
 import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
@@ -38,61 +36,64 @@ export async function POST(request: NextRequest) {
       `Manual ${syncType} sync triggered by admin user: ${user.email}`,
     );
 
-    // Determine which script to run
-    let scriptPath: string;
-    let syncName: string;
-    let timeout: number;
+    // Determine which Python API endpoint to call
+    const syncPath =
+      syncType === 'blockchain'
+        ? '/api/sync-blockchain'
+        : '/api/sync-mcp-remotes';
+    const syncName = syncType === 'blockchain' ? 'blockchain' : 'MCP remotes';
 
-    if (syncType === 'blockchain') {
-      scriptPath = path.join(
-        process.cwd(),
-        'scripts',
-        'sync_blockchain_servers.py',
-      );
-      syncName = 'blockchain';
-      timeout = 600000; // 10 minutes for blockchain
-      console.log('Starting manual blockchain sync...');
-    } else {
-      scriptPath = path.join(process.cwd(), 'scripts', 'sync_mcp_remotes.py');
-      syncName = 'MCP remotes';
-      timeout = 300000; // 5 minutes for MCP remotes
-      console.log('Starting manual MCP remotes sync...');
-    }
+    console.log(`Calling ${syncPath}...`);
 
     try {
-      const result = execSync(`python3 ${scriptPath}`, {
-        encoding: 'utf8',
-        timeout: timeout,
-        env: {
-          ...process.env,
-          // Ensure Python has access to environment variables
-          NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-          SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      // Get the CRON_SECRET to authenticate with the Python API
+      const cronSecret = process.env.CRON_SECRET;
+
+      if (!cronSecret) {
+        throw new Error('CRON_SECRET not configured');
+      }
+
+      // Build the full URL for the Python API
+      const baseUrl = process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : `http://localhost:${process.env.PORT || 3000}`;
+
+      const syncUrl = `${baseUrl}${syncPath}`;
+
+      // Call the Python API endpoint
+      const response = await fetch(syncUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${cronSecret}`,
+          'Content-Type': 'application/json',
         },
       });
 
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || result.details || 'Sync failed');
+      }
+
       console.log(`Manual ${syncName} sync completed successfully`);
-      console.log('Script output:', result);
 
       return NextResponse.json({
         success: true,
         message: `Manual ${syncName} sync completed successfully`,
-        output: result,
+        output: result.message || 'Sync completed',
         triggeredBy: user.email,
         syncType: syncType,
       });
     } catch (execError: unknown) {
-      const errorMessage = execError instanceof Error ? execError.message : 'Unknown error';
-      const stderr = (execError as { stderr?: string }).stderr;
-      
-      console.error(`Error executing ${syncName} sync script:`, errorMessage);
-      console.error('Script stderr:', stderr);
+      const errorMessage =
+        execError instanceof Error ? execError.message : 'Unknown error';
+
+      console.error(`Error executing ${syncName} sync:`, errorMessage);
 
       return NextResponse.json(
         {
-          error: `${syncName} sync script execution failed`,
+          error: `${syncName} sync failed`,
           details: errorMessage,
-          stderr: stderr,
           syncType: syncType,
         },
         { status: 500 },
