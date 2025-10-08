@@ -1,6 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-const handler = async (req: VercelRequest, res: VercelResponse) => {
+const handler = async (req, res) => {
   // Security: Only allow requests with the correct secret
   const authHeader = req.headers.authorization;
   const cronSecret = process.env.CRON_SECRET;
@@ -36,7 +34,7 @@ const handler = async (req: VercelRequest, res: VercelResponse) => {
     const CUSTOM_META_NAMESPACE = 'org.prometheusprotocol.metadata';
     const BLOCKCHAIN_NAMESPACE_UUID = '02ffac85-92a0-4bb2-adf4-c715b3c93b0d';
 
-    function uuidv5(namespace: string, name: string): string {
+    function uuidv5(namespace, name) {
       const hash = crypto
         .createHash('sha1')
         .update(namespace + name)
@@ -44,7 +42,7 @@ const handler = async (req: VercelRequest, res: VercelResponse) => {
       return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-5${hash.slice(13, 16)}-${hash.slice(16, 20)}-${hash.slice(20, 32)}`;
     }
 
-    function transformServerData(serverData: any) {
+    function transformServerData(serverData) {
       const namespace_string = serverData.namespace;
       if (!namespace_string) {
         console.log(
@@ -198,4 +196,3 @@ const handler = async (req: VercelRequest, res: VercelResponse) => {
 };
 
 module.exports = handler;
-export default handler;
