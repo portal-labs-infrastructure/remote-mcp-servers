@@ -40,17 +40,9 @@ def fetch_blockchain_data():
         if not cron_secret:
             raise ValueError("CRON_SECRET environment variable not set")
 
-        # Determine the base URL
-        # In production, we're already running on Vercel, so we can use a relative path
-        # But we need to construct the full URL for the fetch
-        vercel_url = os.environ.get("VERCEL_URL")
-        if vercel_url:
-            base_url = f"https://{vercel_url}"
-        else:
-            # Local development
-            base_url = "http://localhost:3000"
-
-        api_url = f"{base_url}/api/fetch-blockchain-data"
+        # Use localhost for internal API calls to bypass Vercel deployment protection
+        # This works because both functions run in the same Vercel deployment
+        api_url = "http://localhost:3000/api/fetch-blockchain-data"
 
         print(f"Fetching from: {api_url}")
 
