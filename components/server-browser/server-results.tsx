@@ -1,12 +1,10 @@
 'use client';
 
-import ServerCard from '@/components/server-card'; // Adjust path
+import ServerCard from '@/components/server-card';
 import { Input } from '@/components/ui/input';
-import { Search as SearchIcon, AlertTriangle, ListX } from 'lucide-react';
+import { Search as SearchIcon, AlertTriangle, ListX, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { ITEMS_PER_PAGE } from './types';
-import PaginationControls from '../ui/pagination-controls';
+import { useState, useEffect, RefObject } from 'react';
 import { Button } from '../ui/loading-button';
 import { Skeleton } from '../ui/skeleton';
 
@@ -16,9 +14,11 @@ interface ServerResultsProps {
   servers: SpecServerObject[];
   totalCount: number;
   loading: boolean;
+  loadingMore: boolean;
   error: string | null;
-  currentPage: number;
-  onPageChange: (page: number) => void;
+  observerTarget: RefObject<HTMLDivElement | null>;
+  hasMore: boolean;
+  onLoadMore: () => void;
 }
 
 export default function ServerResults({
@@ -27,9 +27,11 @@ export default function ServerResults({
   servers,
   totalCount,
   loading,
+  loadingMore,
   error,
-  currentPage,
-  onPageChange,
+  observerTarget,
+  hasMore,
+  onLoadMore,
 }: ServerResultsProps) {
   const [searchTermInput, setSearchTermInput] = useState(initialSearchTerm);
 
@@ -62,8 +64,6 @@ export default function ServerResults({
     );
   }
 
-  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-
   return (
     <div className="flex-1 space-y-8">
       {/* Enhanced Search Form */}
@@ -95,15 +95,11 @@ export default function ServerResults({
             <ListX className="h-16 w-16 text-muted-foreground" />
           </div>
           <h3 className="text-xl font-bold text-foreground mb-2">
-            {initialSearchTerm.trim() ||
-            Object.keys(initialSearchTerm).length > 1
-              ? 'No servers found'
-              : 'No servers available'}
+            {initialSearchTerm.trim() ? 'No servers found' : 'No servers available'}
           </h3>
           <p className="text-muted-foreground text-lg max-w-md">
-            {initialSearchTerm.trim() ||
-            Object.keys(initialSearchTerm).length > 1
-              ? 'No MCP servers found matching your search or filters. Try adjusting your criteria.'
+            {initialSearchTerm.trim()
+              ? 'No MCP servers found matching your search. Try different keywords.'
               : 'No MCP servers are currently listed in the registry.'}
           </p>
           {!initialSearchTerm.trim() && (
@@ -127,7 +123,7 @@ export default function ServerResults({
               <span className="font-semibold text-foreground">
                 {totalCount}
               </span>{' '}
-              servers found
+              {totalCount === 1 ? 'server' : 'servers'} found
             </p>
           </div>
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -135,13 +131,33 @@ export default function ServerResults({
               <ServerCard server={server} key={server.id} />
             ))}
           </div>
-          <PaginationControls
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
-            itemsPerPage={ITEMS_PER_PAGE}
-            totalItems={totalCount}
-          />
+
+          {/* Infinite Scroll Trigger */}
+          <div ref={observerTarget} className="py-4">
+            {loadingMore && (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <span className="ml-3 text-muted-foreground">
+                  Loading more servers...
+                </span>
+              </div>
+            )}
+            {!loadingMore && hasMore && (
+              <div className="flex items-center justify-center py-4">
+                <Button
+                  onClick={onLoadMore}
+                  variant="outline"
+                  className="hover:scale-105 transition-all duration-200">
+                  Load More Servers
+                </Button>
+              </div>
+            )}
+            {!loadingMore && !hasMore && servers.length > 0 && (
+              <p className="text-center text-muted-foreground py-4">
+                You've reached the end of the list
+              </p>
+            )}
+          </div>
         </div>
       )}
 
