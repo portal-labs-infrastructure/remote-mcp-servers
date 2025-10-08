@@ -1,11 +1,9 @@
 from http.server import BaseHTTPRequestHandler
 import os
-import sys
 import json
 import traceback
-
-# Add the scripts directory to the path so we can import the sync script
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "scripts"))
+import urllib.request
+import urllib.error
 
 
 class handler(BaseHTTPRequestHandler):
@@ -37,27 +35,31 @@ class handler(BaseHTTPRequestHandler):
             if auth_header != f"Bearer {cron_secret}":
                 return self._send_json_response(401, {"error": "Unauthorized"})
 
-            # Import here to avoid import errors if dependencies aren't available yet
-            from sync_blockchain_servers import main as sync_main
+            print("Starting blockchain sync (delegating to Node.js)...")
 
-            # Run the sync
-            print("Starting blockchain sync...")
-            sync_main()
-            print("Blockchain sync completed successfully")
-
-            return self._send_json_response(
-                200,
-                {"success": True, "message": "Blockchain sync completed successfully"},
+            # Delegate to the complete Node.js implementation
+            # Use the complete sync endpoint that handles everything in Node.js
+            req = urllib.request.Request(
+                "http://localhost:3000/api/sync-blockchain-complete",
+                method="POST",
+                headers={"Authorization": f"Bearer {cron_secret}"},
             )
 
-        except ImportError as e:
+            with urllib.request.urlopen(req, timeout=300) as response:
+                result = json.loads(response.read().decode())
+                print("Blockchain sync delegated successfully")
+                return self._send_json_response(200, result)
+
+        except urllib.error.HTTPError as e:
             error_trace = traceback.format_exc()
-            print(f"Import error: {error_trace}")
+            error_body = e.read().decode() if e.fp else "No error body"
+            print(f"HTTP error from Node.js endpoint: {error_trace}")
+            print(f"Error body: {error_body}")
             return self._send_json_response(
                 500,
                 {
-                    "error": "Import failed",
-                    "details": str(e),
+                    "error": "Node.js sync failed",
+                    "details": f"HTTP {e.code}: {error_body}",
                     "trace": error_trace,
                 },
             )

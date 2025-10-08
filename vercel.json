@@ -8,5 +8,16 @@
       "path": "/api/sync-blockchain",
       "schedule": "30 */12 * * *"
     }
+  ],
+  "headers": [
+    {
+      "source": "/api/fetch-blockchain-data",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
   ]
 }

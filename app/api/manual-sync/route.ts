@@ -36,10 +36,10 @@ export async function POST(request: NextRequest) {
       `Manual ${syncType} sync triggered by admin user: ${user.email}`,
     );
 
-    // Determine which Python API endpoint to call
+    // Determine which API endpoint to call
     const syncPath =
       syncType === 'blockchain'
-        ? '/api/sync-blockchain'
+        ? '/api/sync-blockchain-complete'
         : '/api/sync-mcp-remotes';
     const syncName = syncType === 'blockchain' ? 'blockchain' : 'MCP remotes';
 
