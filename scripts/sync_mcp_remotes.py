@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 import os
 import requests
+import uuid
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
@@ -114,14 +115,16 @@ def transform_and_filter_server(official_server: dict):
     official_meta = official_server.get("_meta", {}).get(
         "io.modelcontextprotocol.registry/official", {}
     )
-    server_id = official_meta.get("serverId")
-    if not server_id:
-        print(
-            f"  -> Skipping server with no serverId in _meta: {server_data.get('name')}"
-        )
-        return None
-
+    
+    # Use the server name as the ID (the API no longer provides a separate serverId)
     full_namespace = server_data.get("name", "")
+    if not full_namespace:
+        print(f"  -> Skipping server with no name")
+        return None
+    
+    # Generate a deterministic UUID from the namespace for database compatibility
+    server_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, full_namespace))
+    
     server_name_part = full_namespace.split("/", 1)[-1]
     human_friendly_name = server_name_part.replace("-", " ").replace("_", " ").title()
 
@@ -138,9 +141,10 @@ def transform_and_filter_server(official_server: dict):
     final_meta = official_server.get("_meta", {})
     final_meta[CUSTOM_META_NAMESPACE] = custom_meta_block
 
+    # Status is in the metadata, not the server object
     # Sanitize status to prevent database constraint errors
     allowed_statuses = {"active", "deprecated"}
-    raw_status = server_data.get("status")
+    raw_status = official_meta.get("status")
     status = raw_status if raw_status in allowed_statuses else "active"
     if raw_status and raw_status not in allowed_statuses:
         print(
