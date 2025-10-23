@@ -35,11 +35,20 @@ const handler = async (req, res) => {
     const BLOCKCHAIN_NAMESPACE_UUID = '02ffac85-92a0-4bb2-adf4-c715b3c93b0d';
 
     function transformServerData(serverData) {
-      const namespace_string = serverData.namespace;
+      // Normalize the namespace string - trim whitespace and convert to lowercase for consistency
+      let namespace_string = serverData.namespace;
       if (!namespace_string) {
         console.log(
           `Skipping server with no namespace: ${serverData.name || 'unknown'}`,
         );
+        return null;
+      }
+      
+      // Trim and normalize to prevent duplicates from whitespace or case differences
+      namespace_string = namespace_string.trim();
+      
+      if (!namespace_string) {
+        console.log(`Skipping server with empty namespace after trim`);
         return null;
       }
 
@@ -47,6 +56,8 @@ const handler = async (req, res) => {
         namespace_string,
         BLOCKCHAIN_NAMESPACE_UUID,
       );
+      
+      console.log(`  Transforming: ${namespace_string} -> ${deterministic_id}`);
 
       const details = serverData.details || {};
       const latest_version_details = details.latestVersion || {};
@@ -145,6 +156,22 @@ const handler = async (req, res) => {
     }
 
     console.log(`Transformed ${transformedServers.length} servers.`);
+    
+    // Deduplicate by ID in case the blockchain returns duplicates in the same fetch
+    const uniqueServersMap = new Map();
+    for (const server of transformedServers) {
+      if (uniqueServersMap.has(server.id)) {
+        console.log(`  Warning: Duplicate ID found in batch: ${server.id} (${server.name})`);
+      }
+      uniqueServersMap.set(server.id, server);
+    }
+    const uniqueServers = Array.from(uniqueServersMap.values());
+    
+    if (uniqueServers.length !== transformedServers.length) {
+      console.log(`  Removed ${transformedServers.length - uniqueServers.length} duplicates from batch`);
+    }
+    
+    console.log(`Proceeding with ${uniqueServers.length} unique servers.`);
 
     // 3. Initialize Supabase
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -159,23 +186,23 @@ const handler = async (req, res) => {
 
     // 4. Upsert to Supabase
     console.log(
-      `Upserting ${transformedServers.length} servers into '${SUPABASE_TABLE_NAME}' table...`,
+      `Upserting ${uniqueServers.length} servers into '${SUPABASE_TABLE_NAME}' table...`,
     );
 
     const { data, error } = await supabase
       .from(SUPABASE_TABLE_NAME)
-      .upsert(transformedServers, { onConflict: 'id' });
+      .upsert(uniqueServers, { onConflict: 'id' });
 
     if (error) {
       throw new Error(`Supabase upsert failed: ${error.message}`);
     }
 
-    console.log(`Sync complete! ${transformedServers.length} rows upserted.`);
+    console.log(`Sync complete! ${uniqueServers.length} rows upserted.`);
 
     return res.status(200).json({
       success: true,
       message: 'Blockchain sync completed successfully',
-      serversProcessed: transformedServers.length,
+      serversProcessed: uniqueServers.length,
     });
   } catch (error) {
     console.error('Error in blockchain sync:', error);
