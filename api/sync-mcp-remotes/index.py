@@ -37,6 +37,19 @@ class handler(BaseHTTPRequestHandler):
             if auth_header != f"Bearer {cron_secret}":
                 return self._send_json_response(401, {"error": "Unauthorized"})
 
+            # Parse request body to check for force_full_sync flag
+            try:
+                content_length = int(self.headers.get('Content-Length', 0))
+                if content_length > 0:
+                    body = self.rfile.read(content_length)
+                    request_data = json.loads(body.decode('utf-8'))
+                    if request_data.get('force_full_sync'):
+                        os.environ['FORCE_FULL_SYNC'] = 'true'
+                        print("Force full sync enabled via request parameter")
+            except (json.JSONDecodeError, ValueError):
+                # If there's no body or it's invalid, just continue with default behavior
+                pass
+
             # Import here to avoid import errors if dependencies aren't available yet
             from sync_mcp_remotes import main as sync_main
 

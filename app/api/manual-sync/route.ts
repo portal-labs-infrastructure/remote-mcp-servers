@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
     // Parse request body to get sync type
     const body = await request.json().catch(() => ({}));
     const syncType = body.type || 'mcp-remotes'; // default to mcp-remotes
+    const forceFullSync = body.force_full_sync || false; // option to force full sync
 
     // Admin check: Only allow specific users to trigger syncs
     const isAdmin = user.email?.includes('jesse@portal.one');
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(
-      `Manual ${syncType} sync triggered by admin user: ${user.email}`,
+      `Manual ${syncType} sync triggered by admin user: ${user.email}${forceFullSync ? ' (FULL SYNC)' : ''}`,
     );
 
     // Determine which API endpoint to call
@@ -68,6 +69,7 @@ export async function POST(request: NextRequest) {
           Authorization: `Bearer ${cronSecret}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ force_full_sync: forceFullSync }),
       });
 
       console.log(`Response status: ${response.status}`);

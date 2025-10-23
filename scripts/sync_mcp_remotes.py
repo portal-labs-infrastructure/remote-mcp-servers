@@ -31,6 +31,13 @@ def init_supabase_client():
 
 def get_last_sync_timestamp(supabase: Client) -> str | None:
     """Queries our database to find the most recent 'updated_at' timestamp."""
+    # Check if we should force a full sync via environment variable
+    force_full_sync = os.getenv("FORCE_FULL_SYNC", "").lower() in ["true", "1", "yes"]
+    
+    if force_full_sync:
+        print("FORCE_FULL_SYNC is enabled. Performing a full sync.")
+        return None
+    
     try:
         response = (
             supabase.table(SUPABASE_TABLE_NAME)
