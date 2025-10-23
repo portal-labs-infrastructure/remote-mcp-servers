@@ -75,7 +75,8 @@ def fetch_updated_servers(last_sync_timestamp: str | None):
             new_servers = data.get("servers", [])
             servers.extend(new_servers)
             print(f"Fetched {len(new_servers)} servers. Total so far: {len(servers)}")
-            next_cursor = data.get("metadata", {}).get("next_cursor")
+            # Fixed: API returns 'nextCursor' (camelCase), not 'next_cursor'
+            next_cursor = data.get("metadata", {}).get("nextCursor")
             if not next_cursor:
                 break
         except requests.exceptions.RequestException as e:
