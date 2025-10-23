@@ -98,12 +98,15 @@ def transform_and_filter_server(official_server: dict):
     Transforms a server object and filters out any that are not remote servers.
     Returns the transformed object or None if it should be skipped.
     """
+    # The API response wraps the actual server data in a 'server' property
+    server_data = official_server.get("server", {})
+    
     # --- ADDED: Filter for remote servers ---
     # A server is only a "remote server" if it has a non-empty 'remotes' array.
-    remotes = official_server.get("remotes")
+    remotes = server_data.get("remotes")
     if not remotes or not isinstance(remotes, list) or len(remotes) == 0:
         print(
-            f"  -> Skipping package-based server (no remotes): {official_server.get('name')}"
+            f"  -> Skipping package-based server (no remotes): {server_data.get('name')}"
         )
         return None
     # --- END of filter logic ---
@@ -114,11 +117,11 @@ def transform_and_filter_server(official_server: dict):
     server_id = official_meta.get("serverId")
     if not server_id:
         print(
-            f"  -> Skipping server with no serverId in _meta: {official_server.get('name')}"
+            f"  -> Skipping server with no serverId in _meta: {server_data.get('name')}"
         )
         return None
 
-    full_namespace = official_server.get("name", "")
+    full_namespace = server_data.get("name", "")
     server_name_part = full_namespace.split("/", 1)[-1]
     human_friendly_name = server_name_part.replace("-", " ").replace("_", " ").title()
 
@@ -137,7 +140,7 @@ def transform_and_filter_server(official_server: dict):
 
     # Sanitize status to prevent database constraint errors
     allowed_statuses = {"active", "deprecated"}
-    raw_status = official_server.get("status")
+    raw_status = server_data.get("status")
     status = raw_status if raw_status in allowed_statuses else "active"
     if raw_status and raw_status not in allowed_statuses:
         print(
@@ -147,12 +150,12 @@ def transform_and_filter_server(official_server: dict):
     return {
         "id": server_id,
         "name": full_namespace,
-        "description": official_server.get("description"),
+        "description": server_data.get("description"),
         "status": status,
-        "latest_version": official_server.get("version"),
-        "website_url": official_server.get("websiteUrl"),
-        "repository": official_server.get("repository"),
-        "packages": official_server.get("packages"),
+        "latest_version": server_data.get("version"),
+        "website_url": server_data.get("websiteUrl"),
+        "repository": server_data.get("repository"),
+        "packages": server_data.get("packages"),
         "remotes": remotes,
         "meta": final_meta,
         "published_at": official_meta.get("publishedAt"),
