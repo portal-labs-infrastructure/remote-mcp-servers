@@ -29,6 +29,7 @@ type SyncResult = {
 
 export function SyncDashboard() {
   const [isRunning, setIsRunning] = useState<string | false>(false);
+  const [forceFullSync, setForceFullSync] = useState(false);
   const [lastResults, setLastResults] = useState<{
     'mcp-remotes'?: SyncResult;
     blockchain?: SyncResult;
@@ -38,14 +39,17 @@ export function SyncDashboard() {
     setIsRunning(syncType);
 
     try {
-      console.log(`Triggering ${syncType} sync...`);
+      console.log(`Triggering ${syncType} sync...${forceFullSync ? ' (FULL SYNC)' : ''}`);
 
       const response = await fetch('/api/manual-sync', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ type: syncType }),
+        body: JSON.stringify({ 
+          type: syncType,
+          force_full_sync: forceFullSync,
+        }),
         credentials: 'include', // Important: Include cookies for auth
       });
 
@@ -111,6 +115,27 @@ export function SyncDashboard() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4 pt-0">
+          {type === 'mcp-remotes' && (
+            <div className="flex items-center space-x-2 p-3 bg-muted/50 rounded-lg border border-border/50">
+              <input
+                type="checkbox"
+                id="force-full-sync"
+                checked={forceFullSync}
+                onChange={(e) => setForceFullSync(e.target.checked)}
+                disabled={!!isRunning}
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary disabled:opacity-50"
+              />
+              <label
+                htmlFor="force-full-sync"
+                className={`text-sm font-medium cursor-pointer ${!!isRunning ? 'opacity-50' : ''}`}>
+                Force Full Sync
+                <span className="block text-xs text-muted-foreground font-normal mt-0.5">
+                  Sync all {'>'}600 servers (ignores last sync timestamp)
+                </span>
+              </label>
+            </div>
+          )}
+          
           <Button
             onClick={() => handleManualSync(type)}
             disabled={!!isRunning}
@@ -119,12 +144,12 @@ export function SyncDashboard() {
             {isCurrentlyRunning ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Running...
+                Running{forceFullSync && type === 'mcp-remotes' ? ' Full Sync' : ''}...
               </>
             ) : (
               <>
                 <Play className="h-4 w-4" />
-                Manual Sync
+                {forceFullSync && type === 'mcp-remotes' ? 'Run Full Sync' : 'Manual Sync'}
               </>
             )}
           </Button>
