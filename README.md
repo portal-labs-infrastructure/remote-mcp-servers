@@ -43,9 +43,9 @@ Returns a paginated and filterable list of approved MCP servers.
 - Filter by official status:  
   `/api/servers?isOfficial=true`
 - Filter by authentication type:  
-  `/api/servers?authTypes=OAuth`
+  `/api/servers?authTypes=OAuth2`
 - Filter by multiple authentication types:  
-  `/api/servers?authTypes=OAuth,APIKey`
+  `/api/servers?authTypes=OAuth2,APIKey`
 - Combine filters:  
   `/api/servers?categories=Utility&q=secure&limit=15&isOfficial=true`
 
@@ -55,7 +55,7 @@ Returns a paginated and filterable list of approved MCP servers.
 - `limit` (number, default: 10, max: 100): The number of items per page.
 - `q` (string): Search query (matches server name and description, case-insensitive).
 - `categories` (string, comma-separated): Filter by one or more server categories.
-- `authTypes` (string, comma-separated): Filter by one or more authentication types (e.g., "OAuth", "APIKey", "None").
+- `authTypes` (string, comma-separated): Filter by one or more authentication types (e.g., "OAuth2", "APIKey", "None").
 - `dynamicClientRegistration` (boolean: `true` or `false`): Filter by support for dynamic client registration.
 - `isOfficial` (boolean: `true` or `false`): Filter by official server status.
 
@@ -102,7 +102,7 @@ Returns a sorted array of all unique authentication types in the registry.
 Example Response:
 
 ```json
-{ "authTypes": ["OAuth", "APIKey", "None"] }
+{ "authTypes": ["OAuth2", "APIKey", "None"] }
 ```
 
 ### Summary
@@ -161,7 +161,7 @@ All endpoints return JSON.
       # SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
       ```
     - **Database Schema:** You will need to set up the `discoverable_mcp_servers` table in your Supabase database.
-      Use the csv in `seed/output.csv` in the Supabase dashboard to create the table and populate it with the initial data.
+      Use the CSV in `seed/output.csv` in the Supabase dashboard to create the table and populate it with the initial data. Its `authentication_type` column matches the application schema.
     - **Run SQL Scripts:** Add created_at and status columns to the `discoverable_mcp_servers` table. You can run the following SQL in the Supabase SQL editor:
       ```sql
         UPDATE public.discoverable_mcp_servers
@@ -219,7 +219,3 @@ For code contributions (bug fixes, new features):
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
-
-```
-
-```
