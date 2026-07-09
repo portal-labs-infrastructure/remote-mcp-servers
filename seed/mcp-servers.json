@@ -610,6 +610,20 @@
     "is_official": true
   },
   {
+    "id": "xquik-mcp",
+    "name": "Xquik",
+    "description": "X/Twitter search, extraction workflows, account insights, and automation tools.",
+    "category": "Social Media",
+    "mcp_url": "https://xquik.com/mcp",
+    "authentication_type": "OAuth2",
+    "dynamic_client_registration": true,
+    "documentation_url": "https://docs.xquik.com/mcp/overview",
+    "maintainer_name": "Xquik",
+    "maintainer_url": "https://xquik.com",
+    "icon_url": "https://xquik.com/icon.svg",
+    "is_official": true
+  },
+  {
     "id": "gitmcp-mcp",
     "name": "GitMCP",
     "description": "Git context for MCP.",
