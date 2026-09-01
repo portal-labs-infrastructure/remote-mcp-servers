@@ -63,6 +63,36 @@ const handler = async (req, res) => {
       const latest_version_details = details.latestVersion || {};
       const build_info = latest_version_details.buildInfo || {};
       const repo_url = build_info.repoUrl;
+      
+      // Extract timestamps from blockchain data if available
+      // These may be in nanoseconds or other formats from the IC blockchain
+      const publishedTimestamp = serverData.publishedAt || serverData.createdAt || serverData.created_at;
+      const updatedTimestamp = serverData.updatedAt || serverData.updated_at || publishedTimestamp;
+      
+      // Convert IC timestamps (usually in nanoseconds) to ISO format
+      const convertTimestamp = (timestamp) => {
+        if (!timestamp) return null;
+        try {
+          // If it's a BigInt or very large number (nanoseconds), convert to milliseconds
+          const num = typeof timestamp === 'bigint' ? Number(timestamp) : Number(timestamp);
+          if (num > 1e15) {
+            // Likely nanoseconds, convert to milliseconds
+            return new Date(num / 1000000).toISOString();
+          } else if (num > 1e12) {
+            // Likely milliseconds
+            return new Date(num).toISOString();
+          } else if (num > 0) {
+            // Likely seconds
+            return new Date(num * 1000).toISOString();
+          }
+        } catch (e) {
+          console.log(`  Warning: Could not convert timestamp ${timestamp}:`, e.message);
+        }
+        return null;
+      };
+      
+      const published_at = convertTimestamp(publishedTimestamp) || '2024-01-01T00:00:00.000Z';
+      const updated_at = convertTimestamp(updatedTimestamp) || published_at;
 
       let repo_source = null;
       if (repo_url && repo_url.includes('github.com')) {
@@ -106,8 +136,8 @@ const handler = async (req, res) => {
         packages: null,
         remotes: remote_url ? [{ url: remote_url, type: remote_type }] : [],
         meta: { [CUSTOM_META_NAMESPACE]: custom_meta_block },
-        published_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        published_at: published_at,
+        updated_at: updated_at,
       };
 
       return transformed;
